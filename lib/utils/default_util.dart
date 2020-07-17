@@ -8,4 +8,11 @@ class DefaultUtil {
     }
     return false;
   }
+
+  static bool checkNotAsset(String path) {
+    if (path.contains("assets/images")) {
+      return false;
+    }
+    return true;
+  }
 }

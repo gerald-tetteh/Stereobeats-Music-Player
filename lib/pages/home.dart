@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stereo_beats_main/provider/music_player.dart';
 
 import '../provider/songItem.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
-import '../utils/default_util.dart';
 import '../components/image_builder.dart';
-import '../components/box_image.dart';
 import '../components/mini_player.dart';
+import '../components/custum_list_view.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen>
     var extraPadding = mediaQuery.padding.top;
     var actualHeight = viewHeight - extraPadding;
     var songProvider = Provider.of<SongProvider>(context, listen: false);
-    var audioProvider = Provider.of<AudioPlayer>(context, listen: false);
+    var _isLandScape = mediaQuery.orientation == Orientation.landscape;
     return FutureBuilder(
       future: songProvider.getSongs(),
       builder: (context, snapshot) {
@@ -41,7 +39,9 @@ class _HomeScreenState extends State<HomeScreen>
                 Column(
                   children: [
                     Container(
-                      height: actualHeight * 0.6,
+                      height: _isLandScape
+                          ? actualHeight * 0.4
+                          : actualHeight * 0.6,
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
@@ -103,19 +103,6 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                           ),
-                          Positioned(
-                            bottom: 45,
-                            right:
-                                (mediaQuery.size.width - TextUtil.large) * 0.2,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.play_circle_filled,
-                                size: 70,
-                              ),
-                              onPressed: () async =>
-                                  await audioProvider.play(songs),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -129,8 +116,11 @@ class _HomeScreenState extends State<HomeScreen>
                   bottom: 10,
                   left: 10,
                   right: 10,
-                  child: MiniPlayer(
-                      audioProvider: audioProvider, mediaQuery: mediaQuery),
+                  child: Consumer<AudioPlayer>(
+                    builder: (context, value, child) => value.miniPlayerPresent
+                        ? MiniPlayer(mediaQuery: mediaQuery)
+                        : Container(),
+                  ),
                 ),
               ],
             ),
@@ -191,12 +181,13 @@ class _BottomSheet extends StatelessWidget {
                   ),
                   Spacer(),
                   IconButton(
-                    icon: FaIcon(FontAwesomeIcons.play),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: FaIcon(FontAwesomeIcons.random),
-                    onPressed: () {},
+                    icon: Icon(
+                      Icons.play_circle_outline,
+                      size: TextUtil.large,
+                    ),
+                    onPressed: () =>
+                        Provider.of<AudioPlayer>(context, listen: false)
+                            .play(songs),
                   ),
                 ],
               ),
@@ -205,24 +196,21 @@ class _BottomSheet extends StatelessWidget {
                   addAutomaticKeepAlives: true,
                   itemCount: songs.length - 1,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: BoxImage(
-                        songProvider: songProvider,
-                        song: songs[index + 1],
-                      ),
-                      title: Text(
-                        DefaultUtil.checkNotNull(songs[index].title)
-                            ? songs[index + 1].title
-                            : DefaultUtil.unknown,
-                      ),
-                      subtitle: Text(
-                        DefaultUtil.checkNotNull(songs[index].artist)
-                            ? songs[index + 1].artist
-                            : DefaultUtil.unknown,
-                      ),
+                    return CustumListView(
+                      songProvider: songProvider,
+                      song: songs[index + 1],
+                      songs: songs,
+                      index: index + 1,
                     );
                   },
                 ),
+              ),
+              Consumer<AudioPlayer>(
+                builder: (context, value, child) => value.miniPlayerPresent
+                    ? SizedBox(
+                        height: 73,
+                      )
+                    : Container(),
               ),
             ],
           ),

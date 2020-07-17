@@ -30,7 +30,7 @@ public class MainActivity extends FlutterActivity {
                 (call, result) -> {
                     if(call.method.equals("getDeviceAudio")) {
                         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-                        Permissions.check(getApplicationContext(), permissions, null, null, new PermissionHandler() {
+                        Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
                             @Override
                             public void onGranted() {
                                 getDeviceAudio(result);
@@ -43,7 +43,7 @@ public class MainActivity extends FlutterActivity {
                         });
                     } else if(call.method.equals("getAlbumArt")) {
                         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-                        Permissions.check(getApplicationContext(), permissions, null, null, new PermissionHandler() {
+                        Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
                             @Override
                             public void onGranted() {
                                 String id = call.argument("id");
@@ -99,7 +99,7 @@ public class MainActivity extends FlutterActivity {
                 MediaStore.Audio.AlbumColumns.ARTIST,
                 MediaStore.Audio.AudioColumns.YEAR,
         };
-        Cursor c = getApplicationContext().getContentResolver().query(uri, projection, MediaStore.Audio.AudioColumns.IS_MUSIC + " > ?", new String[]{"0"},
+        Cursor c = MainActivity.this.getContentResolver().query(uri, projection, MediaStore.Audio.AudioColumns.IS_MUSIC + " > ?", new String[]{"0"},
                 MediaStore.Audio.AudioColumns.TITLE + " ASC");
 
 
@@ -130,7 +130,7 @@ public class MainActivity extends FlutterActivity {
 //    }
     private void getAlbumArt(String id, MethodChannel.Result result) {
         String path = null;
-        Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+        Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART}, MediaStore.Audio.Albums._ID + "= ?",
                 new String[]{id},null);
         if(cursor != null) {

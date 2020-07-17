@@ -14,4 +14,8 @@ class TextUtil {
     fontFamily: "Grenze",
     fontSize: TextUtil.medium,
   );
+  static const TextStyle mutedText = TextStyle(
+    fontSize: 15,
+    color: Color(0xff9e9e9e),
+  );
 }

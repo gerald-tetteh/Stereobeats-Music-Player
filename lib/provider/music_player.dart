@@ -6,6 +6,11 @@ import '../utils/default_util.dart';
 
 class AudioPlayer with ChangeNotifier {
   final audioPlayer = AssetsAudioPlayer.withId("Current_Player");
+  bool miniPlayerPresent = false;
+
+  Audio get playing {
+    return audioPlayer.current.value.audio.audio;
+  }
 
   List<Audio> audioSongs(List<SongItem> songs) {
     return songs
@@ -38,10 +43,12 @@ class AudioPlayer with ChangeNotifier {
         playPauseEnabled: true,
         nextEnabled: true,
         prevEnabled: true,
-        stopEnabled: true,
+        stopEnabled: false,
       ),
     );
     await audioPlayer.play();
+    miniPlayerPresent = true;
+    notifyListeners();
   }
 
   Future<void> playOrPause() async {
