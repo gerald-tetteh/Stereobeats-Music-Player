@@ -10,4 +10,8 @@ class TextUtil {
     fontFamily: "Grenze",
     fontSize: TextUtil.xsmall,
   );
+  static const TextStyle quickPick = TextStyle(
+    fontFamily: "Grenze",
+    fontSize: TextUtil.medium,
+  );
 }

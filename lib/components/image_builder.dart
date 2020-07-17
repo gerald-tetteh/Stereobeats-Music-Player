@@ -26,9 +26,11 @@ class _ImageBuilderState extends State<ImageBuilder>
     super.build(context);
     String path;
     return FutureBuilder(
-      future: widget.songProvider
-          .getAlbumArt(widget.song.albumId)
-          .then((value) => path = value),
+      future:
+          widget.songProvider.getAlbumArt(widget.song.albumId).then((value) {
+        path = value;
+        widget.song.artPath = path;
+      }),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return DefaultUtil.checkNotNull(path)

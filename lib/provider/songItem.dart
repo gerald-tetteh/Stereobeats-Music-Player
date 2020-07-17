@@ -1,8 +1,6 @@
 // import 'dart:typed_data';
 // import 'dart:convert';
 
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -23,6 +21,7 @@ class SongItem {
   final String dateAdded;
   final String duration;
   final String path;
+  String artPath;
 
   SongItem({
     this.album,
@@ -34,6 +33,7 @@ class SongItem {
     this.title,
     this.year,
     this.path,
+    this.artPath,
   });
 }
 
@@ -51,6 +51,7 @@ class SongProvider with ChangeNotifier {
             DefaultUtil.checkNotNull(element.year) &&
             (currentYear - int.parse(element.year) < 2))
         .toList();
+    songs.shuffle();
     return songs;
   }
 
