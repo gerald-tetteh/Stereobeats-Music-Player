@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../provider/music_player.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
+import '../pages/play_page.dart';
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({
@@ -37,43 +38,47 @@ class MiniPlayer extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Hero(
-                        tag: song.path,
-                        child: CircleAvatar(
-                          backgroundImage:
-                              DefaultUtil.checkNotAsset(song.metas.image.path)
-                                  ? FileImage(File(song.metas.image.path))
-                                  : AssetImage(song.metas.image.path),
-                          onBackgroundImageError: (_, __) {},
+                  GestureDetector(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(PlayMusicScreen.routeName),
+                    child: Row(
+                      children: [
+                        Hero(
+                          tag: song.path,
+                          child: CircleAvatar(
+                            backgroundImage:
+                                DefaultUtil.checkNotAsset(song.metas.image.path)
+                                    ? FileImage(File(song.metas.image.path))
+                                    : AssetImage(song.metas.image.path),
+                            onBackgroundImageError: (_, __) {},
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          left: 20,
+                        Container(
+                          margin: EdgeInsets.only(
+                            left: 20,
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: mediaQuery.size.width * 0.35,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                song.metas.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                song.metas.artist,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextUtil.mutedText,
+                              ),
+                            ],
+                          ),
                         ),
-                        constraints: BoxConstraints(
-                          maxWidth: mediaQuery.size.width * 0.35,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              song.metas.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              song.metas.artist,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextUtil.mutedText,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   IconButton(
                       icon: FaIcon(FontAwesomeIcons.stepBackward),

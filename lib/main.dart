@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import './pages/home.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
+import './pages/play_page.dart';
+import './utils/text_util.dart';
+import './utils/color_util.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,9 +33,18 @@ class MyApp extends StatelessWidget {
           fontFamily: "Montserrat",
           iconTheme: IconThemeData(
             color: Theme.of(context).accentColor,
+            size: TextUtil.large,
+          ),
+          appBarTheme: AppBarTheme(
+            elevation: 0,
+            iconTheme: Theme.of(context).iconTheme,
+            color: ColorUtil.white,
           ),
         ),
         home: HomeScreen(),
+        routes: {
+          PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
+        },
       ),
     );
   }

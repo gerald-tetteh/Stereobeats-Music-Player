@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stereo_beats_main/provider/music_player.dart';
+import 'package:stereo_beats_main/utils/default_util.dart';
 
 import '../provider/songItem.dart';
 import '../utils/color_util.dart';
@@ -50,25 +51,28 @@ class _HomeScreenState extends State<HomeScreen>
                             song: songs[0],
                           ),
                           Positioned(
+                            right: 10,
                             top: 15,
                             left: 10,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.menu,
-                                size: TextUtil.large,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                          Positioned(
-                            top: 15,
-                            right: 10,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.search,
-                                size: TextUtil.large,
-                              ),
-                              onPressed: () {},
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.menu,
+                                    size: TextUtil.large,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                DefaultUtil.appName,
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.search,
+                                    size: TextUtil.large,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ],
                             ),
                           ),
                           Positioned(
