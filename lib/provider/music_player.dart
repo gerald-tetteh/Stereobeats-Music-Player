@@ -10,6 +10,7 @@ class AudioPlayer with ChangeNotifier {
   bool miniPlayerPresent = false;
   PageController pageController;
   List<SongItem> songsQueue;
+  final songProvider = SongProvider();
 
   Audio get playing {
     return audioPlayer.current.value.audio.audio;
@@ -17,24 +18,26 @@ class AudioPlayer with ChangeNotifier {
 
   List<Audio> audioSongs(List<SongItem> songs) {
     songsQueue = songs;
-    return songs
-        .map((song) => Audio.file(
-              song.path,
-              metas: Metas(
-                album: DefaultUtil.checkNotNull(song.album)
-                    ? song.album
-                    : DefaultUtil.unknown,
-                artist: DefaultUtil.checkNotNull(song.artist)
-                    ? song.artist
-                    : DefaultUtil.unknown,
-                title: DefaultUtil.checkNotNull(song.title)
-                    ? song.title
-                    : DefaultUtil.unknown,
-                image: DefaultUtil.checkNotNull(song.artPath)
-                    ? MetasImage.file(song.artPath)
-                    : MetasImage.asset(DefaultUtil.defaultImage),
-              ),
-            ))
+    songsQueue.map((song) async =>
+        song.artPath = await songProvider.getAlbumArt(song.albumId));
+    return songsQueue
+        .map(
+          (song) => Audio.file(
+            song.path,
+            metas: Metas(
+              album: DefaultUtil.checkNotNull(song.album)
+                  ? song.album
+                  : DefaultUtil.unknown,
+              artist: DefaultUtil.checkNotNull(song.artist)
+                  ? song.artist
+                  : DefaultUtil.unknown,
+              title: DefaultUtil.checkNotNull(song.title)
+                  ? song.title
+                  : DefaultUtil.unknown,
+              image: MetasImage.file(song.artPath),
+            ),
+          ),
+        )
         .toList();
   }
 
@@ -60,6 +63,7 @@ class AudioPlayer with ChangeNotifier {
         keepPage: false,
         viewportFraction: 0.8,
       );
+      notifyListeners();
     });
     miniPlayerPresent = true;
     pageController = PageController(

@@ -38,9 +38,8 @@ class _ImageBuilderState extends State<ImageBuilder>
                   File(path),
                   fit: BoxFit.cover,
                 )
-              : Image.asset(
-                  DefaultUtil.defaultImage,
-                  fit: BoxFit.cover,
+              : Container(
+                  color: Colors.blue,
                 );
         } else {
           return Center(

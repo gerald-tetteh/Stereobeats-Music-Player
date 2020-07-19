@@ -20,13 +20,17 @@ class BoxImage extends StatelessWidget {
       width: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
+        color: Colors.blue,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: ImageBuilder(
-          songProvider: songProvider,
-          song: song,
-        ),
+              songProvider: songProvider,
+              song: song,
+            ) ??
+            Container(
+              color: Colors.blue,
+            ),
       ),
     );
   }

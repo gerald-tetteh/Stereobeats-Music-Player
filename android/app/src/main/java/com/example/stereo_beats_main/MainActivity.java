@@ -28,35 +28,58 @@ public class MainActivity extends FlutterActivity {
 
         new MethodChannel(Objects.requireNonNull(getFlutterEngine()).getDartExecutor().getBinaryMessenger(),"stereo.beats/metadata").setMethodCallHandler(
                 (call, result) -> {
-                    if(call.method.equals("getDeviceAudio")) {
-                        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-                        Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
-                            @Override
-                            public void onGranted() {
-                                getDeviceAudio(result);
-                            }
+                    switch (call.method) {
+                        case "getDeviceAudio": {
+                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    getDeviceAudio(result);
+                                }
 
-                            @Override
-                            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-                                result.error("1", "Permission denied", null);
-                            }
-                        });
-                    } else if(call.method.equals("getAlbumArt")) {
-                        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-                        Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
-                            @Override
-                            public void onGranted() {
-                                String id = call.argument("id");
-                                getAlbumArt(id,result);
-                            }
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    result.error("1", "Permission denied", null);
+                                }
+                            });
+                            break;
+                        }
+                        case "getAlbumArt": {
+                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    String id = call.argument("id");
+                                    getAlbumArt(id, result);
+                                }
 
-                            @Override
-                            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-                                result.error("1", "Permission denied", null);
-                            }
-                        });
-                    } else {
-                        result.error("error","error","error");
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    result.error("1", "Permission denied", null);
+                                }
+                            });
+                            break;
+                        }
+                        case "getAllAlbumArt": {
+                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    List<String> ids = call.argument("ids");
+                                    assert ids != null;
+                                    getAllAlbumArt(ids, result);
+                                }
+
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    result.error("1", "Permission denied", null);
+                                }
+                            });
+                            break;
+                        }
+                        default:
+                            result.error("error", "error", "error");
+                            break;
                     }
                 }
         );
@@ -140,6 +163,22 @@ public class MainActivity extends FlutterActivity {
             cursor.close();
         }
         result.success(path);
+    }
+
+    private void getAllAlbumArt(List<String> ids, MethodChannel.Result result) {
+        Map<String,Object> albumArts = new HashMap<>();
+        for(int i = 0; i< ids.size(); i++) {
+            Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART}, MediaStore.Audio.Albums._ID + "= ?",
+                    new String[]{ids.get(i)},null);
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    albumArts.put(ids.get(i),cursor.getString(0);
+                }
+                cursor.close();
+            }
+        }
+        result.success(albumArts);
     }
 }
 

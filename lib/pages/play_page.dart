@@ -49,7 +49,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
                     onPageChanged: (value1) {
                       setState(() async {
                         await value.audioPlayer.playlistPlayAtIndex(value1);
-                        pageController = PageController(
+                        value.pageController = PageController(
                           initialPage: value1,
                           keepPage: false,
                           viewportFraction: 0.8,
