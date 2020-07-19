@@ -55,11 +55,26 @@ class SongProvider with ChangeNotifier {
     return songs;
   }
 
-  Future<String> getAlbumArt(String id) async {
+  Future<void> getAllAlbumArt() async {
     const platform = MethodChannel("stereo.beats/metadata");
     final path =
-        await platform.invokeMethod("getAlbumArt", {"id": id}) as String;
-    return path;
+        await platform.invokeMethod("getAllAlbumArt") as Map<dynamic, dynamic>;
+    _songs = _songs
+        .map(
+          (song) => SongItem(
+            title: song.title,
+            album: song.album,
+            albumArtist: song.albumArtist,
+            albumId: song.albumId,
+            artist: song.artist,
+            dateAdded: song.duration,
+            duration: song.duration,
+            year: song.year,
+            path: song.path,
+            artPath: path[song.albumId],
+          ),
+        )
+        .toList();
   }
 
   Future<void> getSongs() async {

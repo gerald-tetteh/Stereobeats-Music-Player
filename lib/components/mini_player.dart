@@ -53,7 +53,7 @@ class MiniPlayer extends StatelessWidget {
                               backgroundImage:
                                   DefaultUtil.checkNotNull(songItem.artPath)
                                       ? FileImage(File(songItem.artPath))
-                                      : null,
+                                      : AssetImage(DefaultUtil.defaultImage),
                             ),
                           ),
                           Container(

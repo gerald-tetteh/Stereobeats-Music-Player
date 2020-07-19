@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './pages/home.dart';
+import './pages/loading_screen.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
 import './pages/play_page.dart';
@@ -41,9 +42,10 @@ class MyApp extends StatelessWidget {
             color: ColorUtil.white,
           ),
         ),
-        home: HomeScreen(),
+        home: LoadingScreen(),
         routes: {
           PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
+          HomeScreen.routeName: (ctx) => HomeScreen(),
         },
       ),
     );

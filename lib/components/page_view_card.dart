@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../provider/songItem.dart';
 import '../components/image_builder.dart';
@@ -14,8 +13,7 @@ class PageViewCard extends StatelessWidget {
       child: Card(
         elevation: 10,
         child: ImageBuilder(
-          songProvider: Provider.of<SongProvider>(context, listen: false),
-          song: song,
+          path: song.artPath,
         ),
       ),
     );

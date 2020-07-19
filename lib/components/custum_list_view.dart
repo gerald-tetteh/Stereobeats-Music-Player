@@ -9,13 +9,11 @@ import '../provider/music_player.dart';
 class CustumListView extends StatelessWidget {
   const CustumListView({
     Key key,
-    @required this.songProvider,
     @required this.song,
     @required this.songs,
     @required this.index,
   }) : super(key: key);
 
-  final SongProvider songProvider;
   final SongItem song;
   final int index;
   final List<SongItem> songs;
@@ -24,8 +22,7 @@ class CustumListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: BoxImage(
-        songProvider: songProvider,
-        song: song,
+        path: song.artPath,
       ),
       title: Text(
         DefaultUtil.checkNotNull(song.title) ? song.title : DefaultUtil.unknown,

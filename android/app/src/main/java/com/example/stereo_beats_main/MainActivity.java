@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -44,30 +45,28 @@ public class MainActivity extends FlutterActivity {
                             });
                             break;
                         }
-                        case "getAlbumArt": {
-                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
-                                @Override
-                                public void onGranted() {
-                                    String id = call.argument("id");
-                                    getAlbumArt(id, result);
-                                }
-
-                                @Override
-                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-                                    result.error("1", "Permission denied", null);
-                                }
-                            });
-                            break;
-                        }
+//                        case "getAlbumArt": {
+//                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+//                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+//                                @Override
+//                                public void onGranted() {
+//                                    String id = call.argument("id");
+//                                    getAlbumArt(id, result);
+//                                }
+//
+//                                @Override
+//                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+//                                    result.error("1", "Permission denied", null);
+//                                }
+//                            });
+//                            break;
+//                        }
                         case "getAllAlbumArt": {
                             String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
                             Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
                                 @Override
                                 public void onGranted() {
-                                    List<String> ids = call.argument("ids");
-                                    assert ids != null;
-                                    getAllAlbumArt(ids, result);
+                                    getAllAlbumArt(result);
                                 }
 
                                 @Override
@@ -151,33 +150,31 @@ public class MainActivity extends FlutterActivity {
 //        ;
 //        return path;
 //    }
-    private void getAlbumArt(String id, MethodChannel.Result result) {
-        String path = null;
-        Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART}, MediaStore.Audio.Albums._ID + "= ?",
-                new String[]{id},null);
-        if(cursor != null) {
-            if(cursor.moveToFirst()) {
-                path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-            }
-            cursor.close();
-        }
-        result.success(path);
-    }
+//    private void getAlbumArt(String id, MethodChannel.Result result) {
+//        String path = null;
+//        Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+//                new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART}, MediaStore.Audio.Albums._ID + "= ?",
+//                new String[]{id},null);
+//        if(cursor != null) {
+//            if(cursor.moveToFirst()) {
+//                path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+//            }
+//            cursor.close();
+//        }
+//        result.success(path);
+//    }
 
-    private void getAllAlbumArt(List<String> ids, MethodChannel.Result result) {
-        Map<String,Object> albumArts = new HashMap<>();
-        for(int i = 0; i< ids.size(); i++) {
+    private void getAllAlbumArt(MethodChannel.Result result) {
+        HashMap<String,Object> albumArts = new HashMap<>();
             Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART}, MediaStore.Audio.Albums._ID + "= ?",
-                    new String[]{ids.get(i)},null);
+                    new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART},null,
+                    null,null);
             if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    albumArts.put(ids.get(i),cursor.getString(0);
+                for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+                    albumArts.put(cursor.getString(0),cursor.getString(1));
                 }
                 cursor.close();
             }
-        }
         result.success(albumArts);
     }
 }

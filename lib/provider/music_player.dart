@@ -18,8 +18,6 @@ class AudioPlayer with ChangeNotifier {
 
   List<Audio> audioSongs(List<SongItem> songs) {
     songsQueue = songs;
-    songsQueue.map((song) async =>
-        song.artPath = await songProvider.getAlbumArt(song.albumId));
     return songsQueue
         .map(
           (song) => Audio.file(
@@ -46,6 +44,7 @@ class AudioPlayer with ChangeNotifier {
       Playlist(audios: audioSongs(songs), startIndex: startIndex),
       showNotification: true,
       headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
+      playInBackground: PlayInBackground.enabled,
       notificationSettings: NotificationSettings(
         playPauseEnabled: true,
         nextEnabled: true,
