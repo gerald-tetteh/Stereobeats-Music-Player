@@ -16,7 +16,9 @@ class PlayMusicScreen extends StatefulWidget {
 class _PlayMusicScreenState extends State<PlayMusicScreen> {
   @override
   Widget build(BuildContext context) {
-    // final mediaQuery = MediaQuery.of(context);
+    final value = Provider.of<AudioPlayer>(context, listen: false);
+    final songs = value.audioPlayer.playlist.audios;
+    final songItems = value.songsQueue;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -31,38 +33,38 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
         title: DefaultUtil.appName,
         centerTitle: true,
       ),
-      body: Consumer<AudioPlayer>(
-        builder: (context, value, child) {
-          final songs = value.audioPlayer.playlist.audios;
-          var pageController = value.pageController;
-          final songItems = value.songsQueue;
-          return Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: PageView.builder(
-                    itemCount: songs.length,
-                    controller: pageController,
-                    itemBuilder: (context, index) {
-                      return PageViewCard(songItems[index]);
-                    },
-                    onPageChanged: (value1) {
-                      setState(() async {
-                        await value.audioPlayer.playlistPlayAtIndex(value1);
-                        value.pageController = PageController(
-                          initialPage: value1,
-                          keepPage: false,
-                          viewportFraction: 0.8,
-                        );
-                      });
-                    },
-                  ),
-                ),
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              itemCount: songs.length,
+              controller: value.pageController,
+              itemBuilder: (context, index) {
+                return Hero(
+                  tag: songItems[index].path,
+                  transitionOnUserGestures: true,
+                  child: PageViewCard(songItems[index]),
+                );
+              },
+              onPageChanged: (value1) async {
+                await value.audioPlayer.playlistPlayAtIndex(value1);
+                value.pageController = PageController(
+                  initialPage: value.findCurrentIndex(
+                      value.audioPlayer.current.value.audio.audio.path),
+                  keepPage: false,
+                  viewportFraction: 0.8,
+                );
+              },
+            ),
+          ),
+          Expanded(
+            child: Container(
+              child: Column(
+                children: [],
               ),
-              Expanded(child: Container()),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }

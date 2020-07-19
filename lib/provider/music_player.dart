@@ -55,21 +55,28 @@ class AudioPlayer with ChangeNotifier {
       ),
     );
     await audioPlayer.play();
-    audioPlayer.playlistAudioFinished.listen((event) {
-      pageController = PageController(
-        initialPage:
-            findCurrentIndex(audioPlayer.current.value.audio.audio.path),
-        keepPage: false,
-        viewportFraction: 0.8,
-      );
-      notifyListeners();
-    });
     miniPlayerPresent = true;
     pageController = PageController(
       initialPage: findCurrentIndex(audioPlayer.current.value.audio.audio.path),
       keepPage: false,
       viewportFraction: 0.8,
     );
+    audioPlayer.onReadyToPlay.listen((event) {
+      if (pageController.hasClients) {
+        pageController.animateToPage(
+          findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        pageController = PageController(
+          initialPage:
+              findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+          keepPage: false,
+          viewportFraction: 0.8,
+        );
+      }
+    });
     notifyListeners();
   }
 
@@ -80,21 +87,39 @@ class AudioPlayer with ChangeNotifier {
 
   Future<void> nextTrack() async {
     await audioPlayer.next();
-    pageController = PageController(
-      initialPage: findCurrentIndex(audioPlayer.current.value.audio.audio.path),
-      keepPage: false,
-      viewportFraction: 0.8,
-    );
+    if (pageController.hasClients) {
+      pageController.animateToPage(
+        findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+        curve: Curves.easeInOut,
+        duration: Duration(milliseconds: 300),
+      );
+    } else {
+      pageController = PageController(
+        initialPage:
+            findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+        keepPage: false,
+        viewportFraction: 0.8,
+      );
+    }
     notifyListeners();
   }
 
   Future<void> previousTrack() async {
     await audioPlayer.previous();
-    pageController = PageController(
-      initialPage: findCurrentIndex(audioPlayer.current.value.audio.audio.path),
-      keepPage: false,
-      viewportFraction: 0.8,
-    );
+    if (pageController.hasClients) {
+      pageController.animateToPage(
+        findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+        curve: Curves.easeInOut,
+        duration: Duration(milliseconds: 300),
+      );
+    } else {
+      pageController = PageController(
+        initialPage:
+            findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+        keepPage: false,
+        viewportFraction: 0.8,
+      );
+    }
     notifyListeners();
   }
 
