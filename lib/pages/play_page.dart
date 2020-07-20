@@ -1,10 +1,13 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../provider/music_player.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
-import '../components/page_view_card.dart';
+import '../components/play_page_song_info.dart';
+import '../components/slider_and_duration.dart';
 
 class PlayMusicScreen extends StatefulWidget {
   static const routeName = "/play-page";
@@ -17,8 +20,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
   @override
   Widget build(BuildContext context) {
     final value = Provider.of<AudioPlayer>(context, listen: false);
-    final songs = value.audioPlayer.playlist.audios;
-    final songItems = value.songsQueue;
+    final slider = value.slider;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -36,31 +38,39 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
       body: Column(
         children: [
           Expanded(
-            child: PageView.builder(
-              itemCount: songs.length,
-              controller: value.pageController,
-              itemBuilder: (context, index) {
-                return Hero(
-                  tag: songItems[index].path,
-                  transitionOnUserGestures: true,
-                  child: PageViewCard(songItems[index]),
-                );
-              },
-              onPageChanged: (value1) async {
-                await value.audioPlayer.playlistPlayAtIndex(value1);
-                value.pageController = PageController(
-                  initialPage: value.findCurrentIndex(
-                      value.audioPlayer.current.value.audio.audio.path),
-                  keepPage: false,
-                  viewportFraction: 0.8,
-                );
-              },
-            ),
+            child: slider,
           ),
           Expanded(
             child: Container(
               child: Column(
-                children: [],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  PlayPageSongInfo(),
+                  SliderAndDuration(),
+                  PlayerBuilder.isPlaying(
+                    player: value.audioPlayer,
+                    builder: (context, playing) {
+                      var isPlaying = playing ?? false;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          IconButton(
+                              icon: FaIcon(FontAwesomeIcons.stepBackward),
+                              onPressed: () async =>
+                                  await value.previousTrack()),
+                          IconButton(
+                              icon: (!isPlaying)
+                                  ? FaIcon(FontAwesomeIcons.play)
+                                  : FaIcon(FontAwesomeIcons.pause),
+                              onPressed: () async => await value.playOrPause()),
+                          IconButton(
+                              icon: FaIcon(FontAwesomeIcons.stepForward),
+                              onPressed: () async => await value.nextTrack()),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),

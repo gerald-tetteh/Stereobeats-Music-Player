@@ -18,4 +18,8 @@ class TextUtil {
     fontSize: 15,
     color: Color(0xff9e9e9e),
   );
+  static const TextStyle playPageTitle = TextStyle(
+    fontSize: TextUtil.small,
+    fontFamily: "Grenze",
+  );
 }

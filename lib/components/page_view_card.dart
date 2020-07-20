@@ -9,11 +9,15 @@ class PageViewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(15),
+      width: double.infinity,
+      margin: const EdgeInsets.all(5),
       child: Card(
-        elevation: 10,
-        child: ImageBuilder(
-          path: song.artPath,
+        elevation: 5,
+        child: Hero(
+          tag: song.path,
+          child: ImageBuilder(
+            path: song.artPath,
+          ),
         ),
       ),
     );
