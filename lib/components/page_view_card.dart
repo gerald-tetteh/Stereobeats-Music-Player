@@ -12,11 +12,17 @@ class PageViewCard extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.all(5),
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
         elevation: 5,
         child: Hero(
           tag: song.path,
-          child: ImageBuilder(
-            path: song.artPath,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: ImageBuilder(
+              path: song.artPath,
+            ),
           ),
         ),
       ),

@@ -133,6 +133,10 @@ class AudioPlayer with ChangeNotifier {
     animateCarousel();
   }
 
+  void seekTrack(double value) async {
+    audioPlayer.seek(Duration(milliseconds: value.floor()));
+  }
+
   int findCurrentIndex(String path) {
     return audioPlayer.playlist.audios.indexOf(
         audioPlayer.playlist.audios.firstWhere((song) => song.path == path));

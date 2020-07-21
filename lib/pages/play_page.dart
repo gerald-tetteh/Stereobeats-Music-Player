@@ -1,13 +1,12 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../provider/music_player.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../components/play_page_song_info.dart';
 import '../components/slider_and_duration.dart';
+import '../components/play_page_controls.dart';
 
 class PlayMusicScreen extends StatefulWidget {
   static const routeName = "/play-page";
@@ -22,18 +21,18 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
     final value = Provider.of<AudioPlayer>(context, listen: false);
     final slider = value.slider;
     return Scaffold(
+      backgroundColor: Color(0xffeceff1),
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              size: TextUtil.large,
-            ),
-            onPressed: () {},
-          ),
-        ],
+        backgroundColor: Colors.transparent,
         title: DefaultUtil.appName,
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_drop_down,
+            size: TextUtil.large,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Column(
         children: [
@@ -42,34 +41,17 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
           ),
           Expanded(
             child: Container(
+              margin: EdgeInsets.fromLTRB(0, 45, 0, 0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PlayPageSongInfo(),
-                  SliderAndDuration(),
-                  PlayerBuilder.isPlaying(
-                    player: value.audioPlayer,
-                    builder: (context, playing) {
-                      var isPlaying = playing ?? false;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          IconButton(
-                              icon: FaIcon(FontAwesomeIcons.stepBackward),
-                              onPressed: () async =>
-                                  await value.previousTrack()),
-                          IconButton(
-                              icon: (!isPlaying)
-                                  ? FaIcon(FontAwesomeIcons.play)
-                                  : FaIcon(FontAwesomeIcons.pause),
-                              onPressed: () async => await value.playOrPause()),
-                          IconButton(
-                              icon: FaIcon(FontAwesomeIcons.stepForward),
-                              onPressed: () async => await value.nextTrack()),
-                        ],
-                      );
-                    },
+                  Column(
+                    children: [
+                      PlayPageSongInfo(),
+                      SliderAndDuration(),
+                    ],
                   ),
+                  PlayPageControls(value: value),
                 ],
               ),
             ),

@@ -15,7 +15,6 @@ class PlayPageSongInfo extends StatelessWidget {
     return Consumer<AudioPlayer>(builder: (context, provider, child) {
       final song =
           provider.songsQueue[provider.findCurrentIndex(provider.playing.path)];
-      print(song.duration);
       return Container(
         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: Column(

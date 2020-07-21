@@ -28,7 +28,9 @@ class SliderAndDuration extends StatelessWidget {
                     value: songPosition.toDouble(),
                     min: 0,
                     max: double.parse(songDuration),
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      provider.seekTrack(value);
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(23, 0, 23, 0),
