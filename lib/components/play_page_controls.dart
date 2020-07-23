@@ -26,9 +26,24 @@ class PlayPageControls extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              IconButton(
-                icon: Icon(Icons.shuffle),
-                onPressed: () {},
+              StreamBuilder(
+                stream: value.audioPlayer.isShuffling,
+                initialData: value.prefs.getBool("shuffle"),
+                builder: (context, snapshot) {
+                  // value.audioPlayer.shuffle =
+                  //     value.prefs.getBool("shuffle") ?? false;
+                  return IconButton(
+                    icon: Icon(
+                      Icons.shuffle,
+                      color: snapshot.data ??
+                              value.prefs.getBool("shuffle") ??
+                              false
+                          ? Colors.blue
+                          : Colors.grey,
+                    ),
+                    onPressed: () async => await value.changeShuffle(),
+                  );
+                },
               ),
               IconButton(
                   icon: FaIcon(FontAwesomeIcons.stepBackward),
@@ -36,7 +51,8 @@ class PlayPageControls extends StatelessWidget {
               PlayerBuilder.playerState(
                 player: value.audioPlayer,
                 builder: (context, playerState) => IconButton(
-                  icon: (playerState == PlayerState.pause)
+                  icon: (playerState == PlayerState.pause ||
+                          playerState == PlayerState.stop)
                       ? FaIcon(FontAwesomeIcons.play)
                       : FaIcon(FontAwesomeIcons.pause),
                   onPressed: () async => await value.playOrPause(),
@@ -46,9 +62,24 @@ class PlayPageControls extends StatelessWidget {
                 icon: FaIcon(FontAwesomeIcons.stepForward),
                 onPressed: () async => await value.nextTrack(),
               ),
-              IconButton(
-                icon: Icon(Icons.repeat),
-                onPressed: () {},
+              PlayerBuilder.loopMode(
+                player: value.audioPlayer,
+                builder: (context, loopMode) {
+                  Icon icon;
+                  if (loopMode == LoopMode.none) {
+                    icon = Icon(
+                      Icons.repeat,
+                      color: Colors.grey,
+                    );
+                  } else if (loopMode == LoopMode.playlist) {
+                    icon = Icon(Icons.repeat);
+                  } else {
+                    icon = Icon(Icons.repeat_one);
+                  }
+                  return IconButton(
+                      icon: icon,
+                      onPressed: () async => await value.toogleLopp());
+                },
               ),
             ],
           ),

@@ -24,28 +24,28 @@ class MiniPlayer extends StatelessWidget {
     return PlayerBuilder.isPlaying(
       player: audioProvider.audioPlayer,
       builder: (context, snapshot) {
-        bool isPlaying = snapshot ?? false;
-        Audio song = audioProvider.playing;
-        int songIndex = audioProvider.audioPlayer.playlist.audios.indexOf(song);
-        try {
+        if (audioProvider.audioPlayer.playerState.value != PlayerState.stop) {
+          Audio song = audioProvider.playing;
+          int songIndex =
+              audioProvider.audioPlayer.playlist.audios.indexOf(song);
           SongItem songItem = audioProvider.songsQueue[songIndex];
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Card(
-              shape: RoundedRectangleBorder(
+          return GestureDetector(
+            onTap: () =>
+                Navigator.of(context).pushNamed(PlayMusicScreen.routeName),
+            child: Container(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.of(context)
-                          .pushNamed(PlayMusicScreen.routeName),
-                      child: Row(
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
                         children: [
                           Hero(
                             tag: song.path,
@@ -82,27 +82,40 @@ class MiniPlayer extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                        icon: FaIcon(FontAwesomeIcons.stepBackward),
-                        onPressed: () async =>
-                            await audioProvider.previousTrack()),
-                    IconButton(
-                        icon: (!isPlaying)
-                            ? FaIcon(FontAwesomeIcons.play)
-                            : FaIcon(FontAwesomeIcons.pause),
-                        onPressed: () async =>
-                            await audioProvider.playOrPause()),
-                    IconButton(
-                        icon: FaIcon(FontAwesomeIcons.stepForward),
-                        onPressed: () async => await audioProvider.nextTrack()),
-                  ],
+                      IconButton(
+                          icon: FaIcon(FontAwesomeIcons.stepBackward),
+                          onPressed: () async =>
+                              await audioProvider.previousTrack()),
+                      PlayerBuilder.playerState(
+                        player: audioProvider.audioPlayer,
+                        builder: (context, playerState) => IconButton(
+                            icon: (playerState == PlayerState.pause ||
+                                    playerState == PlayerState.stop)
+                                ? FaIcon(FontAwesomeIcons.play)
+                                : FaIcon(FontAwesomeIcons.pause),
+                            onPressed: () async =>
+                                await audioProvider.playOrPause()),
+                      ),
+                      IconButton(
+                          icon: FaIcon(FontAwesomeIcons.stepForward),
+                          onPressed: () async =>
+                              await audioProvider.nextTrack()),
+                    ],
+                  ),
                 ),
               ),
             ),
           );
-        } catch (e) {
-          return Container();
+        } else {
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(7),
+              child: Center(child: DefaultUtil.appName),
+            ),
+          );
         }
       },
     );

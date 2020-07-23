@@ -4,18 +4,22 @@ import 'package:flutter/foundation.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'songItem.dart';
 import '../utils/default_util.dart';
 import '../components/page_view_card.dart';
 
 class AudioPlayer with ChangeNotifier {
+  AudioPlayer(this.prefs);
+  final SharedPreferences prefs;
+
   final audioPlayer = AssetsAudioPlayer.withId("Current_Player");
   bool miniPlayerPresent = false;
   CarouselController pageController = CarouselController();
   CarouselSlider slider;
   List<SongItem> songsQueue;
-  final songProvider = SongProvider();
+  // final songProvider = SongProvider();
 
   Audio get playing {
     return audioPlayer.current.value.audio.audio;
@@ -44,11 +48,8 @@ class AudioPlayer with ChangeNotifier {
   }
 
   void animateCarousel() {
-    pageController.animateToPage(
-      findCurrentIndex(audioPlayer.current.value.audio.audio.path),
-      curve: Curves.easeInOut,
-      duration: Duration(milliseconds: 300),
-    );
+    pageController.jumpToPage(
+        findCurrentIndex(audioPlayer.current.value.audio.audio.path));
   }
 
   String calculateDuration(int time) {
@@ -89,8 +90,11 @@ class AudioPlayer with ChangeNotifier {
   }
 
   Future<void> play(List<SongItem> songs, [int startIndex = 0]) async {
+    audioPlayer.shuffle = prefs.getBool("shuffle") ?? false;
     await audioPlayer.open(
-      Playlist(audios: audioSongs(songs), startIndex: startIndex),
+      Playlist(audios: audioSongs(songs), startIndex: 0),
+      loopMode:
+          checkLoopMode(prefs.getString("loopMode") ?? "") ?? LoopMode.none,
       showNotification: true,
       headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
       playInBackground: PlayInBackground.enabled,
@@ -103,7 +107,7 @@ class AudioPlayer with ChangeNotifier {
         customPrevAction: (player) => previousTrack(),
       ),
     );
-    await audioPlayer.play();
+    await audioPlayer.playlistPlayAtIndex(startIndex);
     miniPlayerPresent = true;
     changePageController();
     audioPlayer.onReadyToPlay.listen((event) {
@@ -133,12 +137,44 @@ class AudioPlayer with ChangeNotifier {
     animateCarousel();
   }
 
-  void seekTrack(double value) async {
+  void seekTrack(double value) {
     audioPlayer.seek(Duration(milliseconds: value.floor()));
+  }
+
+  LoopMode checkLoopMode(String mode) {
+    if (mode == "single") {
+      return LoopMode.single;
+    } else if (mode == "all") {
+      return LoopMode.playlist;
+    } else if (mode == "none") {
+      return LoopMode.none;
+    }
+    return null;
+  }
+
+  String saveLoopMode(LoopMode mode) {
+    if (mode == LoopMode.none) {
+      return "none";
+    } else if (mode == LoopMode.playlist) {
+      return "all";
+    } else if (mode == LoopMode.single) {
+      return "single";
+    }
+    return null;
+  }
+
+  Future<void> toogleLopp() async {
+    await audioPlayer.toggleLoop();
+    await prefs.setString("loopMode", saveLoopMode(audioPlayer.loopMode.value));
   }
 
   int findCurrentIndex(String path) {
     return audioPlayer.playlist.audios.indexOf(
         audioPlayer.playlist.audios.firstWhere((song) => song.path == path));
+  }
+
+  Future<void> changeShuffle() async {
+    audioPlayer.shuffle = !audioPlayer.shuffle;
+    await prefs.setBool("shuffle", audioPlayer.shuffle);
   }
 }

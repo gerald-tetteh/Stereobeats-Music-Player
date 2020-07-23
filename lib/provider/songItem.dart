@@ -3,6 +3,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/default_util.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +44,8 @@ class SongProvider with ChangeNotifier {
   List<SongItem> get songs {
     return [..._songs];
   }
+
+  SharedPreferences prefs;
 
   List<SongItem> get songsFraction {
     var currentYear = DateTime.now().year;
@@ -96,5 +99,6 @@ class SongProvider with ChangeNotifier {
           ),
         )
         .toList();
+    prefs = await SharedPreferences.getInstance();
   }
 }

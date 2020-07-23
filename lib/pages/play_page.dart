@@ -20,8 +20,9 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
   Widget build(BuildContext context) {
     final value = Provider.of<AudioPlayer>(context, listen: false);
     final slider = value.slider;
+    // Color(0xffeceff1)
     return Scaffold(
-      backgroundColor: Color(0xffeceff1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: DefaultUtil.appName,

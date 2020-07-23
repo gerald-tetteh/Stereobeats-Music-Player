@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SongProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => AudioPlayer(),
+        ChangeNotifierProxyProvider<SongProvider, AudioPlayer>(
+          update: (ctx, songProvider, _) => AudioPlayer(songProvider.prefs),
         ),
       ],
       child: MaterialApp(
