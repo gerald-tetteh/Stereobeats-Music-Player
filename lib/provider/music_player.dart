@@ -11,15 +11,21 @@ import '../utils/default_util.dart';
 import '../components/page_view_card.dart';
 
 class AudioPlayer with ChangeNotifier {
-  AudioPlayer(this.prefs);
-  final SharedPreferences prefs;
+  AudioPlayer({
+    this.prefs,
+    this.audioPlayer,
+    this.pageController,
+    this.slider,
+    this.songsQueue,
+    this.miniPlayerPresent,
+  });
 
-  final audioPlayer = AssetsAudioPlayer.withId("Current_Player");
-  bool miniPlayerPresent = false;
-  CarouselController pageController = CarouselController();
+  SharedPreferences prefs;
+  AssetsAudioPlayer audioPlayer;
+  bool miniPlayerPresent;
+  CarouselController pageController;
   CarouselSlider slider;
   List<SongItem> songsQueue;
-  // final songProvider = SongProvider();
 
   Audio get playing {
     return audioPlayer.current.value.audio.audio;

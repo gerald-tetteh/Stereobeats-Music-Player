@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
           Column(
             children: [
               Container(
-                height: _isLandScape ? actualHeight * 0.4 : actualHeight * 0.6,
+                height: _isLandScape ? actualHeight * 0.4 : actualHeight * 0.5,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [

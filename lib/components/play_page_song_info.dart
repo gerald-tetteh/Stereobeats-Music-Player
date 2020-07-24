@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stereo_beats_main/provider/songItem.dart';
 
 import '../provider/music_player.dart';
 import '../utils/default_util.dart';
@@ -37,11 +38,15 @@ class PlayPageSongInfo extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: Icon(Icons.favorite_border),
-                onPressed: () {},
+            Consumer<SongProvider>(
+              builder: (context, songProvider, child) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                  icon: Icon(songProvider.isFavourite(song.path)
+                      ? Icons.favorite
+                      : Icons.favorite_border),
+                  onPressed: () => songProvider.toggleFavourite(song.path),
+                ),
               ),
             ),
           ],

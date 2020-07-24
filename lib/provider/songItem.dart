@@ -40,6 +40,7 @@ class SongItem {
 
 class SongProvider with ChangeNotifier {
   List<SongItem> _songs = [];
+  List<String> _favourites = [];
 
   List<SongItem> get songs {
     return [..._songs];
@@ -81,6 +82,7 @@ class SongProvider with ChangeNotifier {
   }
 
   Future<void> getSongs() async {
+    prefs = await SharedPreferences.getInstance();
     const platform = MethodChannel("stereo.beats/metadata");
     final songList =
         await platform.invokeMethod("getDeviceAudio") as List<dynamic>;
@@ -99,6 +101,23 @@ class SongProvider with ChangeNotifier {
           ),
         )
         .toList();
-    prefs = await SharedPreferences.getInstance();
+    _favourites = prefs.getStringList("favourites") ?? [];
+  }
+
+  Future<void> toggleFavourite(String path) async {
+    if (!_favourites.contains(path)) {
+      _favourites.add(path);
+    } else {
+      _favourites.remove(path);
+    }
+    notifyListeners();
+    await prefs.setStringList("favourites", _favourites);
+  }
+
+  bool isFavourite(String path) {
+    if (_favourites.contains(path)) {
+      return true;
+    }
+    return false;
   }
 }

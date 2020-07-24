@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:carousel_slider/carousel_controller.dart';
 
 import './pages/home.dart';
 import './pages/loading_screen.dart';
@@ -22,7 +24,19 @@ class MyApp extends StatelessWidget {
           create: (_) => SongProvider(),
         ),
         ChangeNotifierProxyProvider<SongProvider, AudioPlayer>(
-          update: (ctx, songProvider, _) => AudioPlayer(songProvider.prefs),
+          update: (ctx, songProvider, oldProvider) => AudioPlayer(
+            prefs: oldProvider != null ? oldProvider.prefs : songProvider.prefs,
+            audioPlayer: oldProvider != null
+                ? oldProvider.audioPlayer
+                : AssetsAudioPlayer.withId("current_player"),
+            miniPlayerPresent:
+                oldProvider != null ? oldProvider.miniPlayerPresent : false,
+            pageController: oldProvider != null
+                ? oldProvider.pageController
+                : CarouselController(),
+            slider: oldProvider != null ? oldProvider.slider : null,
+            songsQueue: oldProvider != null ? oldProvider.songsQueue : null,
+          ),
         ),
       ],
       child: MaterialApp(
