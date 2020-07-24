@@ -30,8 +30,6 @@ class PlayPageControls extends StatelessWidget {
                 stream: value.audioPlayer.isShuffling,
                 initialData: value.prefs.getBool("shuffle"),
                 builder: (context, snapshot) {
-                  // value.audioPlayer.shuffle =
-                  //     value.prefs.getBool("shuffle") ?? false;
                   return IconButton(
                     icon: Icon(
                       Icons.shuffle,
@@ -72,9 +70,15 @@ class PlayPageControls extends StatelessWidget {
                       color: Colors.grey,
                     );
                   } else if (loopMode == LoopMode.playlist) {
-                    icon = Icon(Icons.repeat);
+                    icon = Icon(
+                      Icons.repeat,
+                      color: Colors.blue,
+                    );
                   } else {
-                    icon = Icon(Icons.repeat_one);
+                    icon = Icon(
+                      Icons.repeat_one,
+                      color: Colors.blue,
+                    );
                   }
                   return IconButton(
                       icon: icon,

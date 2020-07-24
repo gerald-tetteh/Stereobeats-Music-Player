@@ -1,16 +1,8 @@
-// import 'dart:typed_data';
-// import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/default_util.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:stereo_beats_main/helpers/db_helper.dart';
-// import 'package:flutter_file_meta_data/flutter_file_meta_data.dart';
-// import 'package:storage_path/storage_path.dart';
-// import 'package:uuid/uuid.dart';
 
 class SongItem {
   final String title;

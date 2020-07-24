@@ -26,9 +26,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<SongProvider, AudioPlayer>(
           update: (ctx, songProvider, oldProvider) => AudioPlayer(
             prefs: oldProvider != null ? oldProvider.prefs : songProvider.prefs,
-            audioPlayer: oldProvider != null
-                ? oldProvider.audioPlayer
-                : AssetsAudioPlayer.withId("current_player"),
+            audioPlayer: AssetsAudioPlayer.withId("current_player"),
             miniPlayerPresent:
                 oldProvider != null ? oldProvider.miniPlayerPresent : false,
             pageController: oldProvider != null
@@ -42,12 +40,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          accentColor: Color(0xff37474f),
+          primaryColor: Color(0xff1565c0),
+          accentColor: Colors.black,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           fontFamily: "Montserrat",
           iconTheme: IconThemeData(
-            color: Theme.of(context).accentColor,
+            color: Color(0xff1565c0),
             size: TextUtil.large,
           ),
           appBarTheme: AppBarTheme(

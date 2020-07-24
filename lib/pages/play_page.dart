@@ -20,10 +20,37 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
   Widget build(BuildContext context) {
     final value = Provider.of<AudioPlayer>(context, listen: false);
     final slider = value.slider;
+    final mediaQuery = MediaQuery.of(context);
+    final _isLandScape = mediaQuery.orientation == Orientation.landscape;
+    List<Widget> contents = [
+      Expanded(
+        child: slider,
+      ),
+      Expanded(
+        child: Container(
+          margin: _isLandScape
+              ? EdgeInsets.fromLTRB(0, 10, 0, 0)
+              : EdgeInsets.fromLTRB(0, 45, 0, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  PlayPageSongInfo(),
+                  SliderAndDuration(),
+                ],
+              ),
+              PlayPageControls(value: value),
+            ],
+          ),
+        ),
+      ),
+    ];
     // Color(0xffeceff1)
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        iconTheme: Theme.of(context).iconTheme,
         backgroundColor: Colors.transparent,
         title: DefaultUtil.appName,
         centerTitle: true,
@@ -35,30 +62,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: slider,
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.fromLTRB(0, 45, 0, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      PlayPageSongInfo(),
-                      SliderAndDuration(),
-                    ],
-                  ),
-                  PlayPageControls(value: value),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+      body: _isLandScape ? Row(children: contents) : Column(children: contents),
     );
   }
 }

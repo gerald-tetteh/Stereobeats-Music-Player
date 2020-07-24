@@ -42,9 +42,11 @@ class PlayPageSongInfo extends StatelessWidget {
               builder: (context, songProvider, child) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: IconButton(
-                  icon: Icon(songProvider.isFavourite(song.path)
-                      ? Icons.favorite
-                      : Icons.favorite_border),
+                  icon: Icon(
+                    songProvider.isFavourite(song.path)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
                   onPressed: () => songProvider.toggleFavourite(song.path),
                 ),
               ),
