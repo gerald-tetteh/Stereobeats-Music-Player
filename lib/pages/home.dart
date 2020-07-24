@@ -9,6 +9,7 @@ import '../utils/text_util.dart';
 import '../components/image_builder.dart';
 import '../components/mini_player.dart';
 import '../components/custum_list_view.dart';
+import '../components/customDrawer.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home-page";
@@ -21,7 +22,10 @@ class HomeScreen extends StatelessWidget {
     var extraPadding = mediaQuery.padding.top;
     var actualHeight = viewHeight - extraPadding;
     var _isLandScape = mediaQuery.orientation == Orientation.landscape;
+    GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey();
     return Scaffold(
+      key: _scaffoldkey,
+      drawer: CustomDrawer(),
       backgroundColor: Color(0xffeeeeee),
       body: Stack(
         fit: StackFit.expand,
@@ -46,7 +50,8 @@ class HomeScreen extends StatelessWidget {
                               Icons.menu,
                               size: TextUtil.large,
                             ),
-                            onPressed: () {},
+                            onPressed: () =>
+                                _scaffoldkey.currentState.openDrawer(),
                           ),
                           DefaultUtil.appName,
                           IconButton(
