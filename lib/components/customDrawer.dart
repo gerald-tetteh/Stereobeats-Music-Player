@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../pages/home.dart';
+import '../pages/all_songs_page.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -28,23 +29,26 @@ class CustomDrawer extends StatelessWidget {
         ),
         child: ListView(
           children: [
-            Container(
-              alignment: Alignment.topCenter,
-              padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
-              margin: EdgeInsets.only(
-                bottom: 10,
-              ),
-              height: mediaQuery.size.height * 0.1,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                image: DecorationImage(
-                  alignment: Alignment.centerRight,
-                  image: AssetImage("assets/images/app_icon.png"),
-                ),
-              ),
+            DrawerHeader(
+              padding: EdgeInsets.zero,
+              margin: EdgeInsets.zero,
               child: Container(
-                child: DefaultUtil.appName,
-                alignment: Alignment.bottomLeft,
+                alignment: Alignment.topCenter,
+                padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+                margin: EdgeInsets.only(
+                  bottom: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  image: DecorationImage(
+                    alignment: Alignment.centerRight,
+                    image: AssetImage("assets/images/app_icon.png"),
+                  ),
+                ),
+                child: Container(
+                  child: DefaultUtil.appName,
+                  alignment: Alignment.bottomLeft,
+                ),
               ),
             ),
             CustomListTile(
@@ -56,7 +60,8 @@ class CustomDrawer extends StatelessWidget {
             CustomListTile(
               text: "All Songs",
               iconData: Icons.music_note,
-              function: () {},
+              function: () =>
+                  Navigator.of(context).pushNamed(AllSongsScreen.routeName),
             ),
             CustomListTile(
               text: "Favourites",

@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_controller.dart';
 
 import './pages/home.dart';
 import './pages/loading_screen.dart';
+import './pages/all_songs_page.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
 import './pages/play_page.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
         routes: {
           PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
           HomeScreen.routeName: (ctx) => HomeScreen(),
+          AllSongsScreen.routeName: (ctx) => AllSongsScreen(),
         },
       ),
     );
