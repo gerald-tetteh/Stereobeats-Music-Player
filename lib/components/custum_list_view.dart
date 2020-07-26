@@ -6,8 +6,8 @@ import '../utils/default_util.dart';
 import '../components/box_image.dart';
 import '../provider/music_player.dart';
 
-class CustumListView extends StatelessWidget {
-  const CustumListView({
+class CustomListView extends StatelessWidget {
+  const CustomListView({
     Key key,
     @required this.song,
     @required this.songs,

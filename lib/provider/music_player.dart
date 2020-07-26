@@ -98,7 +98,8 @@ class AudioPlayer with ChangeNotifier {
   Future<void> play(List<SongItem> songs, [int startIndex = 0]) async {
     audioPlayer.shuffle = prefs.getBool("shuffle") ?? false;
     await audioPlayer.open(
-      Playlist(audios: audioSongs(songs), startIndex: 0),
+      Playlist(audios: audioSongs(songs)),
+      autoStart: false,
       loopMode:
           checkLoopMode(prefs.getString("loopMode") ?? "") ?? LoopMode.none,
       showNotification: true,
@@ -114,14 +115,14 @@ class AudioPlayer with ChangeNotifier {
       ),
     );
     await audioPlayer.playlistPlayAtIndex(startIndex);
-    miniPlayerPresent = true;
     changePageController();
+    miniPlayerPresent = true;
+    notifyListeners();
     audioPlayer.onReadyToPlay.listen((event) {
       changePageController();
       notifyListeners();
       animateCarousel();
     });
-    notifyListeners();
   }
 
   Future<void> playOrPause() async {

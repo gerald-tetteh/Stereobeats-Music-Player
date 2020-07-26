@@ -8,7 +8,6 @@ import '../pages/all_songs_page.dart';
 class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
@@ -34,10 +33,6 @@ class CustomDrawer extends StatelessWidget {
               margin: EdgeInsets.zero,
               child: Container(
                 alignment: Alignment.topCenter,
-                padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
-                margin: EdgeInsets.only(
-                  bottom: 10,
-                ),
                 decoration: BoxDecoration(
                   color: Colors.black,
                   image: DecorationImage(
@@ -60,8 +55,8 @@ class CustomDrawer extends StatelessWidget {
             CustomListTile(
               text: "All Songs",
               iconData: Icons.music_note,
-              function: () =>
-                  Navigator.of(context).pushNamed(AllSongsScreen.routeName),
+              function: () => Navigator.of(context)
+                  .pushReplacementNamed(AllSongsScreen.routeName),
             ),
             CustomListTile(
               text: "Favourites",

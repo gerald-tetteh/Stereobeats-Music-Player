@@ -41,14 +41,13 @@ class SongProvider with ChangeNotifier {
   SharedPreferences prefs;
 
   List<SongItem> get songsFraction {
-    var currentYear = DateTime.now().year;
-    var songs = _songs
-        .where((element) =>
-            DefaultUtil.checkNotNull(element.year) &&
-            (currentYear - int.parse(element.year) < 2))
-        .toList();
-    songs.shuffle();
-    return songs;
+    var fraction = [..._songs];
+    if (songs.length < 20) {
+      fraction.shuffle();
+      return fraction;
+    }
+    fraction.shuffle();
+    return fraction.sublist(0, 21);
   }
 
   Future<void> getAllAlbumArt() async {

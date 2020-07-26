@@ -17,7 +17,7 @@ class BoxImage extends StatelessWidget {
       width: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.blue,
+        color: Color(0xff212121),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),

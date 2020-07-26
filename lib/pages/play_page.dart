@@ -28,11 +28,9 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
       ),
       Expanded(
         child: Container(
-          margin: _isLandScape
-              ? EdgeInsets.fromLTRB(0, 10, 0, 0)
-              : EdgeInsets.fromLTRB(0, 45, 0, 0),
+          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
                 children: [

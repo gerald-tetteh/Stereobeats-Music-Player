@@ -109,8 +109,8 @@ class HomeScreen extends StatelessWidget {
           ),
           Positioned(
             bottom: 10,
-            left: 10,
-            right: 10,
+            left: 3,
+            right: 3,
             child: Consumer<AudioPlayer>(
               builder: (context, value, child) => value.miniPlayerPresent
                   ? MiniPlayer(mediaQuery: mediaQuery)
@@ -183,7 +183,7 @@ class _BottomSheet extends StatelessWidget {
                   addAutomaticKeepAlives: true,
                   itemCount: songs.length - 1,
                   itemBuilder: (context, index) {
-                    return CustumListView(
+                    return CustomListView(
                       song: songs[index + 1],
                       songs: songs,
                       index: index + 1,

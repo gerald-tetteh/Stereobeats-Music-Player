@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'color_util.dart';
-
 class TextUtil {
   static const double xsmall = 19;
   static const double small = 24;
@@ -25,12 +23,8 @@ class TextUtil {
     fontFamily: "Grenze",
   );
   static const TextStyle pageHeadingTop = TextStyle(
-    fontSize: 40,
-    color: Color(0xff1565c0),
-  );
-  static const TextStyle pageHeadingBottom = TextStyle(
-    fontSize: TextUtil.xsmall,
+    fontSize: TextUtil.small,
+    color: Color(0xff212121),
     fontFamily: "Grenze",
-    fontStyle: FontStyle.italic,
   );
 }

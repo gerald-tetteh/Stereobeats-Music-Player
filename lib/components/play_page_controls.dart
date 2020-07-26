@@ -15,14 +15,14 @@ class PlayPageControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 7, 15, 15),
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
       child: Card(
         elevation: 5,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
         ),
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.all(10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
