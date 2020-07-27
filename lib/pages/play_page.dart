@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,22 +48,51 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
       ),
     ];
     // Color(0xffeceff1)
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
+    return Consumer<AudioPlayer>(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        title: DefaultUtil.appName,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_drop_down,
-            size: TextUtil.large,
+        appBar: AppBar(
+          iconTheme: Theme.of(context).iconTheme,
+          backgroundColor: Colors.transparent,
+          title: DefaultUtil.appName,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_drop_down,
+              size: TextUtil.large,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          onPressed: () => Navigator.of(context).pop(),
         ),
+        body:
+            _isLandScape ? Row(children: contents) : Column(children: contents),
       ),
-      body: _isLandScape ? Row(children: contents) : Column(children: contents),
+      builder: (context, provider, child) {
+        String path = provider.playing.metas.image.path;
+        return Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: DefaultUtil.checkNotNull(path) &&
+                      DefaultUtil.checkNotAsset(path)
+                  ? FileImage(File(path))
+                  : AssetImage(DefaultUtil.defaultImage),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                alignment: Alignment.center,
+                color: Colors.grey.withOpacity(0.1),
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

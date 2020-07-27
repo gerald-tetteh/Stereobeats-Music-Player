@@ -13,7 +13,7 @@ class DefaultUtil {
   }
 
   static bool checkNotAsset(String path) {
-    if (path.contains("assets/images")) {
+    if (path == null || path.contains("assets/images")) {
       return false;
     }
     return true;

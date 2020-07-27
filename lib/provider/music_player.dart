@@ -45,12 +45,19 @@ class AudioPlayer with ChangeNotifier {
         enlargeCenterPage: true,
         initialPage:
             findCurrentIndex(audioPlayer.current.value.audio.audio.path),
-        onPageChanged: (index, reason) async =>
-            CarouselPageChangedReason.manual == reason
-                ? await audioPlayer.playlistPlayAtIndex(index)
-                : null,
+        onPageChanged: (index, reason) async {
+          if (CarouselPageChangedReason.manual == reason) {
+            await audioPlayer.playlistPlayAtIndex(index);
+            notifyListeners();
+          }
+        },
       ),
     );
+  }
+
+  void changeNotify() {
+    changePageController();
+    notifyListeners();
   }
 
   void animateCarousel() {
