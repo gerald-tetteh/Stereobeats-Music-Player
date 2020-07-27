@@ -16,7 +16,8 @@ class AllSongsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final songs = Provider.of<SongProvider>(context).songs;
+    final provider = Provider.of<AudioPlayer>(context, listen: false);
+    final songs = Provider.of<SongProvider>(context, listen: false).songs;
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
     return Scaffold(
       backgroundColor: Color(0xffeeeeee),
@@ -86,13 +87,25 @@ class AllSongsScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              FaIcon(
-                                FontAwesomeIcons.random,
-                                size: TextUtil.xsmall,
+                              IconButton(
+                                icon: FaIcon(
+                                  FontAwesomeIcons.random,
+                                  size: TextUtil.xsmall,
+                                ),
+                                onPressed: () async {
+                                  await provider.setShuffle(true);
+                                  await provider.play(songs, 0, true);
+                                },
                               ),
-                              FaIcon(
-                                FontAwesomeIcons.playCircle,
-                                size: TextUtil.xsmall,
+                              IconButton(
+                                icon: FaIcon(
+                                  FontAwesomeIcons.playCircle,
+                                  size: TextUtil.xsmall,
+                                ),
+                                onPressed: () async {
+                                  await provider.setShuffle(false);
+                                  await provider.play(songs, 0, false);
+                                },
                               ),
                             ],
                           ),
@@ -125,6 +138,10 @@ class AllSongsScreen extends StatelessWidget {
                                 onTap: () => Provider.of<AudioPlayer>(context,
                                         listen: false)
                                     .play(songs, index),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.more_vert),
+                                  onPressed: () {},
+                                ),
                               );
                             },
                           ),

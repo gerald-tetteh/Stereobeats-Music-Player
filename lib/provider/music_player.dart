@@ -93,8 +93,9 @@ class AudioPlayer with ChangeNotifier {
         .toList();
   }
 
-  Future<void> play(List<SongItem> songs, [int startIndex = 0]) async {
-    audioPlayer.shuffle = prefs.getBool("shuffle") ?? false;
+  Future<void> play(List<SongItem> songs,
+      [int startIndex = 0, bool shuffle]) async {
+    audioPlayer.shuffle = shuffle ?? prefs.getBool("shuffle") ?? false;
     await audioPlayer.open(
       Playlist(audios: audioSongs(songs)),
       autoStart: false,
@@ -112,7 +113,13 @@ class AudioPlayer with ChangeNotifier {
         customPrevAction: (player) => previousTrack(),
       ),
     );
-    await audioPlayer.playlistPlayAtIndex(startIndex);
+    if (startIndex == 0 && shuffle == true) {
+      Random rand = Random();
+      int randomIndex = rand.nextInt(songs.length);
+      audioPlayer.playlistPlayAtIndex(randomIndex);
+    } else {
+      await audioPlayer.playlistPlayAtIndex(startIndex);
+    }
     changePageController();
     miniPlayerPresent = true;
     notifyListeners();
@@ -180,6 +187,11 @@ class AudioPlayer with ChangeNotifier {
 
   Future<void> changeShuffle() async {
     audioPlayer.shuffle = !audioPlayer.shuffle;
+    await prefs.setBool("shuffle", audioPlayer.shuffle);
+  }
+
+  Future<void> setShuffle(bool value) async {
+    audioPlayer.shuffle = value;
     await prefs.setBool("shuffle", audioPlayer.shuffle);
   }
 }
