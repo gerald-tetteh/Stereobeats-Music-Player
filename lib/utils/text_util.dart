@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'color_util.dart';
+
 class TextUtil {
   static const double xsmall = 19;
   static const double small = 24;
@@ -21,6 +23,7 @@ class TextUtil {
   static const TextStyle playPageTitle = TextStyle(
     fontSize: TextUtil.small,
     fontFamily: "Grenze",
+    color: ColorUtil.white,
   );
   static const TextStyle pageHeadingTop = TextStyle(
     fontSize: TextUtil.small,

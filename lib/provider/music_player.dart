@@ -11,19 +11,10 @@ import '../utils/default_util.dart';
 import '../components/page_view_card.dart';
 
 class AudioPlayer with ChangeNotifier {
-  AudioPlayer({
-    this.prefs,
-    this.audioPlayer,
-    this.pageController,
-    this.slider,
-    this.songsQueue,
-    this.miniPlayerPresent,
-  });
-
   SharedPreferences prefs;
-  AssetsAudioPlayer audioPlayer;
-  bool miniPlayerPresent;
-  CarouselController pageController;
+  AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId("current_player");
+  bool miniPlayerPresent = false;
+  CarouselController pageController = CarouselController();
   CarouselSlider slider;
   List<SongItem> songsQueue;
 

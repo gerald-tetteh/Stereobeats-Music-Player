@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
 import '../provider/music_player.dart';
+import '../utils/color_util.dart';
 
 class SliderAndDuration extends StatelessWidget {
   const SliderAndDuration({
@@ -39,11 +40,13 @@ class SliderAndDuration extends StatelessWidget {
                       children: [
                         Text(
                           calculatedPosition ?? "0:00",
+                          style: TextStyle(color: ColorUtil.white),
                         ),
                         Text(
                           provider
                               .calculateDuration(int.parse(songDuration))
                               .toString(),
+                          style: TextStyle(color: ColorUtil.white),
                         ),
                       ],
                     ),

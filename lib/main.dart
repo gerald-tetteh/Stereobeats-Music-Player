@@ -24,20 +24,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SongProvider(),
         ),
-        ChangeNotifierProxyProvider<SongProvider, AudioPlayer>(
-            update: (ctx, songProvider, oldProvider) {
-          return AudioPlayer(
-            prefs: oldProvider != null ? oldProvider.prefs : songProvider.prefs,
-            audioPlayer: AssetsAudioPlayer.withId("current_player"),
-            miniPlayerPresent:
-                oldProvider != null ? oldProvider.miniPlayerPresent : false,
-            pageController: oldProvider != null
-                ? oldProvider.pageController
-                : CarouselController(),
-            slider: oldProvider != null ? oldProvider.slider : null,
-            songsQueue: oldProvider != null ? oldProvider.songsQueue : null,
-          );
-        }),
+        ChangeNotifierProvider(
+          create: (_) => AudioPlayer(),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

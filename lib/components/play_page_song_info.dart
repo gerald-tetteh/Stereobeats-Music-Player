@@ -18,37 +18,44 @@ class PlayPageSongInfo extends StatelessWidget {
           provider.songsQueue[provider.findCurrentIndex(provider.playing.path)];
       return Container(
         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: Column(
-          children: [
-            Text(
-              DefaultUtil.checkNotNull(song.title)
-                  ? song.title
-                  : DefaultUtil.unknown,
-              style: TextUtil.playPageTitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              DefaultUtil.checkNotNull(song.artist)
-                  ? song.artist
-                  : DefaultUtil.unknown,
-              style: TextUtil.mutedText,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            Consumer<SongProvider>(
-              builder: (context, songProvider, child) => IconButton(
-                icon: Icon(
-                  songProvider.isFavourite(song.path)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                ),
-                onPressed: () => songProvider.toggleFavourite(song.path),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.black54,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              Text(
+                DefaultUtil.checkNotNull(song.title)
+                    ? song.title
+                    : DefaultUtil.unknown,
+                style: TextUtil.playPageTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              Text(
+                DefaultUtil.checkNotNull(song.artist)
+                    ? song.artist
+                    : DefaultUtil.unknown,
+                style: TextUtil.mutedText,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+              Consumer<SongProvider>(
+                builder: (context, songProvider, child) => IconButton(
+                  icon: Icon(
+                    songProvider.isFavourite(song.path)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                  onPressed: () => songProvider.toggleFavourite(song.path),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });

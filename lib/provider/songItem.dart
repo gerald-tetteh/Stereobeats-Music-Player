@@ -2,8 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/default_util.dart';
-
 class SongItem {
   final String title;
   final String artist;
