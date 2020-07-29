@@ -68,6 +68,8 @@ class SongProvider with ChangeNotifier {
           ),
         )
         .toList();
+    _songs.sort(
+        (a, b) => a.title?.toUpperCase()?.compareTo(b.title?.toUpperCase()));
   }
 
   Future<void> getSongs() async {

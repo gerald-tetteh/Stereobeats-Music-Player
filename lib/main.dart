@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:carousel_slider/carousel_controller.dart';
 
 import './pages/home.dart';
 import './pages/loading_screen.dart';

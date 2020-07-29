@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../components/box_image.dart';
 import '../provider/songItem.dart';
@@ -10,6 +11,7 @@ import '../utils/default_util.dart';
 import '../components/customDrawer.dart';
 import '../provider/music_player.dart';
 import '../components/mini_player.dart';
+import '../components/dropdown_menu.dart';
 
 class AllSongsScreen extends StatelessWidget {
   static const routeName = "/all-songs";
@@ -19,6 +21,7 @@ class AllSongsScreen extends StatelessWidget {
     final provider = Provider.of<AudioPlayer>(context, listen: false);
     final songs = Provider.of<SongProvider>(context, listen: false).songs;
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+    final ItemScrollController itemScrollController = ItemScrollController();
     return Scaffold(
       backgroundColor: Color(0xffeeeeee),
       drawer: CustomDrawer(),
@@ -79,47 +82,58 @@ class AllSongsScreen extends StatelessWidget {
                       topRight: const Radius.circular(30),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Container(
-                          width: mediaQuery.size.width * 0.3,
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              IconButton(
-                                icon: FaIcon(
-                                  FontAwesomeIcons.random,
-                                  size: TextUtil.xsmall,
-                                ),
-                                onPressed: () async {
-                                  await provider.setShuffle(true);
-                                  await provider.play(songs, 0, true);
-                                },
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                              child:
+                                  CustomDropDown(songs, itemScrollController),
+                            ),
+                            Container(
+                              width: mediaQuery.size.width * 0.3,
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  IconButton(
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.random,
+                                      size: TextUtil.xsmall,
+                                    ),
+                                    onPressed: () async {
+                                      await provider.setShuffle(true);
+                                      await provider.play(songs, 0, true);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.playCircle,
+                                      size: TextUtil.xsmall,
+                                    ),
+                                    onPressed: () async {
+                                      await provider.setShuffle(false);
+                                      await provider.play(songs, 0, false);
+                                    },
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: FaIcon(
-                                  FontAwesomeIcons.playCircle,
-                                  size: TextUtil.xsmall,
-                                ),
-                                onPressed: () async {
-                                  await provider.setShuffle(false);
-                                  await provider.play(songs, 0, false);
-                                },
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Expanded(
-                          child: ListView.separated(
+                          child: ScrollablePositionedList.separated(
+                            itemCount: songs.length,
                             addAutomaticKeepAlives: true,
+                            itemScrollController: itemScrollController,
                             separatorBuilder: (context, index) =>
                                 index != songs.length - 1
                                     ? Divider(
                                         indent: mediaQuery.size.width * (1 / 4),
                                       )
                                     : "",
-                            itemCount: songs.length,
                             itemBuilder: (context, index) {
                               return ListTile(
                                 leading: BoxImage(

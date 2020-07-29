@@ -186,7 +186,7 @@ class AudioPlayer with ChangeNotifier {
   }
 
   Future<void> changeShuffle() async {
-    audioPlayer.shuffle = !audioPlayer.shuffle;
+    audioPlayer.toggleShuffle();
     await prefs.setBool("shuffle", audioPlayer.shuffle);
   }
 
