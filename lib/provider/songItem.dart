@@ -36,6 +36,10 @@ class SongProvider with ChangeNotifier {
     return [..._songs];
   }
 
+  List<SongItem> get favourites {
+    return _songs.where((song) => isFavourite(song.path)).toList();
+  }
+
   SharedPreferences prefs;
 
   List<SongItem> get songsFraction {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../components/box_image.dart';
@@ -12,6 +11,7 @@ import '../components/customDrawer.dart';
 import '../provider/music_player.dart';
 import '../components/mini_player.dart';
 import '../components/dropdown_menu.dart';
+import '../components/quick_play_options.dart';
 
 class AllSongsScreen extends StatelessWidget {
   static const routeName = "/all-songs";
@@ -91,36 +91,10 @@ class AllSongsScreen extends StatelessWidget {
                               child:
                                   CustomDropDown(songs, itemScrollController),
                             ),
-                            Container(
-                              width: mediaQuery.size.width * 0.3,
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  IconButton(
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.random,
-                                      size: TextUtil.xsmall,
-                                    ),
-                                    onPressed: () async {
-                                      await provider.setShuffle(true);
-                                      await provider.play(songs, 0, true);
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.playCircle,
-                                      size: TextUtil.xsmall,
-                                    ),
-                                    onPressed: () async {
-                                      await provider.setShuffle(false);
-                                      await provider.play(songs, 0, false);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
+                            QuickPlayOptions(
+                                mediaQuery: mediaQuery,
+                                provider: provider,
+                                songs: songs),
                           ],
                         ),
                         Expanded(
@@ -143,11 +117,15 @@ class AllSongsScreen extends StatelessWidget {
                                   DefaultUtil.checkNotNull(songs[index].title)
                                       ? songs[index].title
                                       : DefaultUtil.unknown,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 subtitle: Text(
                                   DefaultUtil.checkNotNull(songs[index].artist)
                                       ? songs[index].artist
                                       : DefaultUtil.unknown,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 onTap: () => Provider.of<AudioPlayer>(context,
                                         listen: false)

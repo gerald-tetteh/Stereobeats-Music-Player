@@ -4,6 +4,7 @@ import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../pages/home.dart';
 import '../pages/all_songs_page.dart';
+import '../pages/favourites_page.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -61,7 +62,8 @@ class CustomDrawer extends StatelessWidget {
             CustomListTile(
               text: "Favourites",
               iconData: Icons.favorite,
-              function: () {},
+              function: () => Navigator.of(context)
+                  .pushReplacementNamed(FavouritesPage.routeName),
             ),
             CustomListTile(
               text: "Playlists",
