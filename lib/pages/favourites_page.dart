@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,16 +9,25 @@ import '../components/quick_play_options.dart';
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../components/mini_player.dart';
+import '../components/favourite_songs_list_view.dart';
+import '../components/bottom_actions_bar.dart';
 
 class FavouritesPage extends StatelessWidget {
   static const routeName = "/favourites-page";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    final favouriteSongs = Provider.of<SongProvider>(context).favourites;
-    final audioProvider = Provider.of<AudioPlayer>(context);
+    final songProvider = Provider.of<SongProvider>(context);
+    final favouriteSongs = songProvider.favourites;
+    final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      bottomNavigationBar: AnimatedContainer(
+        child: BottomActionsBar(),
+        duration: Duration(milliseconds: 400),
+        curve: Curves.easeIn,
+        height: songProvider.showBottonBar ? 59 : 0,
+      ),
       backgroundColor: Color(0xffeeeeee),
       drawer: CustomDrawer(),
       key: _scaffoldKey,
@@ -63,42 +70,14 @@ class FavouritesPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       QuickPlayOptions(
-                          mediaQuery: mediaQuery,
-                          provider: audioProvider,
-                          songs: favouriteSongs),
+                        mediaQuery: mediaQuery,
+                        provider: audioProvider,
+                        songs: favouriteSongs,
+                      ),
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: favouriteSongs.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(
-                                DefaultUtil.checkNotNull(
-                                        favouriteSongs[index].title)
-                                    ? favouriteSongs[index].title
-                                    : DefaultUtil.unknown,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Text(
-                                DefaultUtil.checkNotNull(
-                                        favouriteSongs[index].artist)
-                                    ? favouriteSongs[index].artist
-                                    : DefaultUtil.unknown,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              trailing: CircleAvatar(
-                                backgroundColor: Colors.black,
-                                backgroundImage: DefaultUtil.checkNotNull(
-                                        favouriteSongs[index].artPath)
-                                    ? FileImage(
-                                        File(favouriteSongs[index].artPath))
-                                    : AssetImage(DefaultUtil.defaultImage),
-                              ),
-                              onTap: () =>
-                                  audioProvider.play(favouriteSongs, index),
-                            );
-                          },
+                        child: FavouriteSongListView(
+                          favouriteSongs: favouriteSongs,
+                          audioProvider: audioProvider,
                         ),
                       ),
                       Consumer<AudioPlayer>(

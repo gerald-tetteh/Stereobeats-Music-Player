@@ -52,6 +52,13 @@ class SongProvider with ChangeNotifier {
     return fraction.sublist(0, 21);
   }
 
+  bool showBottonBar = false;
+
+  void changeBottomBar(bool value) {
+    showBottonBar = value;
+    notifyListeners();
+  }
+
   Future<void> getAllAlbumArt() async {
     const platform = MethodChannel("stereo.beats/metadata");
     final path =
