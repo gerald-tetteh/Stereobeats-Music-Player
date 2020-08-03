@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +32,7 @@ class SongItem {
 class SongProvider with ChangeNotifier {
   List<SongItem> _songs = [];
   List<String> _favourites = [];
+  List<String> _queue = [];
 
   List<SongItem> get songs {
     return [..._songs];
@@ -38,6 +40,14 @@ class SongProvider with ChangeNotifier {
 
   List<SongItem> get favourites {
     return _songs.where((song) => isFavourite(song.path)).toList();
+  }
+
+  List<SongItem> get queue {
+    List<SongItem> selectedSongs = [];
+    _queue.forEach((path) {
+      selectedSongs.add(_songs.firstWhere((song) => song.path == path));
+    });
+    return selectedSongs;
   }
 
   SharedPreferences prefs;
@@ -116,10 +126,30 @@ class SongProvider with ChangeNotifier {
     await prefs.setStringList("favourites", _favourites);
   }
 
+  void removeFromFavourites() async {
+    _queue.forEach((path) {
+      _favourites.remove(path);
+    });
+    notifyListeners();
+    prefs.setStringList("favourites", _favourites);
+  }
+
   bool isFavourite(String path) {
     if (_favourites.contains(path)) {
       return true;
     }
     return false;
   }
+
+  void addToQueue(String path) {
+    _queue.add(path);
+  }
+
+  void removeFromQueue(String path) {
+    _queue.remove(path);
+  }
+
+  void setQueueToNull() => _queue = [];
+
+  bool queueNotNull() => _queue.length > 0;
 }

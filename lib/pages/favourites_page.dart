@@ -23,7 +23,9 @@ class FavouritesPage extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       bottomNavigationBar: AnimatedContainer(
-        child: BottomActionsBar(),
+        child: BottomActionsBar(
+          songProvider.removeFromFavourites,
+        ),
         duration: Duration(milliseconds: 400),
         curve: Curves.easeIn,
         height: songProvider.showBottonBar ? 59 : 0,

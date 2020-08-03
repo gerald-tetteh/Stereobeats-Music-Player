@@ -23,15 +23,13 @@ class FavouriteSongListView extends StatefulWidget {
 }
 
 class _FavouriteSongListViewState extends State<FavouriteSongListView> {
-  bool _showCheckBox = false;
-
   @override
   Widget build(BuildContext context) {
+    final songProvider = Provider.of<SongProvider>(context);
     return GestureDetector(
       onTap: () => setState(() {
-        _showCheckBox = false;
-        Provider.of<SongProvider>(context, listen: false)
-            .changeBottomBar(false);
+        songProvider.changeBottomBar(false);
+        songProvider.setQueueToNull();
       }),
       child: ListView.builder(
         itemCount: widget.favouriteSongs.length,
@@ -40,23 +38,24 @@ class _FavouriteSongListViewState extends State<FavouriteSongListView> {
           return Material(
             color: ColorUtil.white,
             child: InkWell(
-              onTap: () =>
-                  widget.audioProvider.play(widget.favouriteSongs, index),
+              onTap: () {
+                widget.audioProvider.setShuffle(false);
+                widget.audioProvider.play(widget.favouriteSongs, index);
+              },
               onLongPress: () => setState(() {
-                _showCheckBox = true;
-                Provider.of<SongProvider>(context, listen: false)
-                    .changeBottomBar(true);
+                songProvider.changeBottomBar(true);
               }),
               child: GestureDetector(
-                onTap: _showCheckBox
+                onTap: songProvider.showBottonBar
                     ? () => setState(() {
-                          _showCheckBox = false;
-                          Provider.of<SongProvider>(context, listen: false)
-                              .changeBottomBar(false);
+                          songProvider.changeBottomBar(false);
+                          songProvider.setQueueToNull();
                         })
                     : null,
                 child: ListTile(
-                  leading: _showCheckBox ? _buildCheckBox() : null,
+                  leading: songProvider.showBottonBar
+                      ? _buildCheckBox(path: song.path)
+                      : null,
                   title: Text(
                     DefaultUtil.checkNotNull(song.title)
                         ? song.title
@@ -88,7 +87,10 @@ class _FavouriteSongListViewState extends State<FavouriteSongListView> {
 class _buildCheckBox extends StatefulWidget {
   const _buildCheckBox({
     Key key,
+    @required this.path,
   }) : super(key: key);
+
+  final String path;
 
   @override
   __buildCheckBoxState createState() => __buildCheckBoxState();
@@ -98,9 +100,17 @@ class __buildCheckBoxState extends State<_buildCheckBox> {
   bool _boxValue = false;
   @override
   Widget build(BuildContext context) {
+    final songProvider = Provider.of<SongProvider>(context);
     return CircularCheckBox(
       value: _boxValue,
-      onChanged: (value) => setState(() => _boxValue = value),
+      onChanged: (value) {
+        if (value) {
+          songProvider.addToQueue(widget.path);
+        } else {
+          songProvider.removeFromQueue(widget.path);
+        }
+        setState(() => _boxValue = value);
+      },
     );
   }
 }
