@@ -5,6 +5,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'songItem.dart';
 import '../utils/default_util.dart';
@@ -129,6 +130,13 @@ class AudioPlayer with ChangeNotifier {
       animateCarousel();
     });
     audioPlayer.onErrorDo = (handler) async {
+      Fluttertoast.showToast(
+        msg: "File is not supported",
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        gravity: ToastGravity.BOTTOM,
+        toastLength: Toast.LENGTH_SHORT,
+      );
       await nextTrack();
     };
   }

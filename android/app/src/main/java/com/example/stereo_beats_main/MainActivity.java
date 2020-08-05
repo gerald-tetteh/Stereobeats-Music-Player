@@ -2,12 +2,14 @@ package com.example.stereo_beats_main;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
@@ -68,6 +70,22 @@ public class MainActivity extends FlutterActivity {
                                 @Override
                                 public void onGranted() {
                                     getAllAlbumArt(result);
+                                }
+
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    result.error("1", "Permission denied", null);
+                                }
+                            });
+                            break;
+                        }
+                        case "shareFile": {
+                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    List<String> paths = call.argument("paths");
+                                    shareFile(result,paths);
                                 }
 
                                 @Override
@@ -193,6 +211,36 @@ public class MainActivity extends FlutterActivity {
         } else {
             result.success(false);
         }
+    }
+
+    private void shareFile(MethodChannel.Result result,  List<String> paths) {
+        if (paths.size() == 1) {
+            Uri uri = Uri.parse(paths.get(0));
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("audio/*");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            startActivity(Intent.createChooser(share, "Share Sound File"));
+        } else {
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_SEND_MULTIPLE);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Share Songs");
+            intent.setType("*/*");
+
+            ArrayList<Uri> files = new ArrayList<>();
+
+            for(String path : paths) {
+                File file = new File(path);
+                Uri uri = FileProvider.getUriForFile(
+                        MainActivity.this,
+                        "com.example.stereo_beats_main.provider",
+                        file);
+                files.add(uri);
+            }
+
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+            startActivity(Intent.createChooser(intent,"Share Songs"));
+        }
+        result.success(true);
     }
 }
 

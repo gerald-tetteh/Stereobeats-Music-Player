@@ -148,6 +148,11 @@ class SongProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> shareFile() async {
+    const platform = MethodChannel("stereo.beats/metadata");
+    await platform.invokeMethod("shareFile", {"paths": _queue});
+  }
+
   bool isFavourite(String path) {
     if (_favourites.contains(path)) {
       return true;

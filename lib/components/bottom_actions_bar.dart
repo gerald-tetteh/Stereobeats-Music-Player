@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
@@ -35,7 +36,7 @@ class BottomActionsBar extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     return BottomNavigationBar(
-      onTap: (value) {
+      onTap: (value) async {
         if (value == 0) {
           if (songProvider.queueNotNull()) {
             audioProvider.play(songProvider.queue, 0, false);
@@ -43,9 +44,15 @@ class BottomActionsBar extends StatelessWidget {
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
           }
+        } else if (value == 2) {
+          if (songProvider.queueNotNull()) {
+            await songProvider.shareFile();
+            songProvider.changeBottomBar(false);
+            songProvider.setQueueToNull();
+          }
         } else if (value == 3) {
           if (songProvider.queueNotNull()) {
-            showDialog(
+            await showDialog(
               barrierDismissible: false,
               context: scaffoldKey.currentContext,
               builder: (context) {
@@ -54,6 +61,13 @@ class BottomActionsBar extends StatelessWidget {
                   songProvider: songProvider,
                 );
               },
+            );
+            Fluttertoast.showToast(
+              msg: "Item Removed",
+              backgroundColor: Colors.grey,
+              textColor: Colors.white,
+              gravity: ToastGravity.BOTTOM,
+              toastLength: Toast.LENGTH_SHORT,
             );
           }
         }
