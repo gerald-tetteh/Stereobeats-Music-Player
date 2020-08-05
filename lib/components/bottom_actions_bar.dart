@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import 'alert_dialog.dart';
 
 class BottomActionsBar extends StatelessWidget {
-  BottomActionsBar(
+  BottomActionsBar({
     this.deleteFunction,
-  );
+    this.scaffoldKey,
+  });
   final void Function() deleteFunction;
+  final GlobalKey<ScaffoldState> scaffoldKey;
   final _items = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
       icon: Icon(Icons.play_arrow),
@@ -42,9 +45,16 @@ class BottomActionsBar extends StatelessWidget {
           }
         } else if (value == 3) {
           if (songProvider.queueNotNull()) {
-            deleteFunction();
-            songProvider.changeBottomBar(false);
-            songProvider.setQueueToNull();
+            showDialog(
+              barrierDismissible: false,
+              context: scaffoldKey.currentContext,
+              builder: (context) {
+                return ConfirmDeleteAlert(
+                  deleteFunction: deleteFunction,
+                  songProvider: songProvider,
+                );
+              },
+            );
           }
         }
       },

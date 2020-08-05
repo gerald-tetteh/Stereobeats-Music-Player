@@ -24,7 +24,8 @@ class FavouritesPage extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: AnimatedContainer(
         child: BottomActionsBar(
-          songProvider.removeFromFavourites,
+          deleteFunction: songProvider.removeFromFavourites,
+          scaffoldKey: _scaffoldKey,
         ),
         duration: Duration(milliseconds: 400),
         curve: Curves.easeIn,

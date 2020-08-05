@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import '../components/box_image.dart';
 import '../provider/songItem.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
@@ -12,6 +11,8 @@ import '../provider/music_player.dart';
 import '../components/mini_player.dart';
 import '../components/dropdown_menu.dart';
 import '../components/quick_play_options.dart';
+import '../components/bottom_actions_bar.dart';
+import '../components/separated_positioned_list.dart';
 
 class AllSongsScreen extends StatelessWidget {
   static const routeName = "/all-songs";
@@ -19,10 +20,22 @@ class AllSongsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final provider = Provider.of<AudioPlayer>(context, listen: false);
-    final songs = Provider.of<SongProvider>(context, listen: false).songs;
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
     final ItemScrollController itemScrollController = ItemScrollController();
     return Scaffold(
+      bottomNavigationBar: Consumer<SongProvider>(
+        builder: (context, songProvider, child) {
+          return AnimatedContainer(
+            child: BottomActionsBar(
+              deleteFunction: songProvider.deleteSongs,
+              scaffoldKey: _scaffoldKey,
+            ),
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeIn,
+            height: songProvider.showBottonBar ? 59 : 0,
+          );
+        },
+      ),
       backgroundColor: Color(0xffeeeeee),
       drawer: CustomDrawer(),
       key: _scaffoldKey,
@@ -83,59 +96,30 @@ class AllSongsScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-                              child:
-                                  CustomDropDown(songs, itemScrollController),
-                            ),
-                            QuickPlayOptions(
-                                mediaQuery: mediaQuery,
-                                provider: provider,
-                                songs: songs),
-                          ],
+                        Consumer<SongProvider>(
+                          builder: (context, songProvider2, child) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                                  child: CustomDropDown(songProvider2.songs,
+                                      itemScrollController),
+                                ),
+                                QuickPlayOptions(
+                                  mediaQuery: mediaQuery,
+                                  provider: provider,
+                                  songs: songProvider2.songs,
+                                ),
+                              ],
+                            );
+                          },
                         ),
                         Expanded(
-                          child: ScrollablePositionedList.separated(
-                            itemCount: songs.length,
-                            addAutomaticKeepAlives: true,
+                          child: SeparatedPositionedList(
                             itemScrollController: itemScrollController,
-                            separatorBuilder: (context, index) =>
-                                index != songs.length - 1
-                                    ? Divider(
-                                        indent: mediaQuery.size.width * (1 / 4),
-                                      )
-                                    : "",
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                leading: BoxImage(
-                                  path: songs[index].artPath,
-                                ),
-                                title: Text(
-                                  DefaultUtil.checkNotNull(songs[index].title)
-                                      ? songs[index].title
-                                      : DefaultUtil.unknown,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                subtitle: Text(
-                                  DefaultUtil.checkNotNull(songs[index].artist)
-                                      ? songs[index].artist
-                                      : DefaultUtil.unknown,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                onTap: () => Provider.of<AudioPlayer>(context,
-                                        listen: false)
-                                    .play(songs, index),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.more_vert),
-                                  onPressed: () {},
-                                ),
-                              );
-                            },
+                            mediaQuery: mediaQuery,
                           ),
                         ),
                         Consumer<AudioPlayer>(

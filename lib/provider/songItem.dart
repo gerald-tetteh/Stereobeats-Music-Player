@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -132,6 +134,18 @@ class SongProvider with ChangeNotifier {
     });
     notifyListeners();
     prefs.setStringList("favourites", _favourites);
+  }
+
+  Future<void> deleteSongs() async {
+    const platform = MethodChannel("stereo.beats/metadata");
+    _queue.forEach((path) async {
+      _songs.removeWhere((song) => song.path == path);
+      var value = await platform.invokeMethod("deleteFile", {
+        "path": path,
+      });
+      print(value);
+    });
+    notifyListeners();
   }
 
   bool isFavourite(String path) {

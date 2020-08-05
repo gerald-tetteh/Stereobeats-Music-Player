@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,22 +46,22 @@ public class MainActivity extends FlutterActivity {
                             });
                             break;
                         }
-//                        case "getAlbumArt": {
-//                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-//                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
-//                                @Override
-//                                public void onGranted() {
-//                                    String id = call.argument("id");
-//                                    getAlbumArt(id, result);
-//                                }
-//
-//                                @Override
-//                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-//                                    result.error("1", "Permission denied", null);
-//                                }
-//                            });
-//                            break;
-//                        }
+                        case "deleteFile": {
+                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    String path = call.argument("path");
+                                    deleteFile(result,path);
+                                }
+
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    result.error("1", "Permission denied", null);
+                                }
+                            });
+                            break;
+                        }
                         case "getAllAlbumArt": {
                             String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
                             Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
@@ -176,6 +177,22 @@ public class MainActivity extends FlutterActivity {
                 cursor.close();
             }
         result.success(albumArts);
+    }
+
+    private void deleteFile(MethodChannel.Result result, String path) {
+        File dir = new File(path);
+        String selection = MediaStore.Audio.AudioColumns.DATA + "= ?";
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        if(dir.delete()) {
+            try {
+                MainActivity.this.getContentResolver().delete(uri,selection,new String[] {path});
+                result.success(true);
+            } catch (Exception e) {
+                result.success(false);
+            }
+        } else {
+            result.success(false);
+        }
     }
 }
 

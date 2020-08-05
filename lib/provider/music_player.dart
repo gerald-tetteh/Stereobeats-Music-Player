@@ -128,6 +128,9 @@ class AudioPlayer with ChangeNotifier {
       notifyListeners();
       animateCarousel();
     });
+    audioPlayer.onErrorDo = (handler) async {
+      await nextTrack();
+    };
   }
 
   Future<void> playOrPause() async {
