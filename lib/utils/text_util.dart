@@ -30,4 +30,8 @@ class TextUtil {
     color: Color(0xff212121),
     fontFamily: "Grenze",
   );
+  static const TextStyle playlistCardTitle = TextStyle(
+    fontFamily: "Grenze",
+    fontSize: TextUtil.small,
+  );
 }

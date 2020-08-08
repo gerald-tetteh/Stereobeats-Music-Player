@@ -13,6 +13,7 @@ class PlayListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Color(0xffeeeeee),
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
         leading: IconButton(
@@ -27,10 +28,14 @@ class PlayListScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
       ),
       drawer: CustomDrawer(),
-      body: PlayListAndAlbum(),
+      body: PlayListAndAlbum(
+        title: "Playlists",
+        subTitle: "by you",
+        purpose: Purpose.PlayListView,
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => DBHelper.createItem("playLists", "hello"),
+        onPressed: () => DBHelper.createItem("playLists", "All Enya"),
       ),
     );
   }

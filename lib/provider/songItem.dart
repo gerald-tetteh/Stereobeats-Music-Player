@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -170,4 +168,7 @@ class SongProvider with ChangeNotifier {
   void setQueueToNull() => _queue = [];
 
   bool queueNotNull() => _queue.length > 0;
+
+  String getArtPath(String path) =>
+      _songs.firstWhere((song) => song.path == path).artPath;
 }
