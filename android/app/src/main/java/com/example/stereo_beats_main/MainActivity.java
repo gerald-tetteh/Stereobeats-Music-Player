@@ -215,7 +215,8 @@ public class MainActivity extends FlutterActivity {
 
     private void shareFile(MethodChannel.Result result,  List<String> paths) {
         if (paths.size() == 1) {
-            Uri uri = Uri.parse(paths.get(0));
+            File file = new File(paths.get(0));
+            Uri uri = FileProvider.getUriForFile(MainActivity.this,"com.example.stereo_beats_main.provider",file);
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("audio/*");
             share.putExtra(Intent.EXTRA_STREAM, uri);

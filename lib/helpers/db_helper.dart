@@ -1,34 +1,21 @@
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../models/playlist.dart';
 
 class DBHelper {
-  static Future<sql.Database> database() async {
-    final dbPath = await sql.getDatabasesPath();
-    return sql.openDatabase(path.join(dbPath, "stereo.db"),
-        onCreate: (db, version) {
-      return db.execute('''
-       CREATE TABLE allSongs(
-         id TEXT PRIMARY KEY,
-         title TEXT,
-         artist TEXT,
-         album TEXT,
-         albumArtist TEXT,
-         albumArt BLOB,
-         dateAdded TEXT,
-         year TEXT,
-         duration TEXT
-       ) 
-      ''');
-    }, version: 1);
+  static addItem(String boxName, PlayList playList, List<String> paths) {
+    var box = Hive.box<PlayList>(boxName);
+    var savedPlayList = box.get(playList.toString());
+    savedPlayList.paths.addAll(paths);
+    box.put(playList.toString(), savedPlayList);
   }
 
-  static Future<void> insert(String table, Map<String, dynamic> data) async {
-    final db = await DBHelper.database();
-    db.insert(table, data, conflictAlgorithm: sql.ConflictAlgorithm.replace);
-  }
-
-  static Future<List<Map<String, dynamic>>> getData(String table) async {
-    final db = await DBHelper.database();
-    return db.query(table);
+  static createItem(String boxName, String playListName, [List<String> paths]) {
+    var box = Hive.box<PlayList>(boxName);
+    var playList = PlayList()
+      ..name = playListName
+      ..paths = paths;
+    box.put(playList.toString(), playList);
   }
 }

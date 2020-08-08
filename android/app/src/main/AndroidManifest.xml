@@ -12,6 +12,16 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="stereo_beats_main"
         android:icon="@mipmap/ic_launcher">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.stereo_beats_main.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+        </provider>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

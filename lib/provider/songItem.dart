@@ -140,12 +140,11 @@ class SongProvider with ChangeNotifier {
     const platform = MethodChannel("stereo.beats/metadata");
     _queue.forEach((path) async {
       _songs.removeWhere((song) => song.path == path);
-      var value = await platform.invokeMethod("deleteFile", {
+      await platform.invokeMethod("deleteFile", {
         "path": path,
       });
-      print(value);
     });
-    notifyListeners();
+    removeFromFavourites();
   }
 
   Future<void> shareFile() async {
