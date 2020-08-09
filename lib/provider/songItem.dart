@@ -148,6 +148,12 @@ class SongProvider with ChangeNotifier {
     prefs.setStringList("favourites", _favourites);
   }
 
+  void addToFavourites() {
+    _favourites.addAll(_queue);
+    notifyListeners();
+    prefs.setStringList("favourites", _favourites);
+  }
+
   Future<void> deleteSongs() async {
     const platform = MethodChannel("stereo.beats/metadata");
     _queue.forEach((path) async {

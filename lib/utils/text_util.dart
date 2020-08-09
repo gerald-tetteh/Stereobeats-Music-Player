@@ -34,4 +34,8 @@ class TextUtil {
     fontFamily: "Grenze",
     fontSize: TextUtil.small,
   );
+  static const TextStyle addPageHeadings = TextStyle(
+    fontFamily: "Grenze",
+    fontSize: TextUtil.xsmall,
+  );
 }
