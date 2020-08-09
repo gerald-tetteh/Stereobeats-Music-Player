@@ -4,13 +4,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../pages/add_to_page.dart';
+import '../components/toast.dart';
 import 'alert_dialog.dart';
 
 class BottomActionsBar extends StatelessWidget {
   BottomActionsBar({
     this.deleteFunction,
     this.scaffoldKey,
+    this.playListDelete,
   });
+  final void Function(String, List<String>) playListDelete;
   final void Function() deleteFunction;
   final GlobalKey<ScaffoldState> scaffoldKey;
   final _items = <BottomNavigationBarItem>[
@@ -35,6 +39,7 @@ class BottomActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
+    final fToast = FToast(scaffoldKey.currentContext);
     return BottomNavigationBar(
       onTap: (value) async {
         if (value == 0) {
@@ -43,32 +48,57 @@ class BottomActionsBar extends StatelessWidget {
             audioProvider.setShuffle(false);
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
+            songProvider.setKeysToNull();
+          }
+        } else if (value == 1) {
+          if (songProvider.queueNotNull()) {
+            var result =
+                await Navigator.of(context).pushNamed(AddToPage.routeName);
+            if (result) {
+              fToast.showToast(
+                child: ToastComponent(
+                  color: Colors.green[100],
+                  icon: Icons.check,
+                  message: "Item Added",
+                  iconColor: Colors.green[200],
+                ),
+                gravity: ToastGravity.BOTTOM,
+                toastDuration: Duration(seconds: 3),
+              );
+            }
           }
         } else if (value == 2) {
           if (songProvider.queueNotNull()) {
             await songProvider.shareFile();
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
+            songProvider.setKeysToNull();
           }
         } else if (value == 3) {
-          if (songProvider.queueNotNull()) {
-            await showDialog(
+          if (songProvider.queueNotNull() || songProvider.keysNotNull()) {
+            var value = await showDialog<bool>(
               barrierDismissible: false,
               context: scaffoldKey.currentContext,
               builder: (context) {
                 return ConfirmDeleteAlert(
-                  deleteFunction: deleteFunction,
+                  playListDelete: playListDelete,
                   songProvider: songProvider,
+                  deleteFunction: deleteFunction,
                 );
               },
             );
-            Fluttertoast.showToast(
-              msg: "Item Removed",
-              backgroundColor: Colors.grey,
-              textColor: Colors.white,
-              gravity: ToastGravity.BOTTOM,
-              toastLength: Toast.LENGTH_SHORT,
-            );
+            if (value) {
+              fToast.showToast(
+                child: ToastComponent(
+                  color: Colors.green[100],
+                  icon: Icons.check,
+                  message: "Item(s) removed",
+                  iconColor: Colors.green[200],
+                ),
+                gravity: ToastGravity.BOTTOM,
+                toastDuration: Duration(seconds: 3),
+              );
+            }
           }
         }
       },

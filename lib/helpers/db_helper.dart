@@ -1,21 +1,36 @@
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/playlist.dart';
 
 class DBHelper {
-  static addItem(String boxName, PlayList playList, List<String> paths) {
+  static void addItem(String boxName, PlayList playList, List<String> paths) {
     var box = Hive.box<PlayList>(boxName);
     var savedPlayList = box.get(playList.toString());
-    savedPlayList.paths.addAll(paths);
+    if (savedPlayList.paths == null) {
+      savedPlayList.paths = paths;
+    } else {
+      savedPlayList.paths.addAll(paths);
+    }
     box.put(playList.toString(), savedPlayList);
   }
 
-  static createItem(String boxName, String playListName, [List<String> paths]) {
+  static void createItem(String boxName, String playListName,
+      [List<String> paths]) {
     var box = Hive.box<PlayList>(boxName);
     var playList = PlayList()
       ..name = playListName
       ..paths = paths;
     box.put(playList.toString(), playList);
+  }
+
+  static void deleteBox(String boxName, List<String> playListNames) {
+    var box = Hive.box<PlayList>(boxName);
+    box.deleteAll(playListNames);
+  }
+
+  static List<dynamic> getkeys(String boxName) {
+    var box = Hive.box<PlayList>(boxName);
+    return box.keys.toList();
   }
 }

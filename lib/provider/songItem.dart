@@ -1,7 +1,12 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/playlist.dart';
+import '../helpers/db_helper.dart';
 
 class SongItem {
   final String title;
@@ -33,9 +38,14 @@ class SongProvider with ChangeNotifier {
   List<SongItem> _songs = [];
   List<String> _favourites = [];
   List<String> _queue = [];
+  List<String> _playlistKey = [];
 
   List<SongItem> get songs {
     return [..._songs];
+  }
+
+  List<String> get keys {
+    return [..._playlistKey];
   }
 
   List<SongItem> get favourites {
@@ -48,6 +58,10 @@ class SongProvider with ChangeNotifier {
       selectedSongs.add(_songs.firstWhere((song) => song.path == path));
     });
     return selectedSongs;
+  }
+
+  List<String> get queuePath {
+    return [..._queue];
   }
 
   SharedPreferences prefs;
@@ -157,18 +171,37 @@ class SongProvider with ChangeNotifier {
     return false;
   }
 
-  void addToQueue(String path) {
-    _queue.add(path);
-  }
+  void addToQueue(String path) => _queue.add(path);
+  void addToKeys(String name) => _playlistKey.add(name);
 
-  void removeFromQueue(String path) {
-    _queue.remove(path);
+  void addListToQueue(List<String> paths) => _queue.addAll(paths);
+
+  void removeFromQueue(String path) => _queue.remove(path);
+  void removeFromKeys(String name) => _playlistKey.add(name);
+
+  void removeListFromQueue(List<String> paths) {
+    List<String> toRemove = [];
+    _queue.forEach((item) {
+      if (paths.contains(item)) {
+        toRemove.add(item);
+      }
+    });
+    _queue.removeWhere((item) => toRemove.contains(item));
   }
 
   void setQueueToNull() => _queue = [];
+  void setKeysToNull() => _playlistKey = [];
 
   bool queueNotNull() => _queue.length > 0;
+  bool keysNotNull() => _playlistKey.length > 0;
 
   String getArtPath(String path) =>
       _songs.firstWhere((song) => song.path == path).artPath;
+
+  List<SongItem> playListSongs(List<String> paths) {
+    return _songs.where((song) => paths.contains(song.path)).toList();
+  }
+
+  void addToPlayList(PlayList playList) =>
+      DBHelper.addItem("playLists", playList, _queue);
 }

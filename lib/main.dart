@@ -8,6 +8,8 @@ import './pages/loading_screen.dart';
 import './pages/all_songs_page.dart';
 import './pages/favourites_page.dart';
 import './pages/playlist_page.dart';
+import './pages/add_to_page.dart';
+import './pages/add_to_playlist.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
 import './pages/play_page.dart';
@@ -36,7 +38,8 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        title: 'Stereobeats',
         theme: ThemeData(
           primaryColor: Color(0xff1565c0),
           accentColor: Colors.black,
@@ -59,6 +62,8 @@ class MyApp extends StatelessWidget {
           AllSongsScreen.routeName: (ctx) => AllSongsScreen(),
           FavouritesPage.routeName: (ctx) => FavouritesPage(),
           PlayListScreen.routeName: (ctx) => PlayListScreen(),
+          AddToPage.routeName: (ctx) => AddToPage(),
+          AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
         },
       ),
     );
