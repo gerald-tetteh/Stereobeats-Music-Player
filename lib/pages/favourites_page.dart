@@ -41,7 +41,12 @@ class FavouritesPage extends StatelessWidget {
             Icons.menu,
             size: TextUtil.medium,
           ),
-          onPressed: () => _scaffoldKey.currentState.openDrawer(),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+            songProvider.changeBottomBar(false);
+            songProvider.setQueueToNull();
+            songProvider.setKeysToNull();
+          },
         ),
         title: DefaultUtil.appName,
         elevation: 0,

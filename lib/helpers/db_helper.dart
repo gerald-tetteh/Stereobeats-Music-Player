@@ -33,4 +33,13 @@ class DBHelper {
     var box = Hive.box<PlayList>(boxName);
     return box.keys.toList();
   }
+
+  static void changeItemName(
+      String boxName, String playlistName, String newName) {
+    var box = Hive.box<PlayList>(boxName);
+    var oldPlaylist = box.get(playlistName);
+    box.delete(oldPlaylist.toString());
+    oldPlaylist.name = newName;
+    box.put(oldPlaylist.name, oldPlaylist);
+  }
 }

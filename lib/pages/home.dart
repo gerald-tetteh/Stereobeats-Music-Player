@@ -50,8 +50,9 @@ class HomeScreen extends StatelessWidget {
                               Icons.menu,
                               size: TextUtil.large,
                             ),
-                            onPressed: () =>
-                                _scaffoldkey.currentState.openDrawer(),
+                            onPressed: () {
+                              _scaffoldkey.currentState.openDrawer();
+                            },
                           ),
                           DefaultUtil.appName,
                           IconButton(

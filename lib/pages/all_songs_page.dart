@@ -20,6 +20,7 @@ class AllSongsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final provider = Provider.of<AudioPlayer>(context, listen: false);
+    final songProvider3 = Provider.of<SongProvider>(context, listen: false);
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
     final ItemScrollController itemScrollController = ItemScrollController();
     return Scaffold(
@@ -63,7 +64,12 @@ class AllSongsScreen extends StatelessWidget {
                           Icons.menu,
                           size: TextUtil.medium,
                         ),
-                        onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                        onPressed: () {
+                          songProvider3.changeBottomBar(false);
+                          songProvider3.setQueueToNull();
+                          songProvider3.setKeysToNull();
+                          _scaffoldKey.currentState.openDrawer();
+                        },
                       ),
                       Text(
                         "All Tracks",

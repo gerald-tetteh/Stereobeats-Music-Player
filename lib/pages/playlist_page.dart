@@ -18,6 +18,7 @@ class PlayListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final songProvider = Provider.of<SongProvider>(context, listen: false);
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: Consumer<SongProvider>(
@@ -26,6 +27,7 @@ class PlayListScreen extends StatelessWidget {
             child: BottomActionsBar(
               playListDelete: DBHelper.deleteBox,
               scaffoldKey: _scaffoldKey,
+              renameFunction: DBHelper.changeItemName,
             ),
             duration: Duration(milliseconds: 400),
             curve: Curves.easeIn,
@@ -41,7 +43,12 @@ class PlayListScreen extends StatelessWidget {
             Icons.menu,
             size: TextUtil.medium,
           ),
-          onPressed: () => _scaffoldKey.currentState.openDrawer(),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+            songProvider.changeBottomBar(false);
+            songProvider.setQueueToNull();
+            songProvider.setKeysToNull();
+          },
         ),
         title: DefaultUtil.appName,
         elevation: 0,
