@@ -38,4 +38,12 @@ class TextUtil {
     fontFamily: "Grenze",
     fontSize: TextUtil.xsmall,
   );
+  static const TextStyle emptyTitle = TextStyle(
+    fontSize: TextUtil.small,
+    fontWeight: FontWeight.w300,
+  );
+  static const TextStyle emptySubTitle = TextStyle(
+    fontSize: TextUtil.xsmall,
+    fontWeight: FontWeight.w300,
+  );
 }

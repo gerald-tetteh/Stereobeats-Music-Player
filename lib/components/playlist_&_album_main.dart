@@ -71,9 +71,8 @@ class PlayListAndAlbum extends StatelessWidget {
       builder: (context, Box<PlayList> box, child) {
         var playLists = box.values.toList() ?? [];
         if (playLists == null || playLists.length == 0) {
-          return Center(
-            child: Text("No PlayLists"),
-          );
+          return DefaultUtil.empty(
+              "No playlists yet..", "Click on blue icon (top right)");
         }
         return GestureDetector(
           onTap: () {

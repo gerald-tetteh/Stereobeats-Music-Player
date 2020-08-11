@@ -43,26 +43,32 @@ class AddToPlayListPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: songs.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: BuildCheckBox(
-              path: songs[index].path,
-            ),
-            title: Text(
-              DefaultUtil.checkNotNull(songs[index].title)
-                  ? songs[index].title
-                  : DefaultUtil.unknown,
-            ),
-            subtitle: Text(
-              DefaultUtil.checkNotNull(songs[index].artist)
-                  ? songs[index].artist
-                  : DefaultUtil.unknown,
-            ),
-          );
-        },
-      ),
+      body: songs != null && songs.length != 0
+          ? _buildSongList(songs)
+          : DefaultUtil.empty("No songs found..."),
+    );
+  }
+
+  ListView _buildSongList(List<SongItem> songs) {
+    return ListView.builder(
+      itemCount: songs.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: BuildCheckBox(
+            path: songs[index].path,
+          ),
+          title: Text(
+            DefaultUtil.checkNotNull(songs[index].title)
+                ? songs[index].title
+                : DefaultUtil.unknown,
+          ),
+          subtitle: Text(
+            DefaultUtil.checkNotNull(songs[index].artist)
+                ? songs[index].artist
+                : DefaultUtil.unknown,
+          ),
+        );
+      },
     );
   }
 }

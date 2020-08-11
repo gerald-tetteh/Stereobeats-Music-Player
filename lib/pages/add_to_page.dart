@@ -53,6 +53,9 @@ class AddToPage extends StatelessWidget {
               valueListenable: Hive.box<PlayList>("playLists").listenable(),
               builder: (context, Box<PlayList> box, child) {
                 var playLists = box.values.toList() ?? [];
+                if (playLists == null || playLists.length < 1) {
+                  return Container();
+                }
                 return ListView.separated(
                   separatorBuilder: (context, index) =>
                       index != playLists.length - 1
