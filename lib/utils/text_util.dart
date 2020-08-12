@@ -7,6 +7,7 @@ class TextUtil {
   static const double small = 24;
   static const double medium = 30;
   static const double large = 35;
+  static const double xlarge = 45;
 
   static const TextStyle homeSongTitle = TextStyle(
     fontFamily: "Grenze",

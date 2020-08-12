@@ -16,10 +16,14 @@ class BottomActionsBar extends StatelessWidget {
     this.scaffoldKey,
     this.playListDelete,
     this.renameFunction,
+    this.playListDeleteSingle,
+    this.playlistName,
   });
   final void Function(String, List<String>) playListDelete;
+  final void Function(String, String, List<String>) playListDeleteSingle;
   final void Function(String, String, String) renameFunction;
   final void Function() deleteFunction;
+  final String playlistName;
   final GlobalKey<ScaffoldState> scaffoldKey;
   List<BottomNavigationBarItem> _items = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
@@ -95,6 +99,8 @@ class BottomActionsBar extends StatelessWidget {
                   playListDelete: playListDelete,
                   songProvider: songProvider,
                   deleteFunction: deleteFunction,
+                  playListDeleteSingle: playListDeleteSingle,
+                  playlistName: playlistName,
                 );
               },
             );

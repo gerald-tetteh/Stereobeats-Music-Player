@@ -24,6 +24,14 @@ class DBHelper {
     box.put(playList.toString(), playList);
   }
 
+  static void deleteItem(
+      String boxName, String playlistName, List<String> paths) {
+    var box = Hive.box<PlayList>(boxName);
+    var playList = box.get(playlistName);
+    playList.paths.removeWhere((path) => paths.contains(path));
+    box.put(playlistName, playList);
+  }
+
   static void deleteBox(String boxName, List<String> playListNames) {
     var box = Hive.box<PlayList>(boxName);
     box.deleteAll(playListNames);

@@ -680,7 +680,7 @@ packages:
     source: hosted
     version: "2.1.0-nullsafety.2"
   watcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: watcher
       url: "https://pub.dartlang.org"

@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
       body: songs != null && songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
               mediaQuery, songProvider)
-          : DefaultUtil.empty("No songs found..."),
+          : Center(child: DefaultUtil.empty("No songs found...")),
     );
   }
 

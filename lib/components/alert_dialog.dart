@@ -8,11 +8,15 @@ class ConfirmDeleteAlert extends StatelessWidget {
     this.deleteFunction,
     @required this.songProvider,
     this.playListDelete,
+    this.playListDeleteSingle,
+    this.playlistName,
   }) : super(key: key);
 
   final void Function() deleteFunction;
   final void Function(String, List<String>) playListDelete;
+  final void Function(String, String, List<String>) playListDeleteSingle;
   final SongProvider songProvider;
+  final String playlistName;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +33,9 @@ class ConfirmDeleteAlert extends StatelessWidget {
           onPressed: () {
             if (deleteFunction != null) {
               deleteFunction();
+            } else if (playListDeleteSingle != null) {
+              playListDeleteSingle(
+                  "playLists", playlistName, songProvider.queuePath);
             } else {
               playListDelete("playLists", songProvider.keys);
             }

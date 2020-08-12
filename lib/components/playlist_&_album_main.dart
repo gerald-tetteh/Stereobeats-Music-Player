@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:stereo_beats_main/provider/music_player.dart';
 
 import '../models/playlist.dart';
 import '../provider/songItem.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
+import '../pages/playlist_detail_screen.dart';
 import '../extensions/string_extension.dart';
+
 import 'build_check_box.dart';
 
 enum Purpose { PlayListView, AlbumView }
@@ -32,7 +33,6 @@ class PlayListAndAlbum extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
-    final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     if (purpose == Purpose.PlayListView) {
       return Column(
         children: [
@@ -54,7 +54,7 @@ class PlayListAndAlbum extends StatelessWidget {
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: _buildPlayList(mediaQuery, songProvider, audioProvider),
+              child: _buildPlayList(mediaQuery, songProvider),
             ),
           ),
         ],
@@ -64,8 +64,7 @@ class PlayListAndAlbum extends StatelessWidget {
     }
   }
 
-  Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider,
-      AudioPlayer audioProvider) {
+  Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider) {
     return ValueListenableBuilder(
       valueListenable: Hive.box<PlayList>("playLists").listenable(),
       builder: (context, Box<PlayList> box, child) {
@@ -96,19 +95,26 @@ class PlayListAndAlbum extends StatelessWidget {
               return Material(
                 color: ColorUtil.white,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    songProvider.changeBottomBar(false);
+                    songProvider.setQueueToNull();
+                    songProvider.setKeysToNull();
+                    Navigator.of(context).pushNamed(
+                        PlaylistDetailScreen.routeName,
+                        arguments: playLists[index]);
+                  },
                   onLongPress: () => songProvider.changeBottomBar(true),
-                  child: GestureDetector(
-                    onTap: songProvider.showBottonBar
-                        ? () {
-                            songProvider.changeBottomBar(false);
-                            songProvider.setQueueToNull();
-                            songProvider.setKeysToNull();
-                          }
-                        : null,
-                    child: Consumer<SongProvider>(
-                      builder: (context, songProvider1, child) {
-                        return ListTile(
+                  child: Consumer<SongProvider>(
+                    builder: (context, songProvider1, child) {
+                      return GestureDetector(
+                        onTap: songProvider1.showBottonBar
+                            ? () {
+                                songProvider.changeBottomBar(false);
+                                songProvider.setQueueToNull();
+                                songProvider.setKeysToNull();
+                              }
+                            : null,
+                        child: ListTile(
                           leading: songProvider1.showBottonBar
                               ? BuildCheckBox(
                                   paths: playLists[index].paths ?? [],
@@ -128,9 +134,9 @@ class PlayListAndAlbum extends StatelessWidget {
                                 ? FileImage(File(artPath))
                                 : AssetImage(DefaultUtil.defaultImage),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
