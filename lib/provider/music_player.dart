@@ -205,4 +205,9 @@ class AudioPlayer with ChangeNotifier {
     audioPlayer.shuffle = value;
     await prefs.setBool("shuffle", audioPlayer.shuffle);
   }
+
+  void setMiniPlayer(bool value) {
+    miniPlayerPresent = value;
+    notifyListeners();
+  }
 }

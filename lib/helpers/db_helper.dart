@@ -1,34 +1,53 @@
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
+import 'package:hive/hive.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+
+import '../models/playlist.dart';
 
 class DBHelper {
-  static Future<sql.Database> database() async {
-    final dbPath = await sql.getDatabasesPath();
-    return sql.openDatabase(path.join(dbPath, "stereo.db"),
-        onCreate: (db, version) {
-      return db.execute('''
-       CREATE TABLE allSongs(
-         id TEXT PRIMARY KEY,
-         title TEXT,
-         artist TEXT,
-         album TEXT,
-         albumArtist TEXT,
-         albumArt BLOB,
-         dateAdded TEXT,
-         year TEXT,
-         duration TEXT
-       ) 
-      ''');
-    }, version: 1);
+  static void addItem(String boxName, PlayList playList, List<String> paths) {
+    var box = Hive.box<PlayList>(boxName);
+    var savedPlayList = box.get(playList.toString());
+    if (savedPlayList.paths == null) {
+      savedPlayList.paths = paths;
+    } else {
+      savedPlayList.paths.addAll(paths);
+    }
+    box.put(playList.toString(), savedPlayList);
   }
 
-  static Future<void> insert(String table, Map<String, dynamic> data) async {
-    final db = await DBHelper.database();
-    db.insert(table, data, conflictAlgorithm: sql.ConflictAlgorithm.replace);
+  static void createItem(String boxName, String playListName,
+      [List<String> paths]) {
+    var box = Hive.box<PlayList>(boxName);
+    var playList = PlayList()
+      ..name = playListName
+      ..paths = paths;
+    box.put(playList.toString(), playList);
   }
 
-  static Future<List<Map<String, dynamic>>> getData(String table) async {
-    final db = await DBHelper.database();
-    return db.query(table);
+  static void deleteItem(
+      String boxName, String playlistName, List<String> paths) {
+    var box = Hive.box<PlayList>(boxName);
+    var playList = box.get(playlistName);
+    playList.paths.removeWhere((path) => paths.contains(path));
+    box.put(playlistName, playList);
+  }
+
+  static void deleteBox(String boxName, List<String> playListNames) {
+    var box = Hive.box<PlayList>(boxName);
+    box.deleteAll(playListNames);
+  }
+
+  static List<dynamic> getkeys(String boxName) {
+    var box = Hive.box<PlayList>(boxName);
+    return box.keys.toList();
+  }
+
+  static void changeItemName(
+      String boxName, String playlistName, String newName) {
+    var box = Hive.box<PlayList>(boxName);
+    var oldPlaylist = box.get(playlistName);
+    box.delete(oldPlaylist.toString());
+    oldPlaylist.name = newName;
+    box.put(oldPlaylist.name, oldPlaylist);
   }
 }

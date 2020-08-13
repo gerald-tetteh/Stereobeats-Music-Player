@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:stereo_beats_main/utils/text_util.dart';
+import 'package:empty_widget/empty_widget.dart';
+
+import 'text_util.dart';
 
 class DefaultUtil {
   static const defaultImage = "assets/images/default-image.png";
   static const unknown = "Unknown";
+  static const emptyImage = "assets/images/empty_image.webp";
 
   static bool checkNotNull(String value) {
     if (value != null && value.length != 0) {
@@ -40,4 +43,14 @@ class DefaultUtil {
       ],
     ),
   );
+
+  static Widget empty(String text, [String subText]) {
+    return EmptyListWidget(
+      image: DefaultUtil.emptyImage,
+      title: text,
+      titleTextStyle: TextUtil.emptyTitle,
+      subTitle: subText,
+      subtitleTextStyle: TextUtil.emptySubTitle,
+    );
+  }
 }

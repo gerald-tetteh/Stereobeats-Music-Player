@@ -41,7 +41,12 @@ class FavouritesPage extends StatelessWidget {
             Icons.menu,
             size: TextUtil.medium,
           ),
-          onPressed: () => _scaffoldKey.currentState.openDrawer(),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+            songProvider.changeBottomBar(false);
+            songProvider.setQueueToNull();
+            songProvider.setKeysToNull();
+          },
         ),
         title: DefaultUtil.appName,
         elevation: 0,
@@ -69,30 +74,10 @@ class FavouritesPage extends StatelessWidget {
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      QuickPlayOptions(
-                        mediaQuery: mediaQuery,
-                        provider: audioProvider,
-                        songs: favouriteSongs,
-                      ),
-                      Expanded(
-                        child: FavouriteSongListView(
-                          favouriteSongs: favouriteSongs,
-                          audioProvider: audioProvider,
-                        ),
-                      ),
-                      Consumer<AudioPlayer>(
-                        builder: (context, value, child) =>
-                            value.miniPlayerPresent
-                                ? SizedBox(
-                                    height: 73,
-                                  )
-                                : Container(),
-                      ),
-                    ],
-                  ),
+                  child: favouriteSongs != null && favouriteSongs.length != 0
+                      ? _buildSongColumn(
+                          mediaQuery, audioProvider, favouriteSongs)
+                      : DefaultUtil.empty("No favourites yet..."),
                 ),
               ),
             ],
@@ -109,6 +94,33 @@ class FavouritesPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Column _buildSongColumn(MediaQueryData mediaQuery, AudioPlayer audioProvider,
+      List<SongItem> favouriteSongs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        QuickPlayOptions(
+          mediaQuery: mediaQuery,
+          provider: audioProvider,
+          songs: favouriteSongs,
+        ),
+        Expanded(
+          child: FavouriteSongListView(
+            favouriteSongs: favouriteSongs,
+            audioProvider: audioProvider,
+          ),
+        ),
+        Consumer<AudioPlayer>(
+          builder: (context, value, child) => value.miniPlayerPresent
+              ? SizedBox(
+                  height: 73,
+                )
+              : Container(),
+        ),
+      ],
     );
   }
 }

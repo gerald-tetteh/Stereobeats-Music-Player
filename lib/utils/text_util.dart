@@ -7,6 +7,7 @@ class TextUtil {
   static const double small = 24;
   static const double medium = 30;
   static const double large = 35;
+  static const double xlarge = 45;
 
   static const TextStyle homeSongTitle = TextStyle(
     fontFamily: "Grenze",
@@ -29,5 +30,21 @@ class TextUtil {
     fontSize: TextUtil.small,
     color: Color(0xff212121),
     fontFamily: "Grenze",
+  );
+  static const TextStyle playlistCardTitle = TextStyle(
+    fontFamily: "Grenze",
+    fontSize: TextUtil.small,
+  );
+  static const TextStyle addPageHeadings = TextStyle(
+    fontFamily: "Grenze",
+    fontSize: TextUtil.xsmall,
+  );
+  static const TextStyle emptyTitle = TextStyle(
+    fontSize: TextUtil.small,
+    fontWeight: FontWeight.w300,
+  );
+  static const TextStyle emptySubTitle = TextStyle(
+    fontSize: TextUtil.xsmall,
+    fontWeight: FontWeight.w300,
   );
 }

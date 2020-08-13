@@ -7,10 +7,14 @@ import '../provider/songItem.dart';
 class BuildCheckBox extends StatefulWidget {
   const BuildCheckBox({
     Key key,
-    @required this.path,
+    this.path,
+    this.paths,
+    this.playListName,
   }) : super(key: key);
 
   final String path;
+  final List<String> paths;
+  final String playListName;
   @override
   _BuildCheckBoxState createState() => _BuildCheckBoxState();
 }
@@ -19,14 +23,28 @@ class _BuildCheckBoxState extends State<BuildCheckBox> {
   bool _boxValue = false;
   @override
   Widget build(BuildContext context) {
-    final songProvider = Provider.of<SongProvider>(context);
+    final songProvider = Provider.of<SongProvider>(context, listen: false);
     return CircularCheckBox(
       value: _boxValue,
       onChanged: (value) {
         if (value) {
-          songProvider.addToQueue(widget.path);
+          if (widget.playListName != null) {
+            songProvider.addToKeys(widget.playListName);
+          }
+          if (widget.path != null) {
+            songProvider.addToQueue(widget.path);
+          } else {
+            songProvider.addListToQueue(widget.paths);
+          }
         } else {
-          songProvider.removeFromQueue(widget.path);
+          if (widget.playListName != null) {
+            songProvider.removeFromKeys(widget.playListName);
+          }
+          if (widget.path != null) {
+            songProvider.removeFromQueue(widget.path);
+          } else {
+            songProvider.removeListFromQueue(widget.paths);
+          }
         }
         setState(() => _boxValue = value);
       },

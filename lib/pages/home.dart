@@ -6,6 +6,7 @@ import 'package:stereo_beats_main/utils/default_util.dart';
 import '../provider/songItem.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
+import '../utils/default_util.dart';
 import '../components/image_builder.dart';
 import '../components/mini_player.dart';
 import '../components/custum_list_view.dart';
@@ -13,112 +14,145 @@ import '../components/customDrawer.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home-page";
+  final _scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    var songProvider = Provider.of<SongProvider>(context, listen: false);
+    var songProvider = Provider.of<SongProvider>(context);
     List<SongItem> songs = songProvider.songsFraction;
     final mediaQuery = MediaQuery.of(context);
     var viewHeight = mediaQuery.size.height;
     var extraPadding = mediaQuery.padding.top;
     var actualHeight = viewHeight - extraPadding;
     var _isLandScape = mediaQuery.orientation == Orientation.landscape;
-    GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey();
     return Scaffold(
       key: _scaffoldkey,
       drawer: CustomDrawer(),
       backgroundColor: Color(0xffeeeeee),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Column(
-            children: [
-              Container(
-                height: _isLandScape ? actualHeight * 0.4 : actualHeight * 0.5,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ImageBuilder(path: songs[0].artPath),
-                    Positioned(
-                      right: 10,
-                      top: 15,
-                      left: 10,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.menu,
-                              size: TextUtil.large,
-                            ),
-                            onPressed: () =>
-                                _scaffoldkey.currentState.openDrawer(),
+      body: songs != null && songs.length != 0
+          ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
+              mediaQuery, songProvider)
+          : _noSongs(context),
+    );
+  }
+
+  Column _noSongs(BuildContext ctx) {
+    return Column(
+      children: [
+        AppBar(
+          title: DefaultUtil.appName,
+          iconTheme: Theme.of(ctx).iconTheme,
+          leading: IconButton(
+            icon: Icon(
+              Icons.menu,
+              size: TextUtil.medium,
+            ),
+            onPressed: () => _scaffoldkey.currentState.openDrawer(),
+          ),
+        ),
+        Center(child: DefaultUtil.empty("No songs found...")),
+      ],
+    );
+  }
+
+  Stack _buildSongList(
+      bool _isLandScape,
+      double actualHeight,
+      List<SongItem> songs,
+      GlobalKey<ScaffoldState> _scaffoldkey,
+      MediaQueryData mediaQuery,
+      SongProvider songProvider) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Column(
+          children: [
+            Container(
+              height: _isLandScape ? actualHeight * 0.4 : actualHeight * 0.5,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ImageBuilder(path: songs[0].artPath),
+                  Positioned(
+                    right: 10,
+                    top: 15,
+                    left: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.menu,
+                            size: TextUtil.large,
                           ),
-                          DefaultUtil.appName,
-                          IconButton(
-                            icon: Icon(
-                              Icons.search,
-                              size: TextUtil.large,
-                            ),
-                            onPressed: () {},
+                          onPressed: () {
+                            _scaffoldkey.currentState.openDrawer();
+                          },
+                        ),
+                        DefaultUtil.appName,
+                        IconButton(
+                          icon: Icon(
+                            Icons.search,
+                            size: TextUtil.large,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    left: 0,
+                    bottom: 0,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: mediaQuery.size.width * 0.6,
+                      ),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(40),
+                        ),
+                        color: Color(0xffeeeeee),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            songs[0].title,
+                            style: TextUtil.homeSongTitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.fade,
+                          ),
+                          Text(
+                            songs[0].artist,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
                           ),
                         ],
                       ),
                     ),
-                    Positioned(
-                      left: 0,
-                      bottom: 0,
-                      child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: mediaQuery.size.width * 0.6,
-                        ),
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(40),
-                          ),
-                          color: Color(0xffeeeeee),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              songs[0].title,
-                              style: TextUtil.homeSongTitle,
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                            ),
-                            Text(
-                              songs[0].artist,
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: _BottomSheet(
-                  songs: songs,
-                  songProvider: songProvider,
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 10,
-            left: 3,
-            right: 3,
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
             ),
+            Expanded(
+              child: _BottomSheet(
+                songs: songs,
+                songProvider: songProvider,
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 10,
+          left: 3,
+          right: 3,
+          child: Consumer<AudioPlayer>(
+            builder: (context, value, child) => value.miniPlayerPresent
+                ? MiniPlayer(mediaQuery: mediaQuery)
+                : Container(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -181,12 +215,12 @@ class _BottomSheet extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   addAutomaticKeepAlives: true,
-                  itemCount: songs.length - 1,
+                  itemCount: songs.length,
                   itemBuilder: (context, index) {
                     return CustomListView(
-                      song: songs[index + 1],
+                      song: songs[index],
                       songs: songs,
-                      index: index + 1,
+                      index: index,
                     );
                   },
                 ),

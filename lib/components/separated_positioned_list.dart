@@ -24,6 +24,13 @@ class SeparatedPositionedList extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     final songs = songProvider.songs;
+    return songs != null && songs.length != 0
+        ? _buildSongList(songProvider, songs, audioProvider)
+        : DefaultUtil.empty("No songs found...");
+  }
+
+  GestureDetector _buildSongList(SongProvider songProvider,
+      List<SongItem> songs, AudioPlayer audioProvider) {
     return GestureDetector(
       onTap: () {
         songProvider.changeBottomBar(false);

@@ -20,6 +20,7 @@ class AllSongsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final provider = Provider.of<AudioPlayer>(context, listen: false);
+    final songProvider3 = Provider.of<SongProvider>(context, listen: false);
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
     final ItemScrollController itemScrollController = ItemScrollController();
     return Scaffold(
@@ -63,7 +64,12 @@ class AllSongsScreen extends StatelessWidget {
                           Icons.menu,
                           size: TextUtil.medium,
                         ),
-                        onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                        onPressed: () {
+                          songProvider3.changeBottomBar(false);
+                          songProvider3.setQueueToNull();
+                          songProvider3.setKeysToNull();
+                          _scaffoldKey.currentState.openDrawer();
+                        },
                       ),
                       Text(
                         "All Tracks",
@@ -98,22 +104,11 @@ class AllSongsScreen extends StatelessWidget {
                       children: [
                         Consumer<SongProvider>(
                           builder: (context, songProvider2, child) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(12, 8, 8, 8),
-                                  child: CustomDropDown(songProvider2.songs,
-                                      itemScrollController),
-                                ),
-                                QuickPlayOptions(
-                                  mediaQuery: mediaQuery,
-                                  provider: provider,
-                                  songs: songProvider2.songs,
-                                ),
-                              ],
-                            );
+                            return songProvider2.songs != null &&
+                                    songProvider2.songs.length != 0
+                                ? _topActionsBar(songProvider2,
+                                    itemScrollController, mediaQuery, provider)
+                                : Container();
                           },
                         ),
                         Expanded(
@@ -149,6 +144,27 @@ class AllSongsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Row _topActionsBar(
+      SongProvider songProvider2,
+      ItemScrollController itemScrollController,
+      MediaQueryData mediaQuery,
+      AudioPlayer provider) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+          child: CustomDropDown(songProvider2.songs, itemScrollController),
+        ),
+        QuickPlayOptions(
+          mediaQuery: mediaQuery,
+          provider: provider,
+          songs: songProvider2.songs,
+        ),
+      ],
     );
   }
 }
