@@ -6,6 +6,7 @@ import '../pages/home.dart';
 import '../pages/all_songs_page.dart';
 import '../pages/favourites_page.dart';
 import '../pages/playlist_page.dart';
+import '../pages/album_page.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -73,13 +74,14 @@ class CustomDrawer extends StatelessWidget {
                   .pushReplacementNamed(PlayListScreen.routeName),
             ),
             CustomListTile(
-              text: "Artist",
-              iconData: Icons.person_outline,
-              function: () {},
-            ),
-            CustomListTile(
               text: "Album",
               iconData: Icons.album,
+              function: () => Navigator.of(context)
+                  .pushReplacementNamed(AlbumListScreen.routeName),
+            ),
+            CustomListTile(
+              text: "Artist",
+              iconData: Icons.person_outline,
               function: () {},
             ),
           ],

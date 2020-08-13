@@ -3,7 +3,7 @@ import '../provider/songItem.dart';
 class Album {
   String name;
   String albumArtist;
-  List<SongItem> songs;
+  List<SongItem> paths;
 
   @override
   String toString() => this.name;
@@ -11,6 +11,6 @@ class Album {
   Album({
     this.name,
     this.albumArtist,
-    this.songs,
+    this.paths,
   });
 }

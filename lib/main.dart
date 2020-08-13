@@ -11,6 +11,7 @@ import './pages/playlist_page.dart';
 import './pages/add_to_page.dart';
 import './pages/add_to_playlist.dart';
 import './pages/playlist_detail_screen.dart';
+import './pages/album_page.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
 import './pages/play_page.dart';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
           PlaylistDetailScreen.routeName: (ctx) => PlaylistDetailScreen(),
           AddToPage.routeName: (ctx) => AddToPage(),
           AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
+          AlbumListScreen.routeName: (ctx) => AlbumListScreen(),
         },
       ),
     );

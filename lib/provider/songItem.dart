@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/playlist.dart';
+import '../models/album.dart';
 import '../helpers/db_helper.dart';
 
 class SongItem {
@@ -129,17 +130,38 @@ class SongProvider with ChangeNotifier {
   }
 
   Map<String, List<SongItem>> getAlbumsFromSongs() {
-    Map<String, List<SongItem>> albums = {};
+    Map<String, List<SongItem>> albums = Map();
     _songs.map((song) {
-      if (albums.containsKey(song.album)) {
-        var songList = albums[song.album];
+      var albumName = song.album ?? "Unknown";
+      if (albums.containsKey(albumName)) {
+        var songList = albums[albumName];
         songList.add(song);
-        albums[song.album] = songList;
+        albums[albumName] = songList;
       } else {
-        albums[song.album] = [song];
+        albums[albumName] = [song];
       }
-    });
+    }).toList();
     return albums;
+  }
+
+  List<Album> changeToAlbum(Map<String, List<SongItem>> albums) {
+    return albums
+        .map(
+          (key, value) {
+            return MapEntry(
+              key,
+              Album(
+                albumArtist: value
+                    .firstWhere((song) => song.albumArtist != null)
+                    .albumArtist,
+                name: key,
+                paths: value,
+              ),
+            );
+          },
+        )
+        .values
+        .toList();
   }
 
   Future<void> toggleFavourite(String path) async {
