@@ -128,6 +128,20 @@ class SongProvider with ChangeNotifier {
     _favourites = prefs.getStringList("favourites") ?? [];
   }
 
+  Map<String, List<SongItem>> getAlbumsFromSongs() {
+    Map<String, List<SongItem>> albums = {};
+    _songs.map((song) {
+      if (albums.containsKey(song.album)) {
+        var songList = albums[song.album];
+        songList.add(song);
+        albums[song.album] = songList;
+      } else {
+        albums[song.album] = [song];
+      }
+    });
+    return albums;
+  }
+
   Future<void> toggleFavourite(String path) async {
     if (!_favourites.contains(path)) {
       _favourites.add(path);

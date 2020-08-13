@@ -14,6 +14,7 @@ import '../components/customDrawer.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home-page";
+  final _scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     var songProvider = Provider.of<SongProvider>(context);
@@ -23,7 +24,6 @@ class HomeScreen extends StatelessWidget {
     var extraPadding = mediaQuery.padding.top;
     var actualHeight = viewHeight - extraPadding;
     var _isLandScape = mediaQuery.orientation == Orientation.landscape;
-    GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey();
     return Scaffold(
       key: _scaffoldkey,
       drawer: CustomDrawer(),
@@ -31,7 +31,26 @@ class HomeScreen extends StatelessWidget {
       body: songs != null && songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
               mediaQuery, songProvider)
-          : Center(child: DefaultUtil.empty("No songs found...")),
+          : _noSongs(context),
+    );
+  }
+
+  Column _noSongs(BuildContext ctx) {
+    return Column(
+      children: [
+        AppBar(
+          title: DefaultUtil.appName,
+          iconTheme: Theme.of(ctx).iconTheme,
+          leading: IconButton(
+            icon: Icon(
+              Icons.menu,
+              size: TextUtil.medium,
+            ),
+            onPressed: () => _scaffoldkey.currentState.openDrawer(),
+          ),
+        ),
+        Center(child: DefaultUtil.empty("No songs found...")),
+      ],
     );
   }
 

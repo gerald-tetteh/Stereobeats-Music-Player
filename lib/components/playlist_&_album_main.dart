@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../models/playlist.dart';
 import '../provider/songItem.dart';
+import '../provider/music_player.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -33,6 +34,13 @@ class PlayListAndAlbum extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    var extraSpace = Consumer<AudioPlayer>(
+      builder: (context, value, child) => value.miniPlayerPresent
+          ? SizedBox(
+              height: 73,
+            )
+          : Container(),
+    );
     if (purpose == Purpose.PlayListView) {
       return Column(
         children: [
@@ -57,6 +65,7 @@ class PlayListAndAlbum extends StatelessWidget {
               child: _buildPlayList(mediaQuery, songProvider),
             ),
           ),
+          extraSpace,
         ],
       );
     } else {

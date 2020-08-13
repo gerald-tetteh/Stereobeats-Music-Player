@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 import '../models/playlist.dart';
+import '../models/album.dart';
 import '../provider/songItem.dart';
 import '../extensions/string_extension.dart';
 import '../provider/music_player.dart';
@@ -16,20 +19,33 @@ import 'build_check_box.dart';
 
 class PlaylistAndAlbumDetail extends StatelessWidget {
   final PlayList playlist;
-  PlaylistAndAlbumDetail(this.playlist);
+  final Album album;
+  PlaylistAndAlbumDetail({this.playlist, this.album});
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
-    final songs = songProvider.playListSongs(playlist.paths ?? []);
     var viewHeight = mediaQuery.size.height;
     var extraPadding = mediaQuery.padding.top;
     var actualHeight = viewHeight - extraPadding;
-    return songs != null && songs.length != 0
-        ? _buildList(actualHeight, context, playlist.toString(), songs,
-            songProvider, audioProvider)
-        : _noSongs(context);
+    var isLandScape = mediaQuery.orientation == Orientation.landscape;
+    if (playlist == null) {
+      return _noSongs(context);
+    } else {
+      return ValueListenableBuilder(
+        valueListenable: Hive.box<PlayList>("playLists")
+            .listenable(keys: [playlist.toString()]),
+        builder: (context, Box<PlayList> box, child) {
+          final currentPlayList = box.get(playlist.toString());
+          final songs = songProvider.playListSongs(currentPlayList.paths ?? []);
+          return songs != null && songs.length != 0
+              ? _buildList(actualHeight, context, playlist.toString(), songs,
+                  songProvider, audioProvider, isLandScape)
+              : _noSongs(context);
+        },
+      );
+    }
   }
 
   Widget _noSongs(BuildContext context) {
@@ -47,14 +63,15 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
   Column _buildList(
       double actualHeight,
       BuildContext context,
-      String playlistName,
+      String objectName,
       List<SongItem> songs,
       SongProvider provider,
-      AudioPlayer player) {
+      AudioPlayer player,
+      bool isLandScape) {
     return Column(
       children: [
         Container(
-          height: actualHeight * 0.25,
+          height: isLandScape ? actualHeight * 0.45 : actualHeight * 0.25,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -96,7 +113,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        playlistName.trim().capitalize(),
+                        objectName.trim().capitalize(),
                         style: TextUtil.playlistCardTitle.copyWith(
                           color: Colors.white,
                         ),
@@ -107,7 +124,10 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                           Icons.play_circle_fill_outlined,
                           size: TextUtil.xlarge,
                         ),
-                        onPressed: () => print("hello"),
+                        onPressed: () {
+                          player.setShuffle(false);
+                          player.play(songs);
+                        },
                       ),
                     ],
                   ),
@@ -122,6 +142,13 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
             songProvider: provider,
             player: player,
           ),
+        ),
+        Consumer<AudioPlayer>(
+          builder: (context, value, child) => value.miniPlayerPresent
+              ? SizedBox(
+                  height: 73,
+                )
+              : Container(),
         ),
       ],
     );
