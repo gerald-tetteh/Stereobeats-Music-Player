@@ -47,4 +47,7 @@ class TextUtil {
     fontSize: TextUtil.xsmall,
     fontWeight: FontWeight.w300,
   );
+  static const TextStyle albumTitle = TextStyle(
+    fontSize: TextUtil.xsmall,
+  );
 }

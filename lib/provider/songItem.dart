@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
 import '../helpers/db_helper.dart';
+import '../utils/default_util.dart';
 
 class SongItem {
   final String title;
@@ -152,7 +153,9 @@ class SongProvider with ChangeNotifier {
               key,
               Album(
                 albumArtist: value
-                    .firstWhere((song) => song.albumArtist != null)
+                    .firstWhere((song) => song.albumArtist != null,
+                        orElse: () =>
+                            SongItem(albumArtist: DefaultUtil.unknown))
                     .albumArtist,
                 name: key,
                 paths: value,
@@ -161,7 +164,9 @@ class SongProvider with ChangeNotifier {
           },
         )
         .values
-        .toList();
+        .toList()
+          ..sort((a, b) =>
+              a.name?.toUpperCase()?.compareTo(b.name?.toUpperCase()));
   }
 
   Future<void> toggleFavourite(String path) async {

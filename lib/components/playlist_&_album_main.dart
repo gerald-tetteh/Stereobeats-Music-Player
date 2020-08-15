@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:stereo_beats_main/pages/album_detail_screen.dart';
 
 import '../models/playlist.dart';
 import '../models/album.dart';
@@ -31,6 +32,20 @@ class PlayListAndAlbum extends StatelessWidget {
     this.albums,
     this.purpose,
   });
+
+  List<String> albumPaths(Album album) {
+    return album.paths.map((song) => song.path).toList();
+  }
+
+  String getArtPath(Album album) {
+    return album.paths
+        .firstWhere(
+          (song) => song.artPath != null && song.artPath.length != 0,
+          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+        )
+        .artPath;
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -113,7 +128,7 @@ class PlayListAndAlbum extends StatelessWidget {
               isPlaylist) {
             artPath = songProvider.getArtPath(items[index].paths[0]);
           } else if (!isPlaylist) {
-            artPath = null;
+            artPath = getArtPath(items[index]);
           }
           return Material(
             color: ColorUtil.white,
@@ -122,8 +137,11 @@ class PlayListAndAlbum extends StatelessWidget {
                 songProvider.changeBottomBar(false);
                 songProvider.setQueueToNull();
                 songProvider.setKeysToNull();
-                // Navigator.of(context).pushNamed(PlaylistDetailScreen.routeName,
-                //     arguments: items[index]);
+                Navigator.of(context).pushNamed(
+                    isPlaylist
+                        ? PlaylistDetailScreen.routeName
+                        : AlbumDetailScreen.routeName,
+                    arguments: items[index]);
               },
               onLongPress: () => songProvider.changeBottomBar(true),
               child: Consumer<SongProvider>(
@@ -144,12 +162,16 @@ class PlayListAndAlbum extends StatelessWidget {
                                   playListName: items[index].toString(),
                                 )
                               : BuildCheckBox(
-                                  paths: [],
+                                  paths: albumPaths(items[index]),
                                 )
                           : null,
                       title: Text(
-                        items[index].toString().trim().capitalize(),
-                        style: TextUtil.playlistCardTitle,
+                        items[index].toString(),
+                        style: isPlaylist
+                            ? TextUtil.playlistCardTitle
+                            : TextUtil.albumTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
                         "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}",

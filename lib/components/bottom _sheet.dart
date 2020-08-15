@@ -75,8 +75,6 @@ class _ModalSheetState extends State<ModalSheet> {
                 ),
                 onPressed: () {
                   _submit(songProvider);
-                  Navigator.of(context).pop();
-                  songProvider.setQueueToNull();
                 },
               ),
             ],
@@ -93,5 +91,7 @@ class _ModalSheetState extends State<ModalSheet> {
     widget.formKey.currentState.save();
     print(provider.queuePath);
     DBHelper.createItem("playLists", playListName, provider.queuePath);
+    Navigator.of(context).pop();
+    provider.setQueueToNull();
   }
 }

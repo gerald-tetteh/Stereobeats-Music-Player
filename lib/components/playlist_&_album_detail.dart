@@ -24,15 +24,19 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final songProvider = Provider.of<SongProvider>(context, listen: false);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     var viewHeight = mediaQuery.size.height;
     var extraPadding = mediaQuery.padding.top;
     var actualHeight = viewHeight - extraPadding;
     var isLandScape = mediaQuery.orientation == Orientation.landscape;
     if (playlist == null) {
-      return _noSongs(context);
+      final songProvider = Provider.of<SongProvider>(context);
+      return album.paths != null && album.paths.length != 0
+          ? _buildList(actualHeight, context, album.toString(), album.paths,
+              songProvider, audioProvider, isLandScape, mediaQuery)
+          : _noSongs(context);
     } else {
+      final songProvider = Provider.of<SongProvider>(context, listen: false);
       return ValueListenableBuilder(
         valueListenable: Hive.box<PlayList>("playLists")
             .listenable(keys: [playlist.toString()]),
@@ -41,7 +45,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
           final songs = songProvider.playListSongs(currentPlayList.paths ?? []);
           return songs != null && songs.length != 0
               ? _buildList(actualHeight, context, playlist.toString(), songs,
-                  songProvider, audioProvider, isLandScape)
+                  songProvider, audioProvider, isLandScape, mediaQuery)
               : _noSongs(context);
         },
       );
@@ -67,7 +71,8 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
       List<SongItem> songs,
       SongProvider provider,
       AudioPlayer player,
-      bool isLandScape) {
+      bool isLandScape,
+      MediaQueryData mediaQuery) {
     return Column(
       children: [
         Container(
@@ -112,10 +117,15 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                   color: Colors.black54,
                   child: Row(
                     children: [
-                      Text(
-                        objectName.trim().capitalize(),
-                        style: TextUtil.playlistCardTitle.copyWith(
-                          color: Colors.white,
+                      Container(
+                        width: mediaQuery.size.width * 3 / 4,
+                        child: Text(
+                          objectName.trim().capitalize(),
+                          style: TextUtil.playlistCardTitle.copyWith(
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Spacer(),
