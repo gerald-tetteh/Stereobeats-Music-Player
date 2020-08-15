@@ -50,4 +50,10 @@ class TextUtil {
   static const TextStyle albumTitle = TextStyle(
     fontSize: TextUtil.xsmall,
   );
+  static const TextStyle subHeading = TextStyle(
+    fontSize: TextUtil.small,
+    color: ColorUtil.dark,
+    fontWeight: FontWeight.w300,
+    letterSpacing: 2,
+  );
 }

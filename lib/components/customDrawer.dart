@@ -7,6 +7,7 @@ import '../pages/all_songs_page.dart';
 import '../pages/favourites_page.dart';
 import '../pages/playlist_page.dart';
 import '../pages/album_page.dart';
+import '../pages/artist_page.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -82,7 +83,8 @@ class CustomDrawer extends StatelessWidget {
             CustomListTile(
               text: "Artist",
               iconData: Icons.person_outline,
-              function: () {},
+              function: () => Navigator.of(context)
+                  .pushReplacementNamed(ArtistScreen.routeName),
             ),
           ],
         ),

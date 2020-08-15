@@ -169,6 +169,49 @@ class SongProvider with ChangeNotifier {
               a.name?.toUpperCase()?.compareTo(b.name?.toUpperCase()));
   }
 
+  List<SongItem> getArtistSongs(String artist) {
+    return _songs.where((song) => song.artist == artist).toList();
+  }
+
+  List<Album> getArtistAlbums(String albumArtist) {
+    Map<String, Album> albums = Map();
+    _songs.map((song) {
+      if ((song.albumArtist ?? DefaultUtil.unknown) == albumArtist) {
+        if (song.album != null && song.album.length != 0) {
+          if (albums.keys.contains(song.album)) {
+            albums[song.album].paths.add(song);
+          } else {
+            albums[song.album] = Album(
+              albumArtist: song.albumArtist,
+              name: song.album,
+              paths: [song],
+            );
+          }
+        }
+      }
+    }).toList();
+    return albums.values.toList();
+  }
+
+  List<String> artists() {
+    return _songs
+        .map((song) => song.artist ?? DefaultUtil.unknown)
+        .toSet()
+        .toList()
+          ..sort((a, b) => a?.toUpperCase()?.compareTo(b?.toUpperCase()));
+  }
+
+  String artistCoverArt(String artist) {
+    return _songs
+        .firstWhere(
+            (song) =>
+                song.artist == artist &&
+                song.artPath != null &&
+                song.artPath.length != 0,
+            orElse: () => SongItem(artPath: DefaultUtil.defaultImage))
+        .artPath;
+  }
+
   Future<void> toggleFavourite(String path) async {
     if (!_favourites.contains(path)) {
       _favourites.add(path);

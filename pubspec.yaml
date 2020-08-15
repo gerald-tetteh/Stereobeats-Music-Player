@@ -29,6 +29,7 @@ dependencies:
   font_awesome_flutter: ^8.8.1
   carousel_slider: ^2.2.1
   scrollable_positioned_list: ^0.1.7
+  draggable_scrollbar: ^0.0.4
   circular_check_box: ^1.0.2
   fluttertoast: ^7.0.2
   hive: ^1.4.2

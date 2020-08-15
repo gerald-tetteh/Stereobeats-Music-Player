@@ -1,8 +1,19 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ *  AddoDevelop
+ * Email: addodevelop@gmail.com
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+// lib file imports
 import './pages/home.dart';
 import './pages/loading_screen.dart';
 import './pages/all_songs_page.dart';
@@ -12,6 +23,8 @@ import './pages/add_to_page.dart';
 import './pages/add_to_playlist.dart';
 import './pages/playlist_detail_screen.dart';
 import './pages/album_page.dart';
+import './pages/artist_page.dart';
+import './pages/artist_view_page.dart';
 import './pages/album_detail_screen.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
@@ -22,6 +35,7 @@ import './models/playlist.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // * initialize hive db and open db's.
   await Hive.initFlutter("steroBeatsData");
   Hive.registerAdapter(PlayListAdapter());
   await Hive.openBox<PlayList>("playLists");
@@ -31,6 +45,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // * initializing providers.
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -70,6 +85,8 @@ class MyApp extends StatelessWidget {
           AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
           AlbumListScreen.routeName: (ctx) => AlbumListScreen(),
           AlbumDetailScreen.routeName: (ctx) => AlbumDetailScreen(),
+          ArtistScreen.routeName: (ctx) => ArtistScreen(),
+          ArtistViewScreen.routeName: (ctx) => ArtistViewScreen(),
         },
       ),
     );

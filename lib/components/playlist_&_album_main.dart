@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:stereo_beats_main/pages/album_detail_screen.dart';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
+import '../pages/album_detail_screen.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
 import '../provider/songItem.dart';
@@ -14,7 +15,6 @@ import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 import '../pages/playlist_detail_screen.dart';
-import '../extensions/string_extension.dart';
 
 import 'build_check_box.dart';
 
@@ -107,88 +107,94 @@ class PlayListAndAlbum extends StatelessWidget {
       MediaQueryData mediaQuery,
       bool isPlaylist = true,
       List<dynamic> items}) {
+    final _scrollController = ScrollController();
     return GestureDetector(
       onTap: () {
         songProvider.changeBottomBar(false);
         songProvider.setQueueToNull();
         songProvider.setKeysToNull();
       },
-      child: ListView.separated(
-        separatorBuilder: (context, index) => index != items.length - 1
-            ? Divider(
-                indent: mediaQuery.size.width * (1 / 4),
-              )
-            : "",
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          String artPath;
+      child: DraggableScrollbar.semicircle(
+        controller: _scrollController,
+        child: ListView.separated(
+          controller: _scrollController,
+          separatorBuilder: (context, index) => index != items.length - 1
+              ? Divider(
+                  indent: mediaQuery.size.width * (1 / 4),
+                )
+              : "",
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            String artPath;
 
-          if (items[index].paths != null &&
-              items[index].paths.length > 0 &&
-              isPlaylist) {
-            artPath = songProvider.getArtPath(items[index].paths[0]);
-          } else if (!isPlaylist) {
-            artPath = getArtPath(items[index]);
-          }
-          return Material(
-            color: ColorUtil.white,
-            child: InkWell(
-              onTap: () {
-                songProvider.changeBottomBar(false);
-                songProvider.setQueueToNull();
-                songProvider.setKeysToNull();
-                Navigator.of(context).pushNamed(
-                    isPlaylist
-                        ? PlaylistDetailScreen.routeName
-                        : AlbumDetailScreen.routeName,
-                    arguments: items[index]);
-              },
-              onLongPress: () => songProvider.changeBottomBar(true),
-              child: Consumer<SongProvider>(
-                builder: (context, songProvider1, child) {
-                  return GestureDetector(
-                    onTap: songProvider1.showBottonBar
-                        ? () {
-                            songProvider.changeBottomBar(false);
-                            songProvider.setQueueToNull();
-                            songProvider.setKeysToNull();
-                          }
-                        : null,
-                    child: ListTile(
-                      leading: songProvider1.showBottonBar
-                          ? isPlaylist
-                              ? BuildCheckBox(
-                                  paths: items[index].paths ?? [],
-                                  playListName: items[index].toString(),
-                                )
-                              : BuildCheckBox(
-                                  paths: albumPaths(items[index]),
-                                )
-                          : null,
-                      title: Text(
-                        items[index].toString(),
-                        style: isPlaylist
-                            ? TextUtil.playlistCardTitle
-                            : TextUtil.albumTitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}",
-                      ),
-                      trailing: CircleAvatar(
-                        backgroundColor: Colors.black,
-                        backgroundImage: artPath != null && artPath.length != 0
-                            ? FileImage(File(artPath))
-                            : AssetImage(DefaultUtil.defaultImage),
-                      ),
-                    ),
-                  );
+            if (items[index].paths != null &&
+                items[index].paths.length > 0 &&
+                isPlaylist) {
+              artPath = songProvider.getArtPath(items[index].paths[0]);
+            } else if (!isPlaylist) {
+              artPath = getArtPath(items[index]);
+            }
+            return Material(
+              color: ColorUtil.white,
+              child: InkWell(
+                onTap: () {
+                  songProvider.changeBottomBar(false);
+                  songProvider.setQueueToNull();
+                  songProvider.setKeysToNull();
+                  Navigator.of(context).pushNamed(
+                      isPlaylist
+                          ? PlaylistDetailScreen.routeName
+                          : AlbumDetailScreen.routeName,
+                      arguments: items[index]);
                 },
+                onLongPress: () => songProvider.changeBottomBar(true),
+                child: Consumer<SongProvider>(
+                  builder: (context, songProvider1, child) {
+                    return GestureDetector(
+                      onTap: songProvider1.showBottonBar
+                          ? () {
+                              songProvider.changeBottomBar(false);
+                              songProvider.setQueueToNull();
+                              songProvider.setKeysToNull();
+                            }
+                          : null,
+                      child: ListTile(
+                        leading: songProvider1.showBottonBar
+                            ? isPlaylist
+                                ? BuildCheckBox(
+                                    paths: items[index].paths ?? [],
+                                    playListName: items[index].toString(),
+                                  )
+                                : BuildCheckBox(
+                                    paths: albumPaths(items[index]),
+                                  )
+                            : null,
+                        title: Text(
+                          items[index].toString(),
+                          style: isPlaylist
+                              ? TextUtil.playlistCardTitle
+                              : TextUtil.albumTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}",
+                        ),
+                        trailing: CircleAvatar(
+                          backgroundColor: Colors.black,
+                          backgroundImage:
+                              artPath != null && artPath.length != 0
+                                  ? FileImage(File(artPath))
+                                  : AssetImage(DefaultUtil.defaultImage),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
