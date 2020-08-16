@@ -17,9 +17,11 @@ import 'package:provider/provider.dart';
 import '../components/customDrawer.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
+import '../provider/music_player.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
+import '../components/mini_player.dart';
 
 import 'artist_view_page.dart';
 
@@ -72,80 +74,126 @@ class ArtistScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          ListTile(
-            title: Text(
-              "Artists",
-              style: TextUtil.pageHeadingTop,
-            ),
-            subtitle: Text("for you"),
-            trailing: Icon(Icons.person_outline_sharp),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: ColorUtil.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-              ),
-              padding: const EdgeInsets.all(10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                child: DraggableScrollbar.semicircle(
-                  child: ListView.separated(
-                    controller: _scrollController,
-                    itemCount: artists.length,
-                    separatorBuilder: (context, index) =>
-                        index != artists.length - 1
-                            ? Divider(
-                                indent: mediaQuery.size.width * (1 / 4),
-                              )
-                            : "",
-                    itemBuilder: (context, index) {
-                      final coverArt =
-                          songProvider.artistCoverArt(artists[index]);
-                      return Material(
-                        color: ColorUtil.white,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                                ArtistViewScreen.routeName,
-                                arguments: {
-                                  "artist": artists[index],
-                                  "art": coverArt,
-                                });
-                          },
-                          child: ListTile(
-                            title: Text(
-                              artists[index],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: CircleAvatar(
-                              backgroundColor: ColorUtil.dark,
-                              backgroundImage:
-                                  DefaultUtil.checkNotAsset(coverArt)
-                                      ? FileImage(File(coverArt))
-                                      : AssetImage(coverArt),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  controller: _scrollController,
-                ),
-              ),
+          BuildColumn(
+              scrollController: _scrollController,
+              artists: artists,
+              mediaQuery: mediaQuery,
+              songProvider: songProvider),
+          Positioned(
+            bottom: 10,
+            left: 3,
+            right: 3,
+            child: Consumer<AudioPlayer>(
+              builder: (context, value, child) => value.miniPlayerPresent
+                  ? MiniPlayer(mediaQuery: mediaQuery)
+                  : Container(),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class BuildColumn extends StatelessWidget {
+  const BuildColumn({
+    Key key,
+    @required ScrollController scrollController,
+    @required this.artists,
+    @required this.mediaQuery,
+    @required this.songProvider,
+  })  : _scrollController = scrollController,
+        super(key: key);
+
+  final ScrollController _scrollController;
+  final List<String> artists;
+  final MediaQueryData mediaQuery;
+  final SongProvider songProvider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          title: Text(
+            "Artists",
+            style: TextUtil.pageHeadingTop,
+          ),
+          subtitle: Text("for you"),
+          trailing: Icon(Icons.person_outline_sharp),
+        ),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorUtil.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+              child: DraggableScrollbar.semicircle(
+                child: ListView.separated(
+                  controller: _scrollController,
+                  itemCount: artists.length,
+                  separatorBuilder: (context, index) =>
+                      index != artists.length - 1
+                          ? Divider(
+                              indent: mediaQuery.size.width * (1 / 4),
+                            )
+                          : "",
+                  itemBuilder: (context, index) {
+                    final coverArt =
+                        songProvider.artistCoverArt(artists[index]);
+                    return Material(
+                      color: ColorUtil.white,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                              ArtistViewScreen.routeName,
+                              arguments: {
+                                "artist": artists[index],
+                                "art": coverArt,
+                              });
+                        },
+                        child: ListTile(
+                          title: Text(
+                            artists[index],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: CircleAvatar(
+                            backgroundColor: ColorUtil.dark,
+                            backgroundImage: DefaultUtil.checkNotAsset(coverArt)
+                                ? FileImage(File(coverArt))
+                                : AssetImage(coverArt),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                controller: _scrollController,
+              ),
+            ),
+          ),
+        ),
+        Consumer<AudioPlayer>(
+          builder: (context, value, child) => value.miniPlayerPresent
+              ? SizedBox(
+                  height: 73,
+                )
+              : Container(),
+        ),
+      ],
     );
   }
 }

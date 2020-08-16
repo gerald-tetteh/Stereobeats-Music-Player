@@ -56,4 +56,7 @@ class TextUtil {
     fontWeight: FontWeight.w300,
     letterSpacing: 2,
   );
+  static const TextStyle artistAppBar = TextStyle(
+    color: ColorUtil.dark,
+  );
 }
