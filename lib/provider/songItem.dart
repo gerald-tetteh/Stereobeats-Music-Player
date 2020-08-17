@@ -241,11 +241,19 @@ class SongProvider with ChangeNotifier {
   }
 
   List<String> searchArtist(String text) {
-    return _songs.map((song) {
-      if (song.artist != null && song.artist.contains(text)) {
-        return song.artist;
-      }
-    }).toList();
+    var artist = List<String>();
+    _songs
+        .map((song) {
+          if (song.artist != null &&
+              song.artist.toLowerCase().contains(text.toLowerCase())) {
+            if (!artist.contains(song.artist)) {
+              artist.add(song.artist);
+            }
+          }
+        })
+        .toSet()
+        .toList();
+    return artist;
   }
 
   Map<String, List<dynamic>> search(String text) {

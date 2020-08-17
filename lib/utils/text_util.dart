@@ -65,4 +65,7 @@ class TextUtil {
   static const TextStyle loadingScreenCredit2 = TextStyle(
     color: Colors.blue,
   );
+  static const TextStyle search = TextStyle(
+    color: Colors.white,
+  );
 }
