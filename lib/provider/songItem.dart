@@ -212,6 +212,50 @@ class SongProvider with ChangeNotifier {
         .artPath;
   }
 
+  List<SongItem> searchSongs(String text) {
+    return _songs
+        .where((song) =>
+            song.title != null &&
+            song.title.toLowerCase().contains(text.toLowerCase()))
+        .toList();
+  }
+
+  List<Album> searchAlbums(String text) {
+    Map<String, Album> albums = Map();
+    _songs.map((song) {
+      if ((song.album ?? DefaultUtil.unknown).contains(text)) {
+        if (song.album != null && song.album.length != 0) {
+          if (albums.keys.contains(song.album)) {
+            albums[song.album].paths.add(song);
+          } else {
+            albums[song.album] = Album(
+              albumArtist: song.albumArtist ?? DefaultUtil.unknown,
+              name: song.album,
+              paths: [song],
+            );
+          }
+        }
+      }
+    }).toList();
+    return albums.values.toList();
+  }
+
+  List<String> searchArtist(String text) {
+    return _songs.map((song) {
+      if (song.artist != null && song.artist.contains(text)) {
+        return song.artist;
+      }
+    }).toList();
+  }
+
+  Map<String, List<dynamic>> search(String text) {
+    var results = Map<String, List<dynamic>>();
+    results["songs"] = searchSongs(text);
+    results["albums"] = searchAlbums(text);
+    results["artists"] = searchArtist(text);
+    return results;
+  }
+
   Future<void> toggleFavourite(String path) async {
     if (!_favourites.contains(path)) {
       _favourites.add(path);

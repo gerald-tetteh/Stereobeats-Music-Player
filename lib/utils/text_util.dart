@@ -59,4 +59,10 @@ class TextUtil {
   static const TextStyle artistAppBar = TextStyle(
     color: ColorUtil.dark,
   );
+  static const TextStyle loadingScreenCredit1 = TextStyle(
+    color: Colors.red,
+  );
+  static const TextStyle loadingScreenCredit2 = TextStyle(
+    color: Colors.blue,
+  );
 }

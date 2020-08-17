@@ -26,6 +26,7 @@ import './pages/album_page.dart';
 import './pages/artist_page.dart';
 import './pages/artist_view_page.dart';
 import './pages/album_detail_screen.dart';
+import './pages/search_view.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
 import './pages/play_page.dart';
@@ -87,6 +88,7 @@ class MyApp extends StatelessWidget {
           AlbumDetailScreen.routeName: (ctx) => AlbumDetailScreen(),
           ArtistScreen.routeName: (ctx) => ArtistScreen(),
           ArtistViewScreen.routeName: (ctx) => ArtistViewScreen(),
+          SearchView.routeName: (ctx) => SearchView(),
         },
       ),
     );

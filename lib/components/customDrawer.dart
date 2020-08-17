@@ -75,16 +75,21 @@ class CustomDrawer extends StatelessWidget {
                   .pushReplacementNamed(PlayListScreen.routeName),
             ),
             CustomListTile(
-              text: "Album",
+              text: "Albums",
               iconData: Icons.album,
               function: () => Navigator.of(context)
                   .pushReplacementNamed(AlbumListScreen.routeName),
             ),
             CustomListTile(
-              text: "Artist",
+              text: "Artists",
               iconData: Icons.person_outline,
               function: () => Navigator.of(context)
                   .pushReplacementNamed(ArtistScreen.routeName),
+            ),
+            CustomListTile(
+              text: "Equalizer",
+              iconData: Icons.equalizer_rounded,
+              function: () {},
             ),
           ],
         ),

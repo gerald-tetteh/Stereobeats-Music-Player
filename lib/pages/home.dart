@@ -12,6 +12,8 @@ import '../components/mini_player.dart';
 import '../components/custum_list_view.dart';
 import '../components/customDrawer.dart';
 
+import 'search_view.dart';
+
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home-page";
   final _scaffoldkey = GlobalKey<ScaffoldState>();
@@ -30,7 +32,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Color(0xffeeeeee),
       body: songs != null && songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
-              mediaQuery, songProvider)
+              mediaQuery, songProvider, context)
           : _noSongs(context),
     );
   }
@@ -60,7 +62,8 @@ class HomeScreen extends StatelessWidget {
       List<SongItem> songs,
       GlobalKey<ScaffoldState> _scaffoldkey,
       MediaQueryData mediaQuery,
-      SongProvider songProvider) {
+      SongProvider songProvider,
+      BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -94,7 +97,8 @@ class HomeScreen extends StatelessWidget {
                             Icons.search,
                             size: TextUtil.large,
                           ),
-                          onPressed: () {},
+                          onPressed: () => Navigator.of(context)
+                              .pushNamed(SearchView.routeName),
                         ),
                       ],
                     ),

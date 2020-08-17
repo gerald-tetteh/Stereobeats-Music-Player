@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../provider/music_player.dart';
 import '../provider/songItem.dart';
 import 'home.dart';
+import '../utils/default_util.dart';
+import '../utils/text_util.dart';
 
 class LoadingScreen extends StatelessWidget {
   @override
@@ -17,8 +19,25 @@ class LoadingScreen extends StatelessWidget {
           songProvider.prefs;
       Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
     });
-    return Center(
-      child: CircularProgressIndicator(),
+    return Scaffold(
+      backgroundColor: Colors.black87,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Spacer(),
+          Center(child: DefaultUtil.appName),
+          Spacer(),
+          Text(
+            "created by".toLowerCase(),
+            style: TextUtil.loadingScreenCredit1,
+          ),
+          Text(
+            "addo develop".toUpperCase(),
+            style: TextUtil.loadingScreenCredit2,
+          ),
+        ],
+      ),
     );
   }
 }
