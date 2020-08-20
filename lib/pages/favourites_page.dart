@@ -12,6 +12,8 @@ import '../components/mini_player.dart';
 import '../components/favourite_songs_list_view.dart';
 import '../components/bottom_actions_bar.dart';
 
+import 'search_view.dart';
+
 class FavouritesPage extends StatelessWidget {
   static const routeName = "/favourites-page";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -51,6 +53,16 @@ class FavouritesPage extends StatelessWidget {
         title: DefaultUtil.appName,
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.search,
+              size: TextUtil.medium,
+            ),
+            onPressed: () =>
+                Navigator.of(context).pushNamed(SearchView.routeName),
+          ),
+        ],
       ),
       body: Stack(
         fit: StackFit.expand,

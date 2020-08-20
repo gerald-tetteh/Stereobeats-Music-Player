@@ -14,6 +14,8 @@ import '../components/quick_play_options.dart';
 import '../components/bottom_actions_bar.dart';
 import '../components/separated_positioned_list.dart';
 
+import 'search_view.dart';
+
 class AllSongsScreen extends StatelessWidget {
   static const routeName = "/all-songs";
   @override
@@ -80,7 +82,8 @@ class AllSongsScreen extends StatelessWidget {
                           Icons.search,
                           size: TextUtil.medium,
                         ),
-                        onPressed: () {},
+                        onPressed: () => Navigator.of(context)
+                            .pushNamed(SearchView.routeName),
                       ),
                     ],
                   ),

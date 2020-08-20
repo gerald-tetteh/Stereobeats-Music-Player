@@ -24,6 +24,7 @@ import '../utils/color_util.dart';
 import '../components/mini_player.dart';
 
 import 'artist_view_page.dart';
+import 'search_view.dart';
 
 class ArtistScreen extends StatelessWidget {
   static const routeName = "/artist-page";
@@ -70,30 +71,35 @@ class ArtistScreen extends StatelessWidget {
               Icons.search,
               size: TextUtil.medium,
             ),
-            onPressed: () {},
+            onPressed: () =>
+                Navigator.of(context).pushNamed(SearchView.routeName),
           ),
         ],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          BuildColumn(
-              scrollController: _scrollController,
-              artists: artists,
-              mediaQuery: mediaQuery,
-              songProvider: songProvider),
-          Positioned(
-            bottom: 10,
-            left: 3,
-            right: 3,
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
+      body: artists != null && artists.length != 0
+          ? Stack(
+              fit: StackFit.expand,
+              children: [
+                BuildColumn(
+                    scrollController: _scrollController,
+                    artists: artists,
+                    mediaQuery: mediaQuery,
+                    songProvider: songProvider),
+                Positioned(
+                  bottom: 10,
+                  left: 3,
+                  right: 3,
+                  child: Consumer<AudioPlayer>(
+                    builder: (context, value, child) => value.miniPlayerPresent
+                        ? MiniPlayer(mediaQuery: mediaQuery)
+                        : Container(),
+                  ),
+                ),
+              ],
+            )
+          : Center(
+              child: DefaultUtil.empty("Could not find any..."),
             ),
-          ),
-        ],
-      ),
     );
   }
 }

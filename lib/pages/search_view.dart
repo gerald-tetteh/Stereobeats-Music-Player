@@ -80,8 +80,8 @@ class _SearchViewState extends State<SearchView> {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.search_outlined),
-          onPressed: () {},
+          icon: Icon(Icons.cancel_outlined),
+          onPressed: () => _controller.clear(),
         ),
       ],
     );

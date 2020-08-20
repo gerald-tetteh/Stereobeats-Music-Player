@@ -46,6 +46,12 @@ class PlayListAndAlbum extends StatelessWidget {
         .artPath;
   }
 
+  void _resetActions(SongProvider songProvider) {
+    songProvider.changeBottomBar(false);
+    songProvider.setQueueToNull();
+    songProvider.setKeysToNull();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -76,6 +82,9 @@ class PlayListAndAlbum extends StatelessWidget {
 
   Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider) {
     final albumItems = songProvider.changeToAlbum(albums);
+    if (albumItems == null || albumItems.length == 0) {
+      return DefaultUtil.empty("No Albums yet..");
+    }
     return _listBuilder(
       songProvider: songProvider,
       isPlaylist: false,
@@ -137,15 +146,13 @@ class PlayListAndAlbum extends StatelessWidget {
             return Material(
               color: ColorUtil.white,
               child: InkWell(
-                onTap: () {
-                  songProvider.changeBottomBar(false);
-                  songProvider.setQueueToNull();
-                  songProvider.setKeysToNull();
-                  Navigator.of(context).pushNamed(
+                onTap: () async {
+                  await Navigator.of(context).pushNamed(
                       isPlaylist
                           ? PlaylistDetailScreen.routeName
                           : AlbumDetailScreen.routeName,
                       arguments: items[index]);
+                  _resetActions(songProvider);
                 },
                 onLongPress: () => songProvider.changeBottomBar(true),
                 child: Consumer<SongProvider>(

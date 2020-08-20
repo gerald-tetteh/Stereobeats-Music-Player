@@ -10,6 +10,8 @@ import '../provider/music_player.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 
+import 'search_view.dart';
+
 class AlbumListScreen extends StatelessWidget {
   static const routeName = "/album-screen";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -46,6 +48,13 @@ class AlbumListScreen extends StatelessWidget {
         title: DefaultUtil.appName,
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search, size: TextUtil.medium),
+            onPressed: () =>
+                Navigator.of(context).pushNamed(SearchView.routeName),
+          ),
+        ],
       ),
       drawer: CustomDrawer(),
       body: Stack(
