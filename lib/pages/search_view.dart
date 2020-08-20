@@ -18,7 +18,7 @@ import '../provider/music_player.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
-import '../components/box_image.dart';
+import '../components/build_check_box.dart';
 import '../models/album.dart';
 
 import 'artist_view_page.dart';
@@ -179,13 +179,17 @@ class _SearchViewState extends State<SearchView> {
                       "View More +${items.length - 10}",
                     ),
                   ),
-                  onPressed: () => Navigator.of(context).pushNamed(
-                    SearchViewMore.routeName,
-                    arguments: {
-                      "title": title,
-                      "widget": _listType(type, context, true),
-                    },
-                  ),
+                  onPressed: () async {
+                    await Navigator.of(context).pushNamed(
+                      SearchViewMore.routeName,
+                      arguments: {
+                        "title": title,
+                        "widget": _listType(type, context, true, true),
+                      },
+                    );
+                    songProvider.changeBottomBar(false);
+                    songProvider.setQueueToNull();
+                  },
                 ),
             ],
           ),
@@ -194,10 +198,11 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  Widget _listType(ListType type, BuildContext context, [bool all = false]) {
+  Widget _listType(ListType type, BuildContext context,
+      [bool all = false, bool selectable = false]) {
     switch (type) {
       case ListType.Songs:
-        return _buildSongList(context, all);
+        return _buildSongList(context, all, selectable);
         break;
       case ListType.Albums:
         return _buildAlbumList(context, all);
@@ -211,45 +216,77 @@ class _SearchViewState extends State<SearchView> {
     }
   }
 
-  Widget _buildSongList(BuildContext context, bool all) {
+  Widget _buildSongList(BuildContext context, bool all, bool selectable) {
     List<dynamic> songs;
     if (_songs.length > 10 && !all) {
       songs = _songs.sublist(0, 5);
     } else {
       songs = _songs;
     }
-    return Expanded(
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: songs.length,
-        itemBuilder: (context, index) {
-          return Material(
-            color: ColorUtil.white,
-            child: InkWell(
-              onTap: () => player.play(songs, index),
-              child: ListTile(
-                leading: BoxImage(
-                  path: songs[index] != null ? songs[index].artPath : null,
-                ),
-                title: Text(
-                  songs[index] != null
-                      ? songs[index].title
-                      : DefaultUtil.unknown,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  DefaultUtil.checkNotNull(songs[index]?.artist)
-                      ? songs[index].artist
-                      : DefaultUtil.unknown,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+    return Consumer<SongProvider>(
+      builder: (context, provider, child) {
+        return Expanded(
+          child: GestureDetector(
+            onTap: provider.showBottonBar && selectable
+                ? () {
+                    provider.changeBottomBar(false);
+                    provider.setQueueToNull();
+                  }
+                : null,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: songs.length,
+              itemBuilder: (context, index) {
+                return Material(
+                  color: ColorUtil.white,
+                  child: InkWell(
+                    onTap: () => player.play(songs, index),
+                    onLongPress: selectable
+                        ? () => provider.changeBottomBar(true)
+                        : null,
+                    child: GestureDetector(
+                      onTap: provider.showBottonBar && selectable
+                          ? () {
+                              provider.changeBottomBar(false);
+                              provider.setQueueToNull();
+                            }
+                          : null,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: ColorUtil.dark,
+                          backgroundImage:
+                              DefaultUtil.checkNotNull(songs[index].artPath)
+                                  ? FileImage(File(songs[index].artPath))
+                                  : AssetImage(DefaultUtil.defaultImage),
+                        ),
+                        title: Text(
+                          songs[index] != null
+                              ? songs[index].title
+                              : DefaultUtil.unknown,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          DefaultUtil.checkNotNull(songs[index]?.artist)
+                              ? songs[index].artist
+                              : DefaultUtil.unknown,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: provider.showBottonBar && selectable
+                            ? BuildCheckBox(
+                                path: songs[index].path,
+                              )
+                            : null,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
