@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../provider/songItem.dart';
+import '../provider/music_player.dart';
 import '../models/playlist.dart';
 import '../extensions/string_extension.dart';
 import '../utils/text_util.dart';
@@ -13,6 +14,7 @@ class AddToPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final player = Provider.of<AudioPlayer>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -39,6 +41,16 @@ class AddToPage extends StatelessWidget {
             title: Text("Favourites"),
             onTap: () {
               songProvider.addToFavourites();
+              songProvider.changeBottomBar(false);
+              songProvider.setQueueToNull();
+              Navigator.of(context).pop(true);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.queue_music_outlined),
+            title: Text("Queue"),
+            onTap: () {
+              player.addToQueue(songProvider.queue);
               songProvider.changeBottomBar(false);
               songProvider.setQueueToNull();
               Navigator.of(context).pop(true);

@@ -28,24 +28,24 @@ class BottomActionsBar extends StatelessWidget {
   List<BottomNavigationBarItem> _items = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
       icon: Icon(Icons.play_arrow),
-      title: Text("Play"),
+      label: "Play",
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.add),
-      title: Text("Add"),
+      label: "Add",
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.share),
-      title: Text("Share"),
+      label: "Share",
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.delete),
-      title: Text("Delete"),
+      label: "Delete",
     ),
   ];
   final renamePlaylistOption = BottomNavigationBarItem(
     icon: Icon(Icons.edit_outlined),
-    title: Text("Rename"),
+    label: "Rename",
   );
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,8 @@ class BottomActionsBar extends StatelessWidget {
         } else if (value == 1) {
           if (songProvider.queueNotNull()) {
             var result =
-                await Navigator.of(context).pushNamed(AddToPage.routeName);
+                await Navigator.of(context).pushNamed(AddToPage.routeName) ??
+                    false;
             if (result) {
               fToast.showToast(
                 child: ToastComponent(

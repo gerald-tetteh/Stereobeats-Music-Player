@@ -72,8 +72,7 @@ class AudioPlayer with ChangeNotifier {
   }
 
   List<Audio> audioSongs(List<SongItem> songs) {
-    songsQueue = songs;
-    return songsQueue
+    return songs
         .map(
           (song) => Audio.file(
             song.path,
@@ -95,11 +94,15 @@ class AudioPlayer with ChangeNotifier {
   }
 
   Future<void> play(List<SongItem> songs,
-      [int startIndex = 0, bool shuffle]) async {
+      [int startIndex = 0, bool shuffle, Duration seekValue]) async {
     audioPlayer.shuffle = shuffle ?? prefs.getBool("shuffle") ?? false;
+    songsQueue = songs;
     await audioPlayer.open(
       Playlist(audios: audioSongs(songs)),
       autoStart: false,
+      audioFocusStrategy: AudioFocusStrategy.request(
+        resumeAfterInterruption: true,
+      ),
       loopMode:
           checkLoopMode(prefs.getString("loopMode") ?? "") ?? LoopMode.none,
       showNotification: true,
@@ -120,6 +123,9 @@ class AudioPlayer with ChangeNotifier {
       audioPlayer.playlistPlayAtIndex(randomIndex);
     } else {
       await audioPlayer.playlistPlayAtIndex(startIndex);
+      if (seekValue != null) {
+        audioPlayer.seek(seekValue);
+      }
     }
     changePageController();
     miniPlayerPresent = true;
@@ -209,5 +215,14 @@ class AudioPlayer with ChangeNotifier {
   void setMiniPlayer(bool value) {
     miniPlayerPresent = value;
     notifyListeners();
+  }
+
+  void addToQueue(List<SongItem> songs) async {
+    songsQueue.addAll(songs);
+    var playlist = audioPlayer.playlist.audios;
+    playlist.addAll(audioSongs(songs));
+    var currentIndex = findCurrentIndex(playing.path);
+    var currentPosition = audioPlayer.currentPosition.value;
+    await play(songsQueue, currentIndex, null, currentPosition);
   }
 }
