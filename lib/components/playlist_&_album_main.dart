@@ -139,7 +139,8 @@ class PlayListAndAlbum extends StatelessWidget {
             if (items[index].paths != null &&
                 items[index].paths.length > 0 &&
                 isPlaylist) {
-              artPath = songProvider.getArtPath(items[index].paths[0]);
+              artPath = songProvider
+                  .getArtPath(items[index].paths.reversed.toList()[0]);
             } else if (!isPlaylist) {
               artPath = getArtPath(items[index]);
             }

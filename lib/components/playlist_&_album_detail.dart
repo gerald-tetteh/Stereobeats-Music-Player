@@ -42,7 +42,10 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
             .listenable(keys: [playlist.toString()]),
         builder: (context, Box<PlayList> box, child) {
           final currentPlayList = box.get(playlist.toString());
-          final songs = songProvider.playListSongs(currentPlayList.paths ?? []);
+          final songs = songProvider
+              .playListSongs(currentPlayList.paths ?? [])
+              .reversed
+              .toList();
           return songs != null && songs.length != 0
               ? _buildList(actualHeight, context, playlist.toString(), songs,
                   songProvider, audioProvider, isLandScape, mediaQuery)

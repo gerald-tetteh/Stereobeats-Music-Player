@@ -9,16 +9,19 @@ import '../utils/color_util.dart';
 import 'build_check_box.dart';
 
 import 'box_image.dart';
+import 'all_songs_popup.dart';
 
 class SeparatedPositionedList extends StatelessWidget {
   const SeparatedPositionedList({
     Key key,
     @required this.itemScrollController,
     @required this.mediaQuery,
+    @required this.scaffoldKey,
   }) : super(key: key);
 
   final ItemScrollController itemScrollController;
   final MediaQueryData mediaQuery;
+  final GlobalKey<ScaffoldState> scaffoldKey;
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context);
@@ -81,9 +84,11 @@ class SeparatedPositionedList extends StatelessWidget {
                   ),
                   trailing: songProvider.showBottonBar
                       ? BuildCheckBox(path: songs[index].path)
-                      : IconButton(
-                          icon: Icon(Icons.more_vert),
-                          onPressed: () {},
+                      : AllSongsPopUp(
+                          index: index,
+                          song: songs[index],
+                          songs: songs,
+                          scaffoldKey: scaffoldKey,
                         ),
                 ),
               ),

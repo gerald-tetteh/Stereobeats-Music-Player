@@ -118,6 +118,7 @@ class AllSongsScreen extends StatelessWidget {
                           child: SeparatedPositionedList(
                             itemScrollController: itemScrollController,
                             mediaQuery: mediaQuery,
+                            scaffoldKey: _scaffoldKey,
                           ),
                         ),
                         Consumer<AudioPlayer>(
