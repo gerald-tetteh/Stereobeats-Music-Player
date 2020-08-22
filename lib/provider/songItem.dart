@@ -76,6 +76,10 @@ class SongProvider with ChangeNotifier {
     return fraction.sublist(0, 21);
   }
 
+  SongItem getSongFromPath(String path) {
+    return _songs.firstWhere((song) => song.path == path);
+  }
+
   bool showBottonBar = false;
 
   void changeBottomBar(bool value) {

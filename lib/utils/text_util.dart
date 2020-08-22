@@ -68,4 +68,13 @@ class TextUtil {
   static const TextStyle search = TextStyle(
     color: Colors.white,
   );
+  static const TextStyle songDetailTitles = TextStyle(
+    fontWeight: FontWeight.w300,
+    fontSize: TextUtil.xsmall,
+  );
+  static const TextStyle submitForm = TextStyle(
+    fontSize: TextUtil.xsmall,
+    fontWeight: FontWeight.w300,
+    color: ColorUtil.dark,
+  );
 }

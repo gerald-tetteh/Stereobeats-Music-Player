@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../pages/add_to_page.dart';
+import '../pages/song_detail_page.dart';
 
 import 'alert_dialog.dart';
 import 'toast.dart';
@@ -94,6 +95,9 @@ class AllSongsPopUp extends StatelessWidget {
           } else {
             songProvider.setQueueToNull();
           }
+        } else if (value == _menuItems[3]) {
+          Navigator.of(context)
+              .pushNamed(SongDetailPage.routeName, arguments: song.path);
         }
       },
     );
