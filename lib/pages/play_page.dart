@@ -17,6 +17,8 @@ import '../components/play_page_controls.dart';
 import '../components/toast.dart';
 import '../helpers/api_keys.dart';
 
+import 'song_detail_page.dart';
+
 class PlayMusicScreen extends StatefulWidget {
   static const routeName = "/play-page";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -76,6 +78,19 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
             ),
             onPressed: () => Navigator.of(context).pop(),
           ),
+          actions: [
+            Consumer<AudioPlayer>(
+              builder: (context, player, child) {
+                var path = player.playing.path;
+                return IconButton(
+                  icon: Icon(Icons.notes),
+                  onPressed: () => Navigator.of(context)
+                      .pushNamed(SongDetailPage.routeName, arguments: path),
+                  tooltip: "Song Details",
+                );
+              },
+            ),
+          ],
         ),
         body:
             _isLandScape ? Row(children: contents) : Column(children: contents),
