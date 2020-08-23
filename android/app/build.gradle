@@ -51,6 +51,7 @@ android {
 
 dependencies {
     implementation 'com.nabinbhandari.android:permissions:3.8'
+    implementation files('lib/MyID3_for_Android.jar')
 }
 
 flutter {

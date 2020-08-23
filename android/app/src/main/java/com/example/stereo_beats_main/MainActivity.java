@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -14,6 +15,10 @@ import androidx.core.content.FileProvider;
 
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
+
+import org.cmc.music.metadata.MusicMetadata;
+import org.cmc.music.metadata.MusicMetadataSet;
+import org.cmc.music.myid3.MyID3;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -118,27 +123,6 @@ public class MainActivity extends FlutterActivity {
                     }
                 }
         );
-
-//        new MethodChannel(Objects.requireNonNull(getFlutterEngine()).getDartExecutor().getBinaryMessenger(),"stereo.beats/albumArt").setMethodCallHandler(
-//                (call, result) -> {
-//                    if(call.method.equals("getAlbumArt")){
-//                        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-//                        Permissions.check(getApplicationContext(), permissions, null, null, new PermissionHandler() {
-//                            @Override
-//                            public void onGranted() {
-//                                getAlbumArt(result);
-//                            }
-//
-//                            @Override
-//                            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-//                                result.error("1", "Permission denied", null);
-//                            }
-//                        });
-//                    } else {
-//                        result.error("error","error","error");
-//                    }
-//                }
-//        );
     }
 
     private void getDeviceAudio(MethodChannel.Result result) {
@@ -183,20 +167,33 @@ public class MainActivity extends FlutterActivity {
     }
 
     private void updateSongItem(MethodChannel.Result result, Map<String,String> songDetails) {
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String selection = MediaStore.Audio.Media._ID+ " = ?";
-        String[] selectionArgs = {songDetails.get("songId")};
-        ContentValues updateSong = new ContentValues();
-        updateSong.put(MediaStore.Audio.AudioColumns.TITLE,songDetails.get("title"));
-        updateSong.put(MediaStore.Audio.AudioColumns.ALBUM,songDetails.get("album"));
-        updateSong.put(MediaStore.Audio.ArtistColumns.ARTIST,songDetails.get("artist"));
-        updateSong.put(MediaStore.Audio.AlbumColumns.ARTIST,songDetails.get("albumArtist"));
-        updateSong.put(MediaStore.Audio.AudioColumns.YEAR,songDetails.get("year"));
-        int numberOfSongsUpdated = MainActivity.this.getContentResolver().update(uri,updateSong,selection,selectionArgs);
-        if (numberOfSongsUpdated >= 1) {
-            result.success(numberOfSongsUpdated);
-        } else {
-            result.success(false);
+        String filePath = songDetails.get("path");
+        assert filePath != null;
+        File audioFile = new File(filePath);
+        MusicMetadataSet audioFileSet;
+        try {
+            audioFileSet = new MyID3().read(audioFile);
+            MusicMetadata metadata = new MusicMetadata(songDetails.get("title"));
+            metadata.setSongTitle(songDetails.get("title"));
+            metadata.setArtist(songDetails.get("artist"));
+            metadata.setAlbum(songDetails.get("album"));
+            metadata.setYear(songDetails.get("year"));
+            metadata.setProducerArtist(songDetails.get("albumArtist"));
+            new MyID3().update(audioFile,audioFileSet,metadata);
+            MediaScannerConnection.scanFile(MainActivity.this, new String[]{filePath}, new String[]{"audio/*"},
+                    new MediaScannerConnection.MediaScannerConnectionClient() {
+                        @Override
+                        public void onMediaScannerConnected() {
+
+                        }
+
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                        }
+                    });
+            result.success(1);
+        } catch (Exception error) {
+            result.success(0);
         }
     }
 

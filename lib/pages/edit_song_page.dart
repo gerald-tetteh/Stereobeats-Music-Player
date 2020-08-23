@@ -31,9 +31,14 @@ class EditSongPage extends StatelessWidget {
       ),
       duration: Duration(minutes: 2),
     ));
-    await provider.updateSong(songDetails);
+    var result = await provider.updateSong(songDetails);
     _scaffoldKey.currentState.removeCurrentSnackBar();
-    Navigator.of(context).pop();
+    if (result == 1) {
+      Navigator.of(context).pop();
+    } else {
+      _scaffoldKey.currentState
+          .showSnackBar(SnackBar(content: Text("Could not write to file..")));
+    }
   }
 
   @override
@@ -58,6 +63,7 @@ class EditSongPage extends StatelessWidget {
       "year":
           DefaultUtil.checkNotNull(song.year) ? song.year : DefaultUtil.unknown,
       "songId": song.songId,
+      "path": song.path,
     };
     var appBar = AppBar(
       backgroundColor: ColorUtil.dark,

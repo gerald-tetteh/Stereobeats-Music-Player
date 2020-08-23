@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -138,9 +140,9 @@ class SongProvider with ChangeNotifier {
     _favourites = prefs.getStringList("favourites") ?? [];
   }
 
-  Future<void> updateSong(Map<String, String> songDetails) async {
+  Future<int> updateSong(Map<String, String> songDetails) async {
     const platform = MethodChannel("stereo.beats/metadata");
-    int numb = await platform.invokeMethod("updateSong", {
+    int result = await platform.invokeMethod("updateSong", {
       "songDetails": {
         "title": songDetails["title"],
         "artist": songDetails["artist"],
@@ -148,10 +150,30 @@ class SongProvider with ChangeNotifier {
         "albumArtist": songDetails["albumArtist"],
         "year": songDetails["year"],
         "songId": songDetails["songId"],
+        "path": songDetails["path"],
       }
     });
-    print(numb);
-    notifyListeners();
+    if (result == 1) {
+      var oldSong =
+          _songs.firstWhere((song) => song.path == songDetails["path"]);
+      var index = _songs.indexWhere((song) => song.path == songDetails["path"]);
+      var newSong = SongItem(
+        album: songDetails["album"],
+        title: songDetails["title"],
+        artist: songDetails["artist"],
+        albumArtist: songDetails["albumArtist"],
+        artPath: oldSong.artPath,
+        albumId: oldSong.albumId,
+        dateAdded: oldSong.dateAdded,
+        duration: oldSong.duration,
+        path: oldSong.path,
+        songId: oldSong.songId,
+        year: songDetails["year"],
+      );
+      _songs.replaceRange(index, index + 1, [newSong]);
+      notifyListeners();
+    }
+    return result;
   }
 
   Map<String, List<SongItem>> getAlbumsFromSongs() {
