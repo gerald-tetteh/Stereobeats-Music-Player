@@ -184,7 +184,7 @@ public class MainActivity extends FlutterActivity {
 
     private void updateSongItem(MethodChannel.Result result, Map<String,String> songDetails) {
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String selection = MediaStore.Audio.Media._ID + " = ?";
+        String selection = MediaStore.Audio.Media._ID+ " = ?";
         String[] selectionArgs = {songDetails.get("songId")};
         ContentValues updateSong = new ContentValues();
         updateSong.put(MediaStore.Audio.AudioColumns.TITLE,songDetails.get("title"));

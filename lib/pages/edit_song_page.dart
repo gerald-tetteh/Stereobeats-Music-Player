@@ -43,12 +43,21 @@ class EditSongPage extends StatelessWidget {
     final song = parameters["song"] as SongItem;
     final songProvider = parameters["songProvider"] as SongProvider;
     var songdDetails = {
-      "title": song.title ?? "",
-      "artist": song.artist ?? "",
-      "album": song.album ?? "",
-      "albumArtist": song.albumArtist ?? "",
-      "year": song.year ?? "",
-      "songId": song.albumId,
+      "title": DefaultUtil.checkNotNull(song.title)
+          ? song.title
+          : DefaultUtil.unknown,
+      "artist": DefaultUtil.checkNotNull(song.artist)
+          ? song.artist
+          : DefaultUtil.unknown,
+      "album": DefaultUtil.checkNotNull(song.album)
+          ? song.album
+          : DefaultUtil.unknown,
+      "albumArtist": DefaultUtil.checkNotNull(song.albumArtist)
+          ? song.albumArtist
+          : DefaultUtil.unknown,
+      "year":
+          DefaultUtil.checkNotNull(song.year) ? song.year : DefaultUtil.unknown,
+      "songId": song.songId,
     };
     var appBar = AppBar(
       backgroundColor: ColorUtil.dark,
@@ -115,7 +124,10 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["title"] = value;
+                            songdDetails["title"] =
+                                DefaultUtil.checkNotNull(value.trim())
+                                    ? value.trim()
+                                    : DefaultUtil.unknown;
                           },
                         ),
                         TextFormField(
@@ -130,7 +142,10 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["artist"] = value;
+                            songdDetails["artist"] =
+                                DefaultUtil.checkNotNull(value.trim())
+                                    ? value.trim()
+                                    : DefaultUtil.unknown;
                           },
                         ),
                         TextFormField(
@@ -145,7 +160,10 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["album"] = value;
+                            songdDetails["album"] =
+                                DefaultUtil.checkNotNull(value.trim())
+                                    ? value.trim()
+                                    : DefaultUtil.unknown;
                           },
                         ),
                         TextFormField(
@@ -160,7 +178,10 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["albumArtist"] = value;
+                            songdDetails["albumArtist"] =
+                                DefaultUtil.checkNotNull(value.trim())
+                                    ? value.trim()
+                                    : DefaultUtil.unknown;
                           },
                         ),
                         TextFormField(
@@ -175,7 +196,10 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["year"] = value;
+                            songdDetails["year"] =
+                                DefaultUtil.checkNotNull(value.trim())
+                                    ? value.trim()
+                                    : DefaultUtil.unknown;
                           },
                         ),
                         RaisedButton(

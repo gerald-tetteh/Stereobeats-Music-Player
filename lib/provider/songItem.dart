@@ -140,7 +140,7 @@ class SongProvider with ChangeNotifier {
 
   Future<void> updateSong(Map<String, String> songDetails) async {
     const platform = MethodChannel("stereo.beats/metadata");
-    await platform.invokeMethod("updateSong", {
+    int numb = await platform.invokeMethod("updateSong", {
       "songDetails": {
         "title": songDetails["title"],
         "artist": songDetails["artist"],
@@ -150,6 +150,7 @@ class SongProvider with ChangeNotifier {
         "songId": songDetails["songId"],
       }
     });
+    print(numb);
     notifyListeners();
   }
 
