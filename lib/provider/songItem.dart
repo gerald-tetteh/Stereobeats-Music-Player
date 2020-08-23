@@ -9,6 +9,7 @@ import '../helpers/db_helper.dart';
 import '../utils/default_util.dart';
 
 class SongItem {
+  final String songId;
   final String title;
   final String artist;
   final String album;
@@ -21,6 +22,7 @@ class SongItem {
   String artPath;
 
   SongItem({
+    this.songId,
     this.album,
     this.albumArtist,
     this.artist,
@@ -94,6 +96,7 @@ class SongProvider with ChangeNotifier {
     _songs = _songs
         .map(
           (song) => SongItem(
+            songId: song.songId,
             title: song.title,
             album: song.album,
             albumArtist: song.albumArtist,
@@ -128,10 +131,26 @@ class SongProvider with ChangeNotifier {
             duration: song["duration"],
             year: song["year"],
             path: song["path"],
+            songId: song["songId"],
           ),
         )
         .toList();
     _favourites = prefs.getStringList("favourites") ?? [];
+  }
+
+  Future<void> updateSong(Map<String, String> songDetails) async {
+    const platform = MethodChannel("stereo.beats/metadata");
+    await platform.invokeMethod("updateSong", {
+      "songDetails": {
+        "title": songDetails["title"],
+        "artist": songDetails["artist"],
+        "album": songDetails["album"],
+        "albumArtist": songDetails["albumArtist"],
+        "year": songDetails["year"],
+        "songId": songDetails["songId"],
+      }
+    });
+    notifyListeners();
   }
 
   Map<String, List<SongItem>> getAlbumsFromSongs() {

@@ -17,11 +17,23 @@ import '../provider/songItem.dart';
 class EditSongPage extends StatelessWidget {
   static const routeName = "/edit-song-page";
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _submit() {
+  Future<void> _submit(SongProvider provider, Map<String, String> songDetails,
+      BuildContext context) async {
     if (!_formKey.currentState.validate()) {
       return;
     }
+    _formKey.currentState.save();
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Row(
+        children: [CircularProgressIndicator(), Text("Saving Changes...")],
+      ),
+      duration: Duration(minutes: 2),
+    ));
+    await provider.updateSong(songDetails);
+    _scaffoldKey.currentState.removeCurrentSnackBar();
+    Navigator.of(context).pop();
   }
 
   @override
@@ -30,6 +42,14 @@ class EditSongPage extends StatelessWidget {
         ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
     final song = parameters["song"] as SongItem;
     final songProvider = parameters["songProvider"] as SongProvider;
+    var songdDetails = {
+      "title": song.title ?? "",
+      "artist": song.artist ?? "",
+      "album": song.album ?? "",
+      "albumArtist": song.albumArtist ?? "",
+      "year": song.year ?? "",
+      "songId": song.albumId,
+    };
     var appBar = AppBar(
       backgroundColor: ColorUtil.dark,
       elevation: 0,
@@ -45,7 +65,8 @@ class EditSongPage extends StatelessWidget {
             Icons.save_outlined,
             size: TextUtil.medium,
           ),
-          onPressed: _submit,
+          onPressed: () async =>
+              await _submit(songProvider, songdDetails, context),
         ),
       ],
     );
@@ -55,6 +76,7 @@ class EditSongPage extends StatelessWidget {
     var viewHeight = mediaQuery.size.height;
     var actualHeight = viewHeight - (appBarHeight + extraPadding);
     return Scaffold(
+      key: _scaffoldKey,
       appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
@@ -92,6 +114,9 @@ class EditSongPage extends StatelessWidget {
                               return "Text not supported";
                             }
                           },
+                          onSaved: (value) {
+                            songdDetails["title"] = value;
+                          },
                         ),
                         TextFormField(
                           initialValue: song.artist ?? "",
@@ -103,6 +128,9 @@ class EditSongPage extends StatelessWidget {
                             if (!(value is String)) {
                               return "Text not supported";
                             }
+                          },
+                          onSaved: (value) {
+                            songdDetails["artist"] = value;
                           },
                         ),
                         TextFormField(
@@ -116,6 +144,9 @@ class EditSongPage extends StatelessWidget {
                               return "Text not supported";
                             }
                           },
+                          onSaved: (value) {
+                            songdDetails["album"] = value;
+                          },
                         ),
                         TextFormField(
                           initialValue: song.albumArtist ?? "",
@@ -127,6 +158,9 @@ class EditSongPage extends StatelessWidget {
                             if (!(value is String)) {
                               return "Text not supported";
                             }
+                          },
+                          onSaved: (value) {
+                            songdDetails["albumArtist"] = value;
                           },
                         ),
                         TextFormField(
@@ -140,12 +174,16 @@ class EditSongPage extends StatelessWidget {
                               return "Text not supported";
                             }
                           },
+                          onSaved: (value) {
+                            songdDetails["year"] = value;
+                          },
                         ),
                         RaisedButton(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 30,
                           ),
-                          onPressed: () {},
+                          onPressed: () async => await _submit(
+                              songProvider, songdDetails, context),
                           color: Colors.blue,
                           child: Text(
                             "Submit",

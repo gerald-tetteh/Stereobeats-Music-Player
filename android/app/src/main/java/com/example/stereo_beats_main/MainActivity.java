@@ -1,6 +1,7 @@
 package com.example.stereo_beats_main;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -95,6 +96,22 @@ public class MainActivity extends FlutterActivity {
                             });
                             break;
                         }
+                        case "updateSong": {
+                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    Map<String,String> songDetails = call.argument("songDetails");
+                                    updateSongItem(result,songDetails);
+                                }
+
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    result.error("1", "Permission denied", null);
+                                }
+                            });
+                            break;
+                        }
                         default:
                             result.error("error", "error", "error");
                             break;
@@ -139,6 +156,7 @@ public class MainActivity extends FlutterActivity {
                 MediaStore.Audio.AudioColumns.DURATION,
                 MediaStore.Audio.AlbumColumns.ARTIST,
                 MediaStore.Audio.AudioColumns.YEAR,
+                MediaStore.Audio.Media._ID,
         };
         Cursor c = MainActivity.this.getContentResolver().query(uri, projection, MediaStore.Audio.AudioColumns.IS_MUSIC + " > ?", new String[]{"0"},
                 MediaStore.Audio.AudioColumns.TITLE + " ASC");
@@ -156,11 +174,30 @@ public class MainActivity extends FlutterActivity {
                     metaData.put("duration",c.getString(7));
                     metaData.put("albumArtist",c.getString(8));
                     metaData.put("year",c.getString(9));
+                    metaData.put("songId",c.getString(10));
                     songData.add(metaData);
             }
             c.close();
         }
         result.success(songData);
+    }
+
+    private void updateSongItem(MethodChannel.Result result, Map<String,String> songDetails) {
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String selection = MediaStore.Audio.Media._ID + " = ?";
+        String[] selectionArgs = {songDetails.get("songId")};
+        ContentValues updateSong = new ContentValues();
+        updateSong.put(MediaStore.Audio.AudioColumns.TITLE,songDetails.get("title"));
+        updateSong.put(MediaStore.Audio.AudioColumns.ALBUM,songDetails.get("album"));
+        updateSong.put(MediaStore.Audio.ArtistColumns.ARTIST,songDetails.get("artist"));
+        updateSong.put(MediaStore.Audio.AlbumColumns.ARTIST,songDetails.get("albumArtist"));
+        updateSong.put(MediaStore.Audio.AudioColumns.YEAR,songDetails.get("year"));
+        int numberOfSongsUpdated = MainActivity.this.getContentResolver().update(uri,updateSong,selection,selectionArgs);
+        if (numberOfSongsUpdated >= 1) {
+            result.success(numberOfSongsUpdated);
+        } else {
+            result.success(false);
+        }
     }
 
 //    private String getAlbumArtUri(String id) {
