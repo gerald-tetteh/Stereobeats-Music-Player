@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:equalizer/equalizer.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
 import '../provider/music_player.dart';
+import '../provider/songItem.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../components/play_page_song_info.dart';
@@ -31,6 +33,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
   @override
   Widget build(BuildContext context) {
     final value = Provider.of<AudioPlayer>(context, listen: false);
+    final songProvider = Provider.of<SongProvider>(context, listen: false);
     final slider = value.slider;
     final mediaQuery = MediaQuery.of(context);
     final _isLandScape = mediaQuery.orientation == Orientation.landscape;
@@ -87,6 +90,31 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
                   onPressed: () => Navigator.of(context)
                       .pushNamed(SongDetailPage.routeName, arguments: path),
                   tooltip: "Song Details",
+                );
+              },
+            ),
+            Consumer<AudioPlayer>(
+              builder: (context, player2, child) {
+                return IconButton(
+                  icon: Icon(Icons.equalizer_rounded),
+                  onPressed: () async => await Equalizer.open(
+                      player2.audioPlayer.audioSessionId.value),
+                );
+              },
+            ),
+            Consumer<AudioPlayer>(
+              builder: (context, player3, child) {
+                var path = player3.playing.path;
+                songProvider.addToQueue(path);
+                return IconButton(
+                  icon: Icon(
+                    Icons.share_outlined,
+                    size: TextUtil.xsmall,
+                  ),
+                  onPressed: () async {
+                    await songProvider.shareFile();
+                    songProvider.setQueueToNull();
+                  },
                 );
               },
             ),

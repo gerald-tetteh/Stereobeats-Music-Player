@@ -86,11 +86,6 @@ class CustomDrawer extends StatelessWidget {
               function: () => Navigator.of(context)
                   .pushReplacementNamed(ArtistScreen.routeName),
             ),
-            CustomListTile(
-              text: "Equalizer",
-              iconData: Icons.equalizer_rounded,
-              function: () {},
-            ),
           ],
         ),
       ),

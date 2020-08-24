@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:equalizer/equalizer.dart';
 
 import 'songItem.dart';
 import '../utils/default_util.dart';
@@ -120,13 +121,14 @@ class AudioPlayer with ChangeNotifier {
     if (startIndex == 0 && shuffle == true) {
       Random rand = Random();
       int randomIndex = rand.nextInt(songs.length);
-      audioPlayer.playlistPlayAtIndex(randomIndex);
+      await audioPlayer.playlistPlayAtIndex(randomIndex);
     } else {
       await audioPlayer.playlistPlayAtIndex(startIndex);
       if (seekValue != null) {
         audioPlayer.seek(seekValue);
       }
     }
+    await Equalizer.setAudioSessionId(audioPlayer.audioSessionId.value);
     changePageController();
     miniPlayerPresent = true;
     notifyListeners();

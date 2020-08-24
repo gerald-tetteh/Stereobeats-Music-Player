@@ -33,6 +33,7 @@ class AllSongsPopUp extends StatelessWidget {
     "Delete",
     "Add To",
     "Details",
+    "Share",
   ];
   final _items = _menuItems
       .map((item) => PopupMenuItem<String>(
@@ -98,6 +99,10 @@ class AllSongsPopUp extends StatelessWidget {
         } else if (value == _menuItems[3]) {
           Navigator.of(context)
               .pushNamed(SongDetailPage.routeName, arguments: song.path);
+        } else if (value == _menuItems[4]) {
+          songProvider.addToQueue(song.path);
+          songProvider.shareFile();
+          songProvider.setQueueToNull();
         }
       },
     );
