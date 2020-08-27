@@ -1,14 +1,34 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * TextUtil Class
+*/
+
+/*
+  This TextUtil class contains TextStyles for various text widgets
+  that needed a specific style. It also has text sizes that are used to 
+  scale some widgets and text.
+*/
+
+//imports
+
+// package imports
 import 'package:flutter/material.dart';
 
+// lib file imports
 import 'color_util.dart';
 
 class TextUtil {
+  // fon sizes
   static const double xsmall = 19;
   static const double small = 24;
   static const double medium = 30;
   static const double large = 35;
   static const double xlarge = 45;
 
+  // text styles
   static const TextStyle homeSongTitle = TextStyle(
     fontFamily: "Grenze",
     fontSize: TextUtil.xsmall,

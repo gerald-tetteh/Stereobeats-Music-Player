@@ -1,8 +1,14 @@
 /*
  * Author: Gerald Addo-Tetteh
  * Stereo Beats Music Player for Android mobile devices.
- *  AddoDevelop
+ * Addo Develop
  * Email: addodevelop@gmail.com
+*/
+
+/*
+  This is the main file which controlls the application.
+  It containes all the routes, primary and secondary themes
+  and where app wide providers are created.
 */
 
 // imports
@@ -50,6 +56,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // * initializing providers.
+    // the SongProvider controls all function relating to a song items,playlists and song infomation.
+    // the AudioPlayer handels playing audio, shuffle, loop and songs in queue.
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -78,6 +86,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: LoadingScreen(),
+        // below are all the predefined routes
         routes: {
           PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
           HomeScreen.routeName: (ctx) => HomeScreen(),

@@ -1,3 +1,19 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * ColorUtil
+*/
+
+/*
+  ColorUtil contails colors that are frequently used
+  in the app.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 
 class ColorUtil {

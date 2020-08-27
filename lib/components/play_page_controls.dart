@@ -82,7 +82,7 @@ class PlayPageControls extends StatelessWidget {
                   }
                   return IconButton(
                       icon: icon,
-                      onPressed: () async => await value.toogleLopp());
+                      onPressed: () async => await value.toogleLoop());
                 },
               ),
             ],
