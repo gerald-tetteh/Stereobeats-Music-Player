@@ -1,9 +1,27 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * DB Helper
+*/
+
+/*
+  This file contains the class DBHelper which contains
+  static methods to perform CRUD operations.
+*/
+
+// imports
+
+// package imports
 import 'package:hive/hive.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 
+// lib file imports
 import '../models/playlist.dart';
 
 class DBHelper {
+  // this method adds items to an entry in the database
   static void addItem(String boxName, PlayList playList, List<String> paths) {
     var box = Hive.box<PlayList>(boxName);
     var savedPlayList = box.get(playList.toString());
@@ -15,6 +33,7 @@ class DBHelper {
     box.put(playList.toString(), savedPlayList);
   }
 
+  // this method creats new entries in the database
   static void createItem(String boxName, String playListName,
       [List<String> paths]) {
     var box = Hive.box<PlayList>(boxName);
@@ -24,6 +43,7 @@ class DBHelper {
     box.put(playList.toString(), playList);
   }
 
+  // this methods removes items from a database entry
   static void deleteItem(
       String boxName, String playlistName, List<String> paths) {
     var box = Hive.box<PlayList>(boxName);
@@ -32,16 +52,19 @@ class DBHelper {
     box.put(playlistName, playList);
   }
 
+  // this method deletes a database entry
   static void deleteBox(String boxName, List<String> playListNames) {
     var box = Hive.box<PlayList>(boxName);
     box.deleteAll(playListNames);
   }
 
+  // this items returns a list of string used to identify a db entry
   static List<dynamic> getkeys(String boxName) {
     var box = Hive.box<PlayList>(boxName);
     return box.keys.toList();
   }
 
+  // this method changes the name of a db entry
   static void changeItemName(
       String boxName, String playlistName, String newName) {
     var box = Hive.box<PlayList>(boxName);
