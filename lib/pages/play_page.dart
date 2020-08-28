@@ -1,3 +1,22 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Play Page
+*/
+
+/*
+  The play page shows the song that is playing, the duration
+  and the play controls. The user can switch between songs here 
+  and the user can also seek the track. The page also has a button
+  th allows the user to view the music video of the song that is currently
+  playing if it exists.
+*/
+
+// imports
+
+// package imports
 import 'dart:io';
 import 'dart:ui';
 
@@ -9,6 +28,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:equalizer/equalizer.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
+// lib file imports
 import '../provider/music_player.dart';
 import '../provider/songItem.dart';
 import '../utils/default_util.dart';
@@ -22,6 +42,7 @@ import '../helpers/api_keys.dart';
 import 'song_detail_page.dart';
 
 class PlayMusicScreen extends StatefulWidget {
+  // name of route
   static const routeName = "/play-page";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -32,9 +53,10 @@ class PlayMusicScreen extends StatefulWidget {
 class _PlayMusicScreenState extends State<PlayMusicScreen> {
   @override
   Widget build(BuildContext context) {
-    final value = Provider.of<AudioPlayer>(context, listen: false);
+    final value =
+        Provider.of<AudioPlayer>(context, listen: false); // audio player
     final songProvider = Provider.of<SongProvider>(context, listen: false);
-    final slider = value.slider;
+    final slider = value.slider; // carousel slider
     final mediaQuery = MediaQuery.of(context);
     final _isLandScape = mediaQuery.orientation == Orientation.landscape;
     List<Widget> contents = [
@@ -153,6 +175,12 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
   }
 }
 
+/* 
+  This widget returns a button that can be used to view the music 
+  video of the song playing on youtube if it exists.
+  The video is ethier shown on th device browser or in th youtube app
+  on the device (if it exists).
+*/
 class YoutubeView extends StatelessWidget {
   const YoutubeView({
     Key key,
@@ -196,6 +224,10 @@ class YoutubeView extends StatelessWidget {
     );
   }
 
+  /*
+    This method is used to launch the music video.
+    If the URL is valid the browser of youtube app is launched.
+  */
   Future<void> _launch(String url, FToast fToast) async {
     if (await launcher.canLaunch(url)) {
       scaffoldKey.currentState.removeCurrentSnackBar();
@@ -218,6 +250,9 @@ class YoutubeView extends StatelessWidget {
     }
   }
 
+  /*
+    This method returns a snackbar while the video is loading. 
+  */
   void _showSnackBar() {
     scaffoldKey.currentState.showSnackBar(
       SnackBar(

@@ -1,23 +1,38 @@
 /*
-  * Author: Gerald Addo-Tetteh
-  * StereoBeats Music Player
-  * Search View
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Search View More
+*/
+
+/*
+  This widget shows the full list of 
+  results from the users search.
 */
 
 //imports
 
-//package imports
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-//local imports
+// lib file imports
 import '../utils/text_util.dart';
 import '../provider/songItem.dart';
 import '../components/bottom_actions_bar.dart';
 
 class SearchViewMore extends StatelessWidget {
+  // name of route
   static const routeName = "/search-view-more";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  /*
+    This widget requires data from the previous widget to build.
+    This widget recieves the title =>> "Songs", "Artists", "Albums" and
+    a widget would be shown.
+    The widget recieved is a list of the results for a particular section
+    with some options enabled.
+  */
   @override
   Widget build(BuildContext context) {
     final parameters =
@@ -57,7 +72,7 @@ class SearchViewMore extends StatelessWidget {
             ),
           ),
           Divider(),
-          listWidget
+          listWidget // results list
         ],
       ),
     );

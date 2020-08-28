@@ -1,8 +1,25 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Add to Page
+*/
+
+/*
+  This screen shows which collections the user can add a
+  SongItem to. By default favourites is available.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../models/playlist.dart';
@@ -10,6 +27,7 @@ import '../extensions/string_extension.dart';
 import '../utils/text_util.dart';
 
 class AddToPage extends StatelessWidget {
+  // Name of route
   static const routeName = "/add-page";
   @override
   Widget build(BuildContext context) {
@@ -34,6 +52,8 @@ class AddToPage extends StatelessWidget {
           },
         ),
       ),
+      // Available items a rendered in a column
+      // favourites and queue are always present
       body: Column(
         children: [
           ListTile(
@@ -60,6 +80,11 @@ class AddToPage extends StatelessWidget {
             "Playlists",
             style: TextUtil.addPageHeadings,
           ),
+          /*
+            All playlist are retrived from the db and
+            rendered in a list view is there are any present 
+            otherwise and empty container is shown.(invisible)
+          */
           Expanded(
             child: ValueListenableBuilder(
               valueListenable: Hive.box<PlayList>("playLists").listenable(),

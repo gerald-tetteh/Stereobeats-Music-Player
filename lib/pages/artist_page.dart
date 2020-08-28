@@ -1,8 +1,12 @@
 /*
  * Author: Gerald Addo-Tetteh
- * StereoBeats Music Player
- * Artist Page
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Artist page
 */
+
+// this page shows all the artists available on the device
 
 // imports
 
@@ -13,7 +17,7 @@ import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// local imports
+// lib file imports
 import '../components/customDrawer.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
@@ -27,6 +31,7 @@ import 'artist_view_page.dart';
 import 'search_view.dart';
 
 class ArtistScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/artist-page";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _scrollController = ScrollController();
@@ -76,6 +81,7 @@ class ArtistScreen extends StatelessWidget {
           ),
         ],
       ),
+      // shows empty widget if there are no artists
       body: artists != null && artists.length != 0
           ? Stack(
               fit: StackFit.expand,
@@ -89,6 +95,7 @@ class ArtistScreen extends StatelessWidget {
                   bottom: 10,
                   left: 3,
                   right: 3,
+                  // shows miniplayer if available
                   child: Consumer<AudioPlayer>(
                     builder: (context, value, child) => value.miniPlayerPresent
                         ? MiniPlayer(mediaQuery: mediaQuery)
@@ -104,6 +111,11 @@ class ArtistScreen extends StatelessWidget {
   }
 }
 
+/*
+  This widget shows the list of all artist on the device.
+  It creats a list view with each item have the artist name
+  and an image to represent the artist in a circular widget.
+*/
 class BuildColumn extends StatelessWidget {
   const BuildColumn({
     Key key,
@@ -146,6 +158,11 @@ class BuildColumn extends StatelessWidget {
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),
               ),
+              /*
+                The draggable scrollbar creats a list view with a 
+                scroll bar to enable the user to jump to different points
+                in the list view.
+              */
               child: DraggableScrollbar.semicircle(
                 child: ListView.separated(
                   controller: _scrollController,

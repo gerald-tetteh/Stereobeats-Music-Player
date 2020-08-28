@@ -1,6 +1,22 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Playlist Detail Screen
+*/
+
+/*
+  This Screen shows all the songs on a particular playlist.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../components/playlist_&_album_detail.dart';
 import '../components/mini_player.dart';
 import '../models/playlist.dart';
@@ -10,6 +26,7 @@ import '../provider/music_player.dart';
 import '../helpers/db_helper.dart';
 
 class PlaylistDetailScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/playlist-detail";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
@@ -34,6 +51,7 @@ class PlaylistDetailScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // renders list of song on playlist
           PlaylistAndAlbumDetail(
             playlist: playlist,
           ),

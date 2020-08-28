@@ -1,15 +1,25 @@
 /*
-  * Author: Gerald Addo-Tetteh
-  * StereoBeats Main
-  * AllSongsPopUp
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Song Detail Page
+*/
+
+/*
+  This page shows the metadata of a particular song.
+  It recieves the path of the song as input.
 */
 
 // imports
+
+// package imports
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../utils/text_util.dart';
@@ -19,6 +29,7 @@ import '../utils/color_util.dart';
 import 'edit_song_page.dart';
 
 class SongDetailPage extends StatelessWidget {
+  // name of route
   static const routeName = "/song-detail-page";
   @override
   Widget build(BuildContext context) {
@@ -88,6 +99,8 @@ class SongDetailPage extends StatelessWidget {
     );
   }
 
+  // this method returns a colum showing a part of the
+  // songs metadata
   Column _buildListItem(String leading, String songInfo,
       [MediaQueryData mediaQuery, bool showDivider = true]) {
     return Column(

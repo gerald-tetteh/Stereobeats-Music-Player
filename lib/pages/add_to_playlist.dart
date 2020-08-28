@@ -1,6 +1,26 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Add to Playlist Page
+*/
+
+/*
+  This screen shows all songs on the device
+  that can be added to the current playlist.
+  a circular check box on the left of each list
+  tile is used to select the song and store it in 
+  _queue.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 import '../utils/default_util.dart';
@@ -8,6 +28,7 @@ import '../provider/songItem.dart';
 import '../components/build_check_box.dart';
 
 class AddToPlayListPage extends StatelessWidget {
+  // name of route
   static const routeName = "/add_to_playlist";
   @override
   Widget build(BuildContext context) {
@@ -43,6 +64,8 @@ class AddToPlayListPage extends StatelessWidget {
           ),
         ],
       ),
+      // if there are no songs on the device the empty
+      // widget is retured instead.
       body: songs != null && songs.length != 0
           ? _buildSongList(songs)
           : DefaultUtil.empty("No songs found..."),

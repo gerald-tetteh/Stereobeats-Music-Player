@@ -1,7 +1,15 @@
 /*
-  * Author: Gerald Addo-Tetteh
-  * StereoBeats Music Player
-  * Search View
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Search View
+*/
+
+/*
+  The search view serches for song, albums and artists that 
+  match the input string. The reults are renderend in a single
+  child scroll view.
 */
 
 //imports
@@ -12,7 +20,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// local imports
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../utils/color_util.dart';
@@ -25,9 +33,11 @@ import 'artist_view_page.dart';
 import 'album_detail_screen.dart';
 import 'search_view_more.dart';
 
+// eneum to determine type of data
 enum ListType { Songs, Albums, Artists }
 
 class SearchView extends StatefulWidget {
+  // name of route
   static const routeName = "/search-view";
   @override
   _SearchViewState createState() => _SearchViewState();
@@ -48,7 +58,7 @@ class _SearchViewState extends State<SearchView> {
     _albums = [];
     _artists = [];
     songProvider = Provider.of<SongProvider>(context, listen: false);
-    player = Provider.of<AudioPlayer>(context, listen: false);
+    player = Provider.of<AudioPlayer>(context, listen: false); // audio player
     super.initState();
   }
 
@@ -63,6 +73,10 @@ class _SearchViewState extends State<SearchView> {
     var mediaQuery = MediaQuery.of(context);
     var viewHeight = mediaQuery.size.height;
     var extrapadding = mediaQuery.padding.top;
+    /*
+      The appBar contains a TextField that is used
+      to recieve user input.
+    */
     var appBar = AppBar(
       backgroundColor: ColorUtil.dark,
       iconTheme: Theme.of(context).iconTheme,
@@ -90,6 +104,11 @@ class _SearchViewState extends State<SearchView> {
     return Scaffold(
       backgroundColor: ColorUtil.white,
       appBar: appBar,
+      /*
+        The single child scroll view consists of  
+        three other lists that are used to show the results
+        of the search => songs, albums, artsis in that order.
+      */
       body: SingleChildScrollView(
         child: Container(
           height: actualHeight,
@@ -120,6 +139,12 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
+  /*
+    This method is called everytime the user types in the
+    search box.
+    Its serches through the list of SongItems to find the ones 
+    that match the users input.
+  */
   void _submit(SongProvider provider, String text) {
     print(text);
     var results = provider.search(text.trim());
@@ -129,6 +154,10 @@ class _SearchViewState extends State<SearchView> {
     setState(() {});
   }
 
+  /*
+    This methods finds the album art that would be used 
+    to identify an album
+  */
   String getArtPath(Album album) {
     return album.paths
         .firstWhere(
@@ -138,6 +167,7 @@ class _SearchViewState extends State<SearchView> {
         .artPath;
   }
 
+  // builds results list
   Widget _buildSearchResults(
       String title, List<dynamic> items, ListType type, BuildContext context) {
     if (items.length == 0) {
@@ -198,6 +228,10 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
+  /*
+   This method determines how the results of the search should be 
+   shown.
+  */
   Widget _listType(ListType type, BuildContext context,
       [bool all = false, bool selectable = false]) {
     switch (type) {
@@ -216,8 +250,13 @@ class _SearchViewState extends State<SearchView> {
     }
   }
 
+  // builds a list of all songs that match the users search
   Widget _buildSongList(BuildContext context, bool all, bool selectable) {
     List<dynamic> songs;
+    /*
+      Depending on th current context the full list of results
+      or a portion of it is shown.
+    */
     if (_songs.length > 10 && !all) {
       songs = _songs.sublist(0, 5);
     } else {
@@ -290,6 +329,7 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
+  // build a list of all artists that match the users input
   Widget _buildArtistList(BuildContext context, bool all) {
     List<dynamic> artists;
     if (_artists.length > 10 && !all) {
@@ -331,6 +371,7 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
+  // builds a list of albums that match the users input
   Widget _buildAlbumList(BuildContext context, bool all) {
     List<dynamic> albums;
     if (_albums.length > 10 && !all) {

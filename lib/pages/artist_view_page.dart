@@ -1,7 +1,14 @@
-/* 
+/*
  * Author: Gerald Addo-Tetteh
- * StereoBeats Music Player
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
  * Artist View Page
+*/
+
+/*
+  This page shows all songs and albums 
+  that have been produced by a paticular artist.
 */
 
 // imports
@@ -12,6 +19,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../components/mini_player.dart';
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
@@ -22,7 +30,12 @@ import '../models/album.dart';
 import '../pages/album_detail_screen.dart';
 
 class ArtistViewScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/artist-view-page";
+  /*
+    This method finds the find song in the album 
+    with album art and returns the path to the image
+  */
   String getArtPath(Album album) {
     return album.paths
         .firstWhere(
@@ -34,6 +47,12 @@ class ArtistViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*
+      This screen requires data from the previous 
+      route to build.
+      It recieves the name of the artist and the
+      image associated with the artist
+    */
     final parameters =
         ModalRoute.of(context).settings.arguments as Map<String, String>;
     final artist = parameters["artist"];
@@ -106,6 +125,11 @@ class ArtistViewScreen extends StatelessWidget {
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
+                    /*
+                      This widgets creats a scroll views
+                      which contains the artist cover image,
+                      the artist songs and albums. 
+                    */
                     child: CustomScrollView(
                       slivers: [
                         _buildsubHeading(artistSongs.length, "Songs"),
@@ -124,6 +148,7 @@ class ArtistViewScreen extends StatelessWidget {
             bottom: 10,
             left: 3,
             right: 3,
+            // shows the miniplayer if present
             child: Consumer<AudioPlayer>(
               builder: (context, value, child) => value.miniPlayerPresent
                   ? MiniPlayer(mediaQuery: mediaQuery)
@@ -135,6 +160,10 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
+  /*
+    Creats a spce beneath the custom scroll view to prevent 
+    the mini player from obstructing it.  
+  */
   Consumer<AudioPlayer> _extraSpace() {
     return Consumer<AudioPlayer>(
       builder: (context, value, child) => value.miniPlayerPresent
@@ -145,6 +174,10 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
+  /*
+    builds the list of all albums that were made by the
+    artist provided 
+  */
   SliverList _buildAlbumList(List<Album> artistAlbums, BuildContext context) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
@@ -185,6 +218,10 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
+  /*
+    builds the list of all songs that were made by the
+    artist provided 
+  */
   SliverList _buildSongsList(AudioPlayer player, List<SongItem> artistSongs) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
@@ -224,6 +261,7 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
+  // build a heading to identify different sections
   SliverList _buildsubHeading(int length, String title) {
     return SliverList(
       delegate: SliverChildListDelegate.fixed(

@@ -1,6 +1,23 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Favourites Page
+*/
+
+/*
+  This screen shows all the user's favourites.
+  This page refreshes when the favourites list changes. 
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -15,6 +32,7 @@ import '../components/bottom_actions_bar.dart';
 import 'search_view.dart';
 
 class FavouritesPage extends StatelessWidget {
+  // name of the route
   static const routeName = "/favourites-page";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   @override
@@ -109,6 +127,10 @@ class FavouritesPage extends StatelessWidget {
     );
   }
 
+  /*
+    This method returns a column with the quick options 
+    and the favourites list.
+  */
   Column _buildSongColumn(MediaQueryData mediaQuery, AudioPlayer audioProvider,
       List<SongItem> favouriteSongs) {
     return Column(

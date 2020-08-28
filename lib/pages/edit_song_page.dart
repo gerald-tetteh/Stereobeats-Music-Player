@@ -1,24 +1,39 @@
 /*
-  * Author: Gerald Addo-Tetteh
-  * StereoBeats Main
-  * AllSongsPopUp
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Edit Songs Page
 */
 
 // imports
+
+// package imports
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+// lib file imports
 import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 import '../utils/default_util.dart';
 import '../provider/songItem.dart';
 
 class EditSongPage extends StatelessWidget {
+  // name of route
   static const routeName = "/edit-song-page";
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  /*
+    This method is called when the user wishes to save changes.
+    The method first checks if all the data the user enterd is
+    campatible with the app; if there is an error a message if shown 
+    beneath the textfield.
+    
+    No errors => A snackbar is shown to let the user know that changes
+    are being made. 
+  */
   Future<void> _submit(SongProvider provider, Map<String, String> songDetails,
       BuildContext context) async {
     if (!_formKey.currentState.validate()) {
@@ -41,12 +56,18 @@ class EditSongPage extends StatelessWidget {
     }
   }
 
+  /*
+    This widget requires information from the previous widget to build.
+    It recieves the song(SongItem) and the songProvider(Songprovider) 
+  */
   @override
   Widget build(BuildContext context) {
     final parameters =
         ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
     final song = parameters["song"] as SongItem;
     final songProvider = parameters["songProvider"] as SongProvider;
+    // songDetails is updated when the user saves data
+    // it is used to prepopulate the text fields
     var songdDetails = {
       "title": DefaultUtil.checkNotNull(song.title)
           ? song.title

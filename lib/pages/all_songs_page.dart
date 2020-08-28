@@ -1,7 +1,21 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * All Songs Page
+*/
+
+// the page shows all songs available on the device
+
+//imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
@@ -17,14 +31,17 @@ import '../components/separated_positioned_list.dart';
 import 'search_view.dart';
 
 class AllSongsScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/all-songs";
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final provider = Provider.of<AudioPlayer>(context, listen: false);
+    final provider =
+        Provider.of<AudioPlayer>(context, listen: false); // audio player
     final songProvider3 = Provider.of<SongProvider>(context, listen: false);
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-    final ItemScrollController itemScrollController = ItemScrollController();
+    final ItemScrollController itemScrollController =
+        ItemScrollController(); // list view controller
     return Scaffold(
       bottomNavigationBar: Consumer<SongProvider>(
         builder: (context, songProvider, child) {
@@ -115,12 +132,15 @@ class AllSongsScreen extends StatelessWidget {
                           },
                         ),
                         Expanded(
+                          // renders song list
                           child: SeparatedPositionedList(
                             itemScrollController: itemScrollController,
                             mediaQuery: mediaQuery,
                             scaffoldKey: _scaffoldKey,
                           ),
                         ),
+                        // creats a space beneath the list so that
+                        // it is not obstacted by the miniplayer
                         Consumer<AudioPlayer>(
                           builder: (context, value, child) =>
                               value.miniPlayerPresent
@@ -140,6 +160,7 @@ class AllSongsScreen extends StatelessWidget {
             bottom: 10,
             left: 3,
             right: 3,
+            // shows miniplayer if available
             child: Consumer<AudioPlayer>(
               builder: (context, value, child) => value.miniPlayerPresent
                   ? MiniPlayer(mediaQuery: mediaQuery)
@@ -151,6 +172,11 @@ class AllSongsScreen extends StatelessWidget {
     );
   }
 
+  /*
+    This method returns a row containing the quick options
+    (play all or shuffle) and a drop down sheet to jump to specific 
+    points in the list view
+  */
   Row _topActionsBar(
       SongProvider songProvider2,
       ItemScrollController itemScrollController,

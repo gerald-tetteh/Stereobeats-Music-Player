@@ -1,6 +1,23 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Album Page
+*/
+
+/*
+  This page shows all albums that are available on the 
+  device.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../components/bottom_actions_bar.dart';
 import '../components/playlist_&_album_main.dart';
 import '../components/customDrawer.dart';
@@ -13,6 +30,7 @@ import '../utils/text_util.dart';
 import 'search_view.dart';
 
 class AlbumListScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/album-screen";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
@@ -60,6 +78,7 @@ class AlbumListScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // renders the list of albums
           PlayListAndAlbum(
             title: "Albums",
             subTitle: "for you",
@@ -70,6 +89,7 @@ class AlbumListScreen extends StatelessWidget {
             bottom: 10,
             left: 3,
             right: 3,
+            // shows miniplayer if present
             child: Consumer<AudioPlayer>(
               builder: (context, value, child) => value.miniPlayerPresent
                   ? MiniPlayer(mediaQuery: mediaQuery)

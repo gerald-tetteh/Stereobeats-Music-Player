@@ -1,6 +1,23 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Playlist Page
+*/
+
+/*
+  This page shows all available playlists and 
+  also gives the user an option to create a new playlist.
+*/
+
+//imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../components/customDrawer.dart';
@@ -78,6 +95,7 @@ class PlayListScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // renders playlist list
           PlayListAndAlbum(
             title: "Playlists",
             subTitle: "by you",

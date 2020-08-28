@@ -1,8 +1,20 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Home Page
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stereo_beats_main/provider/music_player.dart';
 import 'package:stereo_beats_main/utils/default_util.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
@@ -15,6 +27,7 @@ import '../components/customDrawer.dart';
 import 'search_view.dart';
 
 class HomeScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/home-page";
   final _scaffoldkey = GlobalKey<ScaffoldState>();
   @override
@@ -30,6 +43,7 @@ class HomeScreen extends StatelessWidget {
       key: _scaffoldkey,
       drawer: CustomDrawer(),
       backgroundColor: Color(0xffeeeeee),
+      // returns empty widget if there are songs on the device
       body: songs != null && songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
               mediaQuery, songProvider, context)
@@ -37,6 +51,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  /*
+    This method returns a column that contains an AppBar 
+    and the empty widget.
+  */
   Column _noSongs(BuildContext ctx) {
     return Column(
       children: [
@@ -56,6 +74,15 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  /*
+    This method build the home page widgets.
+    The top half of the page contains the search
+    button, the app name and a button to open the drawer
+    The background of the top half is the album art of the first 
+    song in the songs fraction.
+    The bottom half is a list view showing all the songs in the
+    song fraction.
+  */
   Stack _buildSongList(
       bool _isLandScape,
       double actualHeight,
@@ -161,6 +188,10 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+/*
+  The bottom sheet renders a list view showing the songs 
+  fraction.
+*/
 class _BottomSheet extends StatelessWidget {
   const _BottomSheet({
     Key key,

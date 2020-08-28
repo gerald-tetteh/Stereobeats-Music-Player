@@ -1,6 +1,25 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Loading Screen
+*/
+
+/*
+  This screen is shown when the app is opened.
+  The app reads the external storage and retrieves all
+  the songs on the device.
+  All the album arts are also retrieved.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../provider/music_player.dart';
 import '../provider/songItem.dart';
 import 'home.dart';
