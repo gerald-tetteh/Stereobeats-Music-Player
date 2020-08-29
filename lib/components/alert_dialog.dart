@@ -1,5 +1,23 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Alert Dialog (Component)
+*/
+
+/*
+  This widget returns a dialog box to warn the 
+  user about a decision they are about to make.
+  Eg: deleting a file
+*/
+
+//imports
+
+// package imports
 import 'package:flutter/material.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 
 class ConfirmDeleteAlert extends StatelessWidget {

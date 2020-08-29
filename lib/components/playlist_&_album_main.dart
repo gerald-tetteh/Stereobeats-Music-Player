@@ -1,3 +1,19 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Playlist & Album Main template (Component)
+*/
+
+/*
+  This page is a template for the playlist and album 
+  screens. The screens for both types are similar.
+*/
+
+// imports
+
+// package imports
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +22,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
+// file imports
 import '../pages/album_detail_screen.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
@@ -18,6 +35,7 @@ import '../pages/playlist_detail_screen.dart';
 
 import 'build_check_box.dart';
 
+// enum to determine data type
 enum Purpose { PlayListView, AlbumView }
 
 class PlayListAndAlbum extends StatelessWidget {
@@ -33,10 +51,15 @@ class PlayListAndAlbum extends StatelessWidget {
     this.purpose,
   });
 
+  // this method returns the path of each song
+  // in the album
   List<String> albumPaths(Album album) {
     return album.paths.map((song) => song.path).toList();
   }
 
+  /*
+    This method returns the album art.
+  */
   String getArtPath(Album album) {
     return album.paths
         .firstWhere(
@@ -46,6 +69,9 @@ class PlayListAndAlbum extends StatelessWidget {
         .artPath;
   }
 
+  /*
+    This method deselectes all selected items.
+  */
   void _resetActions(SongProvider songProvider) {
     songProvider.changeBottomBar(false);
     songProvider.setQueueToNull();
@@ -56,6 +82,10 @@ class PlayListAndAlbum extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    /*
+      creats a space beneath the list to prevent
+      the miniplayer from obstacting it.
+    */
     var extraSpace = Consumer<AudioPlayer>(
       builder: (context, value, child) => value.miniPlayerPresent
           ? SizedBox(
@@ -63,6 +93,10 @@ class PlayListAndAlbum extends StatelessWidget {
             )
           : Container(),
     );
+    /* 
+      builds either the playlist view or album 
+      view depending on the purpose.
+    */
     if (purpose == Purpose.PlayListView) {
       return PageDefaults(
         title: title,
@@ -80,6 +114,7 @@ class PlayListAndAlbum extends StatelessWidget {
     }
   }
 
+  // returns the album list
   Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider) {
     final albumItems = songProvider.changeToAlbum(albums);
     if (albumItems == null || albumItems.length == 0) {
@@ -93,6 +128,7 @@ class PlayListAndAlbum extends StatelessWidget {
     );
   }
 
+  // returns the playlist view
   Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider) {
     return ValueListenableBuilder(
       valueListenable: Hive.box<PlayList>("playLists").listenable(),
@@ -111,6 +147,10 @@ class PlayListAndAlbum extends StatelessWidget {
     );
   }
 
+  /*
+    This Method returns a list of items.
+    Ethier all the playlists or all the albums.
+  */
   GestureDetector _listBuilder(
       {SongProvider songProvider,
       MediaQueryData mediaQuery,
@@ -186,7 +226,7 @@ class PlayListAndAlbum extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}",
+                          "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}", // ensures null is not returned
                         ),
                         trailing: CircleAvatar(
                           backgroundColor: Colors.black,
@@ -208,6 +248,11 @@ class PlayListAndAlbum extends StatelessWidget {
   }
 }
 
+/*
+  This widget returns a column with the page name 
+  and some layout options that are common to both 
+  the playlist and album view.
+*/
 class PageDefaults extends StatelessWidget {
   const PageDefaults({
     Key key,

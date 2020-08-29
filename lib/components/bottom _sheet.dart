@@ -1,6 +1,24 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Bottom Sheet (Component)
+*/
+
+/*
+  This widget returns a column that contains a textfield to enter the 
+  playlist name and a button to add songs to the playlist on creation.
+  Finally the submit button.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 // import '../provider/music_player.dart';
 import '../helpers/db_helper.dart';
 import '../provider/songItem.dart';
@@ -55,6 +73,10 @@ class _ModalSheetState extends State<ModalSheet> {
           ),
           Row(
             children: [
+              /*
+                The check box next to the button is filled
+                when the user has selected songs to add to the playlist.
+              */
               FlatButton.icon(
                 label: Text("Add Songs"),
                 icon: songProvider.queueNotNull()
@@ -84,6 +106,10 @@ class _ModalSheetState extends State<ModalSheet> {
     );
   }
 
+  /*
+    The submit method checks if the name entered is valid 
+    and call creatItem form the DBHelper.
+  */
   void _submit(SongProvider provider) {
     if (!widget.formKey.currentState.validate()) {
       return;

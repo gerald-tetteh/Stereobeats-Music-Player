@@ -1,3 +1,18 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Playlist & Album Detail Template (Component)
+*/
+
+/*
+  This Widget build the playlist and album detail screen and
+*/
+
+// imports
+
+// package imports
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+// lib file imports
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -21,6 +37,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
   final PlayList playlist;
   final Album album;
   PlaylistAndAlbumDetail({this.playlist, this.album});
+  // either the album or playlist must be null
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -31,6 +48,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
     var isLandScape = mediaQuery.orientation == Orientation.landscape;
     if (playlist == null) {
       final songProvider = Provider.of<SongProvider>(context);
+      // it the album songs are null or 0 the empty widget is returned
       return album.paths != null && album.paths.length != 0
           ? _buildList(actualHeight, context, album.toString(), album.paths,
               songProvider, audioProvider, isLandScape, mediaQuery)
@@ -46,6 +64,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
               .playListSongs(currentPlayList.paths ?? [])
               .reversed
               .toList();
+          // if the playlist has 0 songs the empty widget is returned
           return songs != null && songs.length != 0
               ? _buildList(actualHeight, context, playlist.toString(), songs,
                   songProvider, audioProvider, isLandScape, mediaQuery)
@@ -55,6 +74,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
     }
   }
 
+  // returns the empty widget
   Widget _noSongs(BuildContext context) {
     return Column(
       children: [
@@ -67,6 +87,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
     );
   }
 
+  // this widget constructs the layout for the page
   Column _buildList(
       double actualHeight,
       BuildContext context,
@@ -95,6 +116,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                   ),
                 ),
               ),
+              // items in positioned are stacked on the top most element (in code)
               Positioned(
                 left: 7,
                 top: 15,
@@ -156,6 +178,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
             player: player,
           ),
         ),
+        // adds extra space when the miniplayer is present
         Consumer<AudioPlayer>(
           builder: (context, value, child) => value.miniPlayerPresent
               ? SizedBox(
@@ -168,6 +191,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
   }
 }
 
+// builds list view to show songs in album or playlist.
 class BuildListView extends StatelessWidget {
   const BuildListView({Key key, this.songs, this.songProvider, this.player})
       : super(key: key);

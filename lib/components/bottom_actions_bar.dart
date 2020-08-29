@@ -1,7 +1,35 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Bottom Actions Bar (Component)
+*/
+
+/*
+  The bottom actions bar is shown when the user
+  presses on an item for a long time.
+  This bar presents the user with options to delete
+  songs, rename playlists or add them to a collection.
+
+  It is available on most screens in the app.
+  It is animated in using an animated container.
+
+  Depending on the screen diffrent functions for options sunch
+  as delete are passed to this widget.
+
+  The delete option could simply remove an item from a playlist or
+  remove the song from the device file permanently.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../pages/add_to_page.dart';
@@ -25,6 +53,7 @@ class BottomActionsBar extends StatelessWidget {
   final void Function() deleteFunction;
   final String playlistName;
   final GlobalKey<ScaffoldState> scaffoldKey;
+  // the buttons shown on the bottom bar
   List<BottomNavigationBarItem> _items = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
       icon: Icon(Icons.play_arrow),
@@ -43,6 +72,7 @@ class BottomActionsBar extends StatelessWidget {
       label: "Delete",
     ),
   ];
+  // this option is only visible on the playlist page
   final renamePlaylistOption = BottomNavigationBarItem(
     icon: Icon(Icons.edit_outlined),
     label: "Rename",
@@ -58,6 +88,7 @@ class BottomActionsBar extends StatelessWidget {
     return BottomNavigationBar(
       onTap: (value) async {
         if (value == 0) {
+          // the functions only work when the user has selected an item
           if (songProvider.queueNotNull()) {
             audioProvider.play(songProvider.queue, 0, false);
             audioProvider.setShuffle(false);
@@ -71,6 +102,7 @@ class BottomActionsBar extends StatelessWidget {
                 await Navigator.of(context).pushNamed(AddToPage.routeName) ??
                     false;
             if (result) {
+              // creats a toast to show action was completed
               fToast.showToast(
                 child: ToastComponent(
                   color: Colors.green[100],
@@ -96,6 +128,7 @@ class BottomActionsBar extends StatelessWidget {
               barrierDismissible: false,
               context: scaffoldKey.currentContext,
               builder: (context) {
+                // displays a dialog box to warn the user before deleting
                 return ConfirmDeleteAlert(
                   playListDelete: playListDelete,
                   songProvider: songProvider,
@@ -120,6 +153,8 @@ class BottomActionsBar extends StatelessWidget {
           }
         } else if (value == 4) {
           if (songProvider.keysNotNull() && songProvider.keys.length == 1) {
+            // displays a modal sheet with a text field to change the
+            // playlist name
             await showModalBottomSheet(
               context: scaffoldKey.currentContext,
               builder: (ctx) {

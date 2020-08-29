@@ -1,14 +1,26 @@
 /*
-  * Author: Gerald Addo-Tetteh
-  * StereoBeats Main
-  * AllSongsPopUp
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * All Songs PopUp (Component)
+*/
+
+/*
+  This widget a PopUpMenu when show actions that could be 
+  performed on the selected item.
+
+  This is specific to the all songs page.
 */
 
 // imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../pages/add_to_page.dart';
@@ -35,6 +47,7 @@ class AllSongsPopUp extends StatelessWidget {
     "Details",
     "Share",
   ];
+  // generates a list of popUpMenuItems
   final _items = _menuItems
       .map((item) => PopupMenuItem<String>(
             value: item,
