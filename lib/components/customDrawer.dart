@@ -1,5 +1,17 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Custom Drawer (Component)
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 
+// lib file imports
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../pages/home.dart';
@@ -53,6 +65,7 @@ class CustomDrawer extends StatelessWidget {
             CustomListTile(
               text: "Home",
               iconData: Icons.home,
+              // the page the drawer item opens
               function: () => Navigator.of(context)
                   .pushReplacementNamed(HomeScreen.routeName),
             ),
@@ -93,6 +106,10 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
+/*
+  This widget returns a list tile showing the
+  name of the page and an icon to identify it.
+*/
 class CustomListTile extends StatelessWidget {
   const CustomListTile({
     Key key,

@@ -1,8 +1,24 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Favourites Songs List View (Component)
+*/
+
+/*
+  This Widget returns a list of all the users favourite songs.
+*/
+
+// imports
+
+// package imports
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../utils/default_util.dart';

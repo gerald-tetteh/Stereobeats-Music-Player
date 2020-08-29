@@ -1,7 +1,23 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Separated Positioned List (Component)
+*/
+
+/*
+  This widget builds a list of all the songs on the device.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
 import '../utils/default_util.dart';
@@ -27,11 +43,13 @@ class SeparatedPositionedList extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     final songs = songProvider.songs;
+    // returns empty widget if no songs are available
     return songs != null && songs.length != 0
         ? _buildSongList(songProvider, songs, audioProvider)
         : DefaultUtil.empty("No songs found...");
   }
 
+  // this method builds the list of songs(all songs on device)
   GestureDetector _buildSongList(SongProvider songProvider,
       List<SongItem> songs, AudioPlayer audioProvider) {
     return GestureDetector(
@@ -57,6 +75,10 @@ class SeparatedPositionedList extends StatelessWidget {
                 audioProvider.play(songs, index);
               },
               onLongPress: () => songProvider.changeBottomBar(true),
+              /*
+                This gesture detector is set to null when the bottom
+                actions bar is shown to remove its functionality. 
+              */
               child: GestureDetector(
                 onTap: songProvider.showBottonBar
                     ? () {

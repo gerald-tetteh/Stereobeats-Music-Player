@@ -1,3 +1,22 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Mini Player (component)
+*/
+
+/*
+  This widget returns a rectangle with rounded edges which shows
+  the current song that is playing. It also has controls to pause or play the
+  song and also sekip to the next track or return to the previous song.
+
+  Cliking on the miniplayer opens the play page.
+*/
+
+// imports
+
+// package imports
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,6 +24,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+// lib file imports
 import '../provider/music_player.dart';
 import '../utils/text_util.dart';
 import '../pages/play_page.dart';
@@ -20,6 +40,7 @@ class MiniPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
+    // The playbuilder rebuilds every time the song playing changes.
     return PlayerBuilder.isPlaying(
       player: audioProvider.audioPlayer,
       builder: (context, snapshot) {
@@ -79,6 +100,7 @@ class MiniPlayer extends StatelessWidget {
                           ],
                         ),
                       ),
+                      // play controls
                       Row(
                         children: [
                           IconButton(
@@ -108,6 +130,7 @@ class MiniPlayer extends StatelessWidget {
             ),
           );
         } else {
+          // returned when no song is playing
           return Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),

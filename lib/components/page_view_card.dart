@@ -1,5 +1,22 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Page View Card (Corousel Slider Component)
+*/
+
+/*
+  The widget returns a square with rounded edges
+  with the album art of the current song as its background.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../components/image_builder.dart';
 

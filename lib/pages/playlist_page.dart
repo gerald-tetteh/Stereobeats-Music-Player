@@ -30,6 +30,7 @@ import '../components/bottom_actions_bar.dart';
 import '../provider/music_player.dart';
 
 class PlayListScreen extends StatelessWidget {
+  // name of route
   static const routeName = "/playlist-screen";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override

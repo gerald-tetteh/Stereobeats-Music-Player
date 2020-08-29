@@ -1,6 +1,24 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Quick Play Options
+*/
+
+/*
+  This widget returns a row which
+  contains two widgets that either shuffle all the songs
+  or plays them in alphabetical order.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../utils/text_util.dart';
 import '../provider/music_player.dart';
@@ -14,7 +32,7 @@ class QuickPlayOptions extends StatelessWidget {
   }) : super(key: key);
 
   final MediaQueryData mediaQuery;
-  final AudioPlayer provider;
+  final AudioPlayer provider; // audio player
   final List<SongItem> songs;
 
   @override

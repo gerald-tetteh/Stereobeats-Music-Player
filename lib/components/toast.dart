@@ -1,3 +1,15 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Toast (Component)
+*/
+
+// This widget is used to form toasts
+// A specific message and icon is provided based on the context
+
+// package imports
 import 'package:flutter/material.dart';
 
 class ToastComponent extends StatelessWidget {
@@ -22,7 +34,10 @@ class ToastComponent extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon,color: iconColor,),
+          Icon(
+            icon,
+            color: iconColor,
+          ),
           SizedBox(
             width: 12.0,
           ),

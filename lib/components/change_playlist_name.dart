@@ -1,5 +1,17 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Change Playlist Name (Component)
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 
+// lib file imports
 import '../provider/songItem.dart';
 import '../extensions/string_extension.dart';
 
@@ -19,6 +31,7 @@ class _ChangePlaylistNameState extends State<ChangePlaylistName> {
 
   @override
   void initState() {
+    // initialize controller
     _controller = TextEditingController();
     _controller.text = widget.songProvider.keys[0].trim().capitalize();
     super.initState();
@@ -33,6 +46,7 @@ class _ChangePlaylistNameState extends State<ChangePlaylistName> {
   @override
   Widget build(BuildContext context) {
     return Padding(
+      // this padding keeps the widget above the keyboard
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
@@ -59,6 +73,8 @@ class _ChangePlaylistNameState extends State<ChangePlaylistName> {
     );
   }
 
+  // this method is called when the user clicks submit
+  // it updates the playlist and notifies listners.
   void _submit() {
     widget.renameFunction(
         "playLists", widget.songProvider.keys[0], _controller.text);

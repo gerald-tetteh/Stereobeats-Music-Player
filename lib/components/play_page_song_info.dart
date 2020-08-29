@@ -1,7 +1,26 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Play Page Song Info (Component)
+*/
+
+/*
+  This widgets returns a conatiner showing the title and
+  artist of the current song.
+  A heart icon is below the text. It is used indicated the 
+  favourite status.
+*/
+
+// imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stereo_beats_main/provider/songItem.dart';
 
+// lib file imports
 import '../provider/music_player.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
@@ -13,6 +32,7 @@ class PlayPageSongInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // the consumer rebuilds the widget when the song changes
     return Consumer<AudioPlayer>(builder: (context, provider, child) {
       final song =
           provider.songsQueue[provider.findCurrentIndex(provider.playing.path)];

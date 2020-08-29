@@ -1,7 +1,24 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Slider and Duration (Component)
+*/
+
+/*
+  This widget renders a slider showing the current position on the 
+  song playing and the duration below the slider.
+*/
+
+//imports
+
+// package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
+// lib file imports
 import '../provider/music_player.dart';
 
 class SliderAndDuration extends StatelessWidget {
@@ -16,10 +33,12 @@ class SliderAndDuration extends StatelessWidget {
         final songDuration = provider
             .songsQueue[provider.findCurrentIndex(provider.playing.path)]
             .duration;
+        // the PlayBuilder updates every second in sync with the current song.
         return PlayerBuilder.currentPosition(
           player: provider.audioPlayer,
           builder: (context, position) {
             final songPosition = position.inMilliseconds ?? 0;
+            // converts songPosition from milliseconds => minutes:seconds || hours:minutes:seconds
             final calculatedPosition = provider.calculateDuration(songPosition);
             return Container(
               child: Column(
