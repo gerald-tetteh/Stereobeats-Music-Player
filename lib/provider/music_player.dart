@@ -182,7 +182,6 @@ class AudioPlayer with ChangeNotifier {
         audioPlayer.seek(seekValue);
       }
     }
-    await Equalizer.setAudioSessionId(audioPlayer.audioSessionId.value);
     changePageController();
     miniPlayerPresent = true;
     notifyListeners();
@@ -203,6 +202,8 @@ class AudioPlayer with ChangeNotifier {
       );
       await nextTrack();
     };
+    // setup eqaulizer
+    await Equalizer.setAudioSessionId(audioPlayer.audioSessionId.value);
   }
 
   // plays or pauses a song based on the current state

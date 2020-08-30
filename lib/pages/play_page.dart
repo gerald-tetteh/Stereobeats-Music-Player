@@ -56,92 +56,127 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
     final value =
         Provider.of<AudioPlayer>(context, listen: false); // audio player
     final songProvider = Provider.of<SongProvider>(context, listen: false);
-    final slider = value.slider; // carousel slider
+    final slider = value.slider;
     final mediaQuery = MediaQuery.of(context);
+    var viewlHeight = mediaQuery.size.height;
+    var viewWidth = mediaQuery.size.width;
+    // the boolean variables ae used to ensure different
+    // layouts on different screen sizes
+    final _smallSize = viewlHeight < 600;
+    final _smallWidth = viewWidth < 600;
+    var appBar = AppBar(
+      iconTheme: Theme.of(context).iconTheme,
+      backgroundColor: Colors.transparent,
+      title: FittedBox(child: DefaultUtil.appName),
+      centerTitle: true,
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_drop_down,
+          size: TextUtil.large,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      actions: [
+        if (!_smallSize)
+          Consumer<AudioPlayer>(
+            builder: (context, player, child) {
+              var path = player.playing.path;
+              return IconButton(
+                icon: Icon(Icons.notes),
+                onPressed: () => Navigator.of(context)
+                    .pushNamed(SongDetailPage.routeName, arguments: path),
+                tooltip: "Song Details",
+              );
+            },
+          ),
+        Consumer<AudioPlayer>(
+          builder: (context, player2, child) {
+            return IconButton(
+              icon: Icon(Icons.equalizer_rounded),
+              onPressed: () async => await Equalizer.open(
+                  player2.audioPlayer.audioSessionId.value),
+            );
+          },
+        ),
+        Consumer<AudioPlayer>(
+          builder: (context, player3, child) {
+            var path = player3.playing.path;
+            songProvider.addToQueue(path);
+            return IconButton(
+              icon: Icon(
+                Icons.share_outlined,
+                size: TextUtil.xsmall,
+              ),
+              onPressed: () async {
+                await songProvider.shareFile();
+                songProvider.setQueueToNull();
+              },
+            );
+          },
+        ),
+        if (_smallSize)
+          YoutubeView(
+            value: value,
+            scaffoldKey: widget._scaffoldKey,
+          ),
+      ],
+    ); // carousel slider
+    var appBarHeight = appBar.preferredSize.height;
+    var extraPadding = mediaQuery.padding.top;
+    var actualHeight = viewlHeight - (extraPadding + appBarHeight);
     final _isLandScape = mediaQuery.orientation == Orientation.landscape;
+
+    var songDataAndDuration = Container(
+      constraints: _smallSize && !_isLandScape
+          ? BoxConstraints(
+              maxHeight: actualHeight * 0.71,
+              maxWidth: mediaQuery.size.width,
+            )
+          : null,
+      margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            children: [
+              PlayPageSongInfo(),
+              SliderAndDuration(),
+              if (!_smallSize)
+                YoutubeView(
+                  value: value,
+                  scaffoldKey: widget._scaffoldKey,
+                ),
+            ],
+          ),
+          PlayPageControls(value: value),
+        ],
+      ),
+    );
     List<Widget> contents = [
       Expanded(
         child: slider,
       ),
-      Expanded(
-        child: Container(
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                children: [
-                  PlayPageSongInfo(),
-                  SliderAndDuration(),
-                  YoutubeView(
-                    value: value,
-                    scaffoldKey: widget._scaffoldKey,
-                  ),
-                ],
-              ),
-              PlayPageControls(value: value),
-            ],
-          ),
-        ),
-      ),
+      _smallSize && !_isLandScape
+          ? FittedBox(
+              child: songDataAndDuration,
+            )
+          : Expanded(
+              child: songDataAndDuration,
+              flex: _isLandScape && _smallSize && _smallWidth ? 2 : 1,
+            ),
     ];
     // Color(0xffeceff1)
     return Consumer<AudioPlayer>(
       child: Scaffold(
         key: widget._scaffoldKey,
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          iconTheme: Theme.of(context).iconTheme,
-          backgroundColor: Colors.transparent,
-          title: DefaultUtil.appName,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_drop_down,
-              size: TextUtil.large,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          actions: [
-            Consumer<AudioPlayer>(
-              builder: (context, player, child) {
-                var path = player.playing.path;
-                return IconButton(
-                  icon: Icon(Icons.notes),
-                  onPressed: () => Navigator.of(context)
-                      .pushNamed(SongDetailPage.routeName, arguments: path),
-                  tooltip: "Song Details",
-                );
-              },
-            ),
-            Consumer<AudioPlayer>(
-              builder: (context, player2, child) {
-                return IconButton(
-                  icon: Icon(Icons.equalizer_rounded),
-                  onPressed: () async => await Equalizer.open(
-                      player2.audioPlayer.audioSessionId.value),
-                );
-              },
-            ),
-            Consumer<AudioPlayer>(
-              builder: (context, player3, child) {
-                var path = player3.playing.path;
-                songProvider.addToQueue(path);
-                return IconButton(
-                  icon: Icon(
-                    Icons.share_outlined,
-                    size: TextUtil.xsmall,
-                  ),
-                  onPressed: () async {
-                    await songProvider.shareFile();
-                    songProvider.setQueueToNull();
-                  },
-                );
-              },
-            ),
-          ],
-        ),
+        appBar: appBar,
+        /*
+          The items on this page are arranged differently 
+          when the device orientation changes to prevent 
+          layout errors.
+        */
         body:
             _isLandScape ? Row(children: contents) : Column(children: contents),
       ),
@@ -160,6 +195,8 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
             ),
           ),
           child: ClipRRect(
+            // creats a backgroud blur effect
+            // the songs album art is used as the background
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(

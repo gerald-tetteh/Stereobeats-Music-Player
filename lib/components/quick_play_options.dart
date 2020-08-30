@@ -38,10 +38,10 @@ class QuickPlayOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: mediaQuery.size.width * 0.3,
+      width: mediaQuery.size.width * 0.35,
       padding: const EdgeInsets.all(8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
             icon: FaIcon(

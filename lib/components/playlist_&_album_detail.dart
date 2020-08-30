@@ -100,7 +100,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
     return Column(
       children: [
         Container(
-          height: isLandScape ? actualHeight * 0.45 : actualHeight * 0.25,
+          height: isLandScape ? actualHeight * 0.45 : actualHeight * 0.35,
           child: Stack(
             fit: StackFit.expand,
             children: [
