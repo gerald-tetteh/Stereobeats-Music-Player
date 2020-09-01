@@ -1,4 +1,17 @@
-package com.example.stereo_beats_main;
+package com.herokuapp.addodevelop.stereo_beats_main;
+
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * */
+
+/*
+* This file contains methods written in java to perform functions
+* that can not by done with dart alone (Accessing native features)
+* The methods here are called through the method channel.
+* */
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -40,6 +53,7 @@ public class MainActivity extends FlutterActivity {
                 (call, result) -> {
                     switch (call.method) {
                         case "getDeviceAudio": {
+                            // checks for permissions
                             String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
                             Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
                                 @Override
@@ -125,8 +139,14 @@ public class MainActivity extends FlutterActivity {
         );
     }
 
+    /*
+    * This method returns all audio files classified as music.
+    * It uses the cursor to search through the media store for all
+    * the music on the device.
+    * The metadata for each song is also collected and stored
+    * in a HasMap.
+    * */
     private void getDeviceAudio(MethodChannel.Result result) {
-
         List<Map<String,Object>> songData = new ArrayList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {
@@ -144,8 +164,6 @@ public class MainActivity extends FlutterActivity {
         };
         Cursor c = MainActivity.this.getContentResolver().query(uri, projection, MediaStore.Audio.AudioColumns.IS_MUSIC + " > ?", new String[]{"0"},
                 MediaStore.Audio.AudioColumns.TITLE + " ASC");
-
-
         if(c != null) {
             while (c.moveToNext()) {
                     Map<String,Object> metaData = new HashMap<>();
@@ -166,6 +184,11 @@ public class MainActivity extends FlutterActivity {
         result.success(songData);
     }
 
+    /*
+    * This method is used to update the metadata(ID3 tags) of a song.
+    * An external package is used to update the files then the media store
+    * is refreshed.
+    * */
     private void updateSongItem(MethodChannel.Result result, Map<String,String> songDetails) {
         String filePath = songDetails.get("path");
         assert filePath != null;
@@ -217,6 +240,12 @@ public class MainActivity extends FlutterActivity {
 //        result.success(path);
 //    }
 
+    /*
+    * This method returns the path to the album art
+    * for all the music files on the device if it exits.
+    * The paths are stored in a map with the album id the
+    * key and the path the value.
+    * */
     private void getAllAlbumArt(MethodChannel.Result result) {
         HashMap<String,Object> albumArts = new HashMap<>();
             Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
@@ -231,6 +260,11 @@ public class MainActivity extends FlutterActivity {
         result.success(albumArts);
     }
 
+    /*
+    * The method is used to permanently remove an audio file from
+    * the device.
+    * The media store is refreshed to reflect the changes.
+    * */
     private void deleteFile(MethodChannel.Result result, String path) {
         File dir = new File(path);
         String selection = MediaStore.Audio.AudioColumns.DATA + "= ?";
@@ -247,10 +281,15 @@ public class MainActivity extends FlutterActivity {
         }
     }
 
+    /*
+    * This method opens a dialog box to enable the user to share
+    * an audio file with another device or application.
+    * */
     private void shareFile(MethodChannel.Result result,  List<String> paths) {
         if (paths.size() == 1) {
             File file = new File(paths.get(0));
-            Uri uri = FileProvider.getUriForFile(MainActivity.this,"com.example.stereo_beats_main.provider",file);
+            // file provider created in manifest.
+            Uri uri = FileProvider.getUriForFile(MainActivity.this,"com.herokuapp.gerald-addo.stereo_beats_main.provider",file);
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("audio/*");
             share.putExtra(Intent.EXTRA_STREAM, uri);
@@ -267,7 +306,8 @@ public class MainActivity extends FlutterActivity {
                 File file = new File(path);
                 Uri uri = FileProvider.getUriForFile(
                         MainActivity.this,
-                        "com.example.stereo_beats_main.provider",
+                        // file provider created in manifest.
+                        "com.herokuapp.addodevelop.stereo_beats_main.provider",
                         file);
                 files.add(uri);
             }

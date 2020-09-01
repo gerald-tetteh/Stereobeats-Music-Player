@@ -49,6 +49,14 @@ dev_dependencies:
     sdk: flutter
   hive_generator: ^0.7.1
   build_runner: ^1.10.2
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#212121"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
