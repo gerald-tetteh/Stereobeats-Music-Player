@@ -45,3 +45,7 @@ app.*.map.json
 
 # api file
 /lib/helpers/api_keys.dart
+
+# Android related
+android/app/UsersUSER_NAMEkey.jks
+android/app/UsersUSER_NAMEkey.jks.old
