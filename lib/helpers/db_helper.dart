@@ -52,6 +52,18 @@ class DBHelper {
     box.put(playlistName, playList);
   }
 
+  // this method deletes items from the data base when the items have
+  // been deleted from the device
+  static void randomDeleteItem(String boxName, String path) {
+    var box = Hive.box<PlayList>(boxName);
+    List<PlayList> playLists =
+        box.values.where((playlist) => playlist.paths.contains(path)).toList();
+    playLists.forEach((list) {
+      list.paths.remove(path);
+      box.put(list.toString(), list);
+    });
+  }
+
   // this method deletes a database entry
   static void deleteBox(String boxName, List<String> playListNames) {
     var box = Hive.box<PlayList>(boxName);

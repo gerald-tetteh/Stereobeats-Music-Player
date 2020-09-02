@@ -426,6 +426,16 @@ class SongProvider with ChangeNotifier {
   }
 
   /*
+    When a song is deleted this method removes it from the playlist
+    if it exits.
+  */
+  void removeFromPlayList() {
+    _queue.forEach((path) {
+      DBHelper.randomDeleteItem("playLists", path);
+    });
+  }
+
+  /*
     Deletes all songs in _queue permanently from the device
     and clears all entries from the MediaStrore.
     This completed using java code through the platform channel. 
@@ -438,6 +448,7 @@ class SongProvider with ChangeNotifier {
         "path": path,
       });
     });
+    removeFromPlayList();
     removeFromFavourites();
   }
 
