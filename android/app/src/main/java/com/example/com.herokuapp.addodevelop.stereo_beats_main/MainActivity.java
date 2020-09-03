@@ -14,14 +14,12 @@ package com.herokuapp.addodevelop.stereo_beats_main;
 * */
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -105,6 +103,7 @@ public class MainActivity extends FlutterActivity {
                                 @Override
                                 public void onGranted() {
                                     List<String> paths = call.argument("paths");
+                                    assert paths != null;
                                     shareFile(result,paths);
                                 }
 
@@ -121,6 +120,7 @@ public class MainActivity extends FlutterActivity {
                                 @Override
                                 public void onGranted() {
                                     Map<String,String> songDetails = call.argument("songDetails");
+                                    assert songDetails != null;
                                     updateSongItem(result,songDetails);
                                 }
 
