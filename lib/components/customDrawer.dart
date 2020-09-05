@@ -31,7 +31,7 @@ class CustomDrawer extends StatelessWidget {
             colors: [
               Colors.blue[300],
               Colors.blue[200],
-              Colors.blue[200],
+              Colors.blue[100],
               Colors.blue[50],
               Colors.red[50],
               Colors.red[100],
