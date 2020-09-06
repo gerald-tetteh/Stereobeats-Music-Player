@@ -49,6 +49,7 @@ void main() async {
   await Hive.initFlutter("steroBeatsData");
   Hive.registerAdapter(PlayListAdapter());
   await Hive.openBox<PlayList>("playLists");
+  await Hive.openBox<String>("settings");
   runApp(MyApp());
 }
 
