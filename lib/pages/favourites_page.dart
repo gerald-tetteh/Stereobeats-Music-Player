@@ -28,6 +28,7 @@ import '../provider/music_player.dart';
 import '../components/mini_player.dart';
 import '../components/favourite_songs_list_view.dart';
 import '../components/bottom_actions_bar.dart';
+import '../helpers/reviewHelper.dart';
 
 import 'search_view.dart';
 
@@ -35,12 +36,16 @@ class FavouritesPage extends StatelessWidget {
   // name of the route
   static const routeName = "/favourites-page";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
+  final reviweHelper = ReviewHelper(DateTime.now());
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context);
     final favouriteSongs = songProvider.favourites;
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
+    // used to show review dialog.
+    reviweHelper.showReview();
     return Scaffold(
       bottomNavigationBar: AnimatedContainer(
         child: BottomActionsBar(

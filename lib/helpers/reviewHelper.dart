@@ -1,5 +1,19 @@
+/*
+ * Author: Gerald Addo-Tetteh
+ * Stereo Beats Music Player for Android mobile devices.
+ * Addo Develop
+ * Email: addodevelop@gmail.com
+ * Review Helper
+*/
+
+/*
+  This class handles in app reviews.
+  The user is promted a maximum of three times 
+  over ninty days to leave a review in the app store.
+*/
+
+// imports
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_review/in_app_review.dart';
 
 class ReviewHelper {
@@ -9,40 +23,41 @@ class ReviewHelper {
 
   bool isAfter(DateTime reviewDate) => date.isAfter(reviewDate);
   bool askCount(int number) => number < 3;
-  bool hasAsked(String value) => value == "1";
 
-  void reset(Box<String> box, String reviewCount, int year,
-      [bool newYear = false]) {
+  /*
+    This method is used to reset the database 
+    each time the review dialog is shown.
+    It also increases the count. i.e the number of
+    times the review dialog has shown.
+  */
+  Future<void> reset(Box<String> box, String reviewCount) async {
     var nextReview = date.add(Duration(days: 30));
-    var newCount = newYear ? 0 : int.parse(reviewCount) + 1;
-    box.put("nextReview", nextReview.toIso8601String());
-    box.put("savedYear", year.toString());
-    box.put(reviewCount, newCount.toString());
+    var newCount = int.parse(reviewCount) + 1;
+    await box.put("nextReview", nextReview.toIso8601String());
+    await box.put(reviewCount, newCount.toString());
   }
 
+  /*
+    This method is used to show the dialog.
+    The method checks if the device is compatible
+    first and also if the review dialog can be shown 
+    before showing it.
+  */
   Future<void> showReview() async {
-    final year = date.year;
     var nextReviewDefault = date.add(Duration(days: 30));
     var box = Hive.box<String>("settings");
-    var hasAsked = box.get("hasAsked", defaultValue: "0");
-    // TODO: Check if user has submitted a review.
-    var nextDate = box.get("nextReview",
-        defaultValue: "${nextReviewDefault.toIso8601String()}");
-    var savedYear = box.get("savedYear", defaultValue: year.toString());
+    var nextDate = box.get("nextReview");
+    if (nextDate == null) {
+      nextDate = nextReviewDefault.toIso8601String();
+      await box.put("nextReview", nextDate);
+    }
     var reviewCount = box.get("reviewCount", defaultValue: "0");
-    if (int.parse(savedYear) == year) {
-      if (askCount(int.parse(reviewCount))) {
-        if (isAfter(DateTime.parse(nextDate))) {
-          if (await inAppReview.isAvailable()) {
-            await inAppReview.requestReview();
-            reset(box, reviewCount, year);
-          }
+    if (askCount(int.parse(reviewCount))) {
+      if (isAfter(DateTime.parse(nextDate))) {
+        if (await inAppReview.isAvailable()) {
+          await inAppReview.requestReview();
+          await reset(box, reviewCount);
         }
-      }
-    } else {
-      if (await inAppReview.isAvailable()) {
-        await inAppReview.requestReview();
-        reset(box, reviewCount, year, true);
       }
     }
   }
