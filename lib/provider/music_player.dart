@@ -26,7 +26,6 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:equalizer/equalizer.dart';
 
 // lib file imports
 import 'songItem.dart';
@@ -85,8 +84,12 @@ class AudioPlayer with ChangeNotifier {
 
   // change the current index of the carousel when it is mouted
   void animateCarousel() {
-    pageController.jumpToPage(
-        findCurrentIndex(audioPlayer.current.value.audio.audio.path));
+    try {
+      pageController.jumpToPage(
+          findCurrentIndex(audioPlayer.current.value.audio.audio.path));
+    } catch (e) {
+      return;
+    }
   }
 
   /*
@@ -185,7 +188,7 @@ class AudioPlayer with ChangeNotifier {
     changePageController();
     miniPlayerPresent = true;
     notifyListeners();
-    audioPlayer.onReadyToPlay.listen((event) {
+    audioPlayer.onReadyToPlay.listen((event) async {
       changePageController();
       notifyListeners();
       animateCarousel();
@@ -203,7 +206,6 @@ class AudioPlayer with ChangeNotifier {
       await nextTrack();
     };
     // setup eqaulizer
-    await Equalizer.setAudioSessionId(audioPlayer.audioSessionId.value);
   }
 
   // plays or pauses a song based on the current state

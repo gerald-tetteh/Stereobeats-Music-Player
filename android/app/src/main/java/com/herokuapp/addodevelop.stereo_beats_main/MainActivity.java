@@ -289,7 +289,8 @@ public class MainActivity extends FlutterActivity {
         if (paths.size() == 1) {
             File file = new File(paths.get(0));
             // file provider created in manifest.
-            Uri uri = FileProvider.getUriForFile(MainActivity.this,"com.herokuapp.gerald-addo.stereo_beats_main.provider",file);
+            Uri uri = FileProvider.getUriForFile(MainActivity.this,
+                    "com.herokuapp.addodevelop.stereo_beats_main.provider",file);
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("audio/*");
             share.putExtra(Intent.EXTRA_STREAM, uri);

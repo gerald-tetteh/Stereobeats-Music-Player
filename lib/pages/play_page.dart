@@ -101,13 +101,13 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
         Consumer<AudioPlayer>(
           builder: (context, player3, child) {
             var path = player3.playing.path;
-            songProvider.addToQueue(path);
             return IconButton(
               icon: Icon(
                 Icons.share_outlined,
                 size: TextUtil.xsmall,
               ),
               onPressed: () async {
+                songProvider.addToQueue(path);
                 await songProvider.shareFile();
                 songProvider.setQueueToNull();
               },
