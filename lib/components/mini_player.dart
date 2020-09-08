@@ -26,6 +26,7 @@ import 'package:provider/provider.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
+import '../provider/songItem.dart';
 import '../utils/text_util.dart';
 import '../pages/play_page.dart';
 import '../utils/default_util.dart';
@@ -41,8 +42,10 @@ class MiniPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     // widget rebuilds each time the song changes.
     final audioProvider = Provider.of<AudioPlayer>(context);
+    final songProvider = Provider.of<SongProvider>(context, listen: false);
     if (audioProvider.audioPlayer.playerState.value != PlayerState.stop) {
       Audio song = audioProvider.playing;
+      var albumArt = songProvider.getSongFromPath(song.path).artPath;
       return GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(PlayMusicScreen.routeName),
         child: Container(
@@ -64,10 +67,9 @@ class MiniPlayer extends StatelessWidget {
                         Hero(
                           tag: song.path,
                           child: CircleAvatar(
-                            backgroundImage:
-                                DefaultUtil.checkNotNull(song.metas.image.path)
-                                    ? FileImage(File(song.metas.image.path))
-                                    : AssetImage(DefaultUtil.defaultImage),
+                            backgroundImage: DefaultUtil.checkNotNull(albumArt)
+                                ? FileImage(File(albumArt))
+                                : AssetImage(DefaultUtil.defaultImage),
                           ),
                         ),
                         Expanded(

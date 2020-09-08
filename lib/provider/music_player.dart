@@ -152,12 +152,15 @@ class AudioPlayer with ChangeNotifier {
     is incompatible with the device.
   */
   Future<void> play(List<SongItem> songs,
-      [int startIndex = 0, bool shuffle, Duration seekValue]) async {
+      [int startIndex = 0, bool shuffle = false, Duration seekValue]) async {
     audioPlayer.shuffle = shuffle ?? prefs.getBool("shuffle") ?? false;
     songsQueue = songs;
+    Random rand = Random();
+    int randomIndex = rand.nextInt(songs.length);
     await audioPlayer.open(
-      Playlist(audios: audioSongs(songs)),
-      autoStart: false,
+      Playlist(
+          audios: audioSongs(songs),
+          startIndex: shuffle ? randomIndex : startIndex),
       audioFocusStrategy: AudioFocusStrategy.request(
         resumeAfterInterruption: true,
       ), // the song continues after the interuption.
@@ -175,15 +178,8 @@ class AudioPlayer with ChangeNotifier {
         customPrevAction: (player) => previousTrack(),
       ),
     );
-    if (startIndex == 0 && shuffle == true) {
-      Random rand = Random();
-      int randomIndex = rand.nextInt(songs.length);
-      await audioPlayer.playlistPlayAtIndex(randomIndex);
-    } else {
-      await audioPlayer.playlistPlayAtIndex(startIndex);
-      if (seekValue != null) {
-        audioPlayer.seek(seekValue);
-      }
+    if (seekValue != null) {
+      audioPlayer.seek(seekValue);
     }
     changePageController();
     miniPlayerPresent = true;
