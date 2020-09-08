@@ -34,13 +34,10 @@ class PageViewCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
         elevation: 5,
-        child: Hero(
-          tag: song.path,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: ImageBuilder(
-              path: song.artPath,
-            ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: ImageBuilder(
+            path: song.artPath,
           ),
         ),
       ),
