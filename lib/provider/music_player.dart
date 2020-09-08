@@ -193,6 +193,12 @@ class AudioPlayer with ChangeNotifier {
       notifyListeners();
       animateCarousel();
     });
+    // audioPlayer.playlistFinished.listen((event) async {
+    //   if (event && audioPlayer.loopMode.value == LoopMode.none) {
+    //     await audioPlayer.playlistPlayAtIndex(startIndex);
+    //     await audioPlayer.pause();
+    //   }
+    // });
     audioPlayer.onErrorDo = (handler) async {
       // shows a toast if song can not be played and
       // moves to the next song.

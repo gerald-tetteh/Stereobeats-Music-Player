@@ -149,11 +149,7 @@ class ArtistViewScreen extends StatelessWidget {
             left: 3,
             right: 3,
             // shows the miniplayer if present
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
-            ),
+            child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],
       ),
@@ -164,13 +160,9 @@ class ArtistViewScreen extends StatelessWidget {
     Creats a spce beneath the custom scroll view to prevent 
     the mini player from obstructing it.  
   */
-  Consumer<AudioPlayer> _extraSpace() {
-    return Consumer<AudioPlayer>(
-      builder: (context, value, child) => value.miniPlayerPresent
-          ? SliverList(
-              delegate: SliverChildListDelegate.fixed([SizedBox(height: 73)]),
-            )
-          : SliverList(delegate: SliverChildListDelegate([])),
+  SliverList _extraSpace() {
+    return SliverList(
+      delegate: SliverChildListDelegate.fixed([SizedBox(height: 73)]),
     );
   }
 

@@ -245,14 +245,29 @@ class YoutubeView extends StatelessWidget {
             var title = value.playing.metas.title;
             if (title != null) {
               _showSnackBar();
-              var response = await ApiKeys.youtubeApiHandler
-                  .search(title + " $finalArtistName");
-              var url = response
-                  .firstWhere(
-                      (result) => result.url != null && result.url.length != 0,
-                      orElse: () => null)
-                  ?.url;
-              await _launch(url, fToast);
+              try {
+                var response = await ApiKeys.youtubeApiHandler
+                    .search(title + " $finalArtistName");
+                var url = response
+                    .firstWhere(
+                        (result) =>
+                            result.url != null && result.url.length != 0,
+                        orElse: () => null)
+                    ?.url;
+                await _launch(url, fToast);
+              } catch (e) {
+                scaffoldKey.currentState.removeCurrentSnackBar();
+                fToast.showToast(
+                  child: ToastComponent(
+                    color: Colors.orangeAccent,
+                    icon: Icons.error_outline,
+                    message: "Could not load video...",
+                    iconColor: Colors.orangeAccent[100],
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: Duration(seconds: 3),
+                );
+              }
             }
           },
           tooltip: "Watch Youtube Video",

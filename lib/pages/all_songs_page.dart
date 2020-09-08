@@ -141,13 +141,8 @@ class AllSongsScreen extends StatelessWidget {
                         ),
                         // creats a space beneath the list so that
                         // it is not obstacted by the miniplayer
-                        Consumer<AudioPlayer>(
-                          builder: (context, value, child) =>
-                              value.miniPlayerPresent
-                                  ? SizedBox(
-                                      height: 73,
-                                    )
-                                  : Container(),
+                        SizedBox(
+                          height: 73,
                         ),
                       ],
                     ),
@@ -161,11 +156,7 @@ class AllSongsScreen extends StatelessWidget {
             left: 3,
             right: 3,
             // shows miniplayer if available
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
-            ),
+            child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],
       ),

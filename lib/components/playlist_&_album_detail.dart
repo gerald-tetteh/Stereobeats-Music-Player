@@ -179,12 +179,8 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
           ),
         ),
         // adds extra space when the miniplayer is present
-        Consumer<AudioPlayer>(
-          builder: (context, value, child) => value.miniPlayerPresent
-              ? SizedBox(
-                  height: 73,
-                )
-              : Container(),
+        SizedBox(
+          height: 73,
         ),
       ],
     );

@@ -177,11 +177,7 @@ class HomeScreen extends StatelessWidget {
           bottom: 10,
           left: 3,
           right: 3,
-          child: Consumer<AudioPlayer>(
-            builder: (context, value, child) => value.miniPlayerPresent
-                ? MiniPlayer(mediaQuery: mediaQuery)
-                : Container(),
-          ),
+          child: MiniPlayer(mediaQuery: mediaQuery),
         ),
       ],
     );
@@ -260,12 +256,8 @@ class _BottomSheet extends StatelessWidget {
                   },
                 ),
               ),
-              Consumer<AudioPlayer>(
-                builder: (context, value, child) => value.miniPlayerPresent
-                    ? SizedBox(
-                        height: 73,
-                      )
-                    : Container(),
+              SizedBox(
+                height: 73,
               ),
             ],
           ),

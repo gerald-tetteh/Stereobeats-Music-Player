@@ -27,7 +27,6 @@ import '../pages/album_detail_screen.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
 import '../provider/songItem.dart';
-import '../provider/music_player.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -86,12 +85,8 @@ class PlayListAndAlbum extends StatelessWidget {
       creats a space beneath the list to prevent
       the miniplayer from obstacting it.
     */
-    var extraSpace = Consumer<AudioPlayer>(
-      builder: (context, value, child) => value.miniPlayerPresent
-          ? SizedBox(
-              height: 73,
-            )
-          : Container(),
+    var extraSpace = SizedBox(
+      height: 73,
     );
     /* 
       builds either the playlist view or album 
@@ -264,7 +259,7 @@ class PageDefaults extends StatelessWidget {
 
   final String title;
   final String subTitle;
-  final Consumer<AudioPlayer> extraSpace;
+  final SizedBox extraSpace;
   final Widget child;
 
   @override

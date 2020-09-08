@@ -22,7 +22,6 @@ import '../components/mini_player.dart';
 import '../models/album.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
-import '../provider/music_player.dart';
 
 class AlbumDetailScreen extends StatelessWidget {
   // name of route
@@ -58,11 +57,7 @@ class AlbumDetailScreen extends StatelessWidget {
             left: 3,
             right: 3,
             // shows mini player if available
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
-            ),
+            child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],
       ),

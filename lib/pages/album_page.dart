@@ -23,7 +23,6 @@ import '../components/playlist_&_album_main.dart';
 import '../components/customDrawer.dart';
 import '../components/mini_player.dart';
 import '../provider/songItem.dart';
-import '../provider/music_player.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 
@@ -90,11 +89,7 @@ class AlbumListScreen extends StatelessWidget {
             left: 3,
             right: 3,
             // shows miniplayer if present
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
-            ),
+            child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],
       ),

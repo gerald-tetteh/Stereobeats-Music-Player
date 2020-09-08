@@ -21,7 +21,6 @@ import 'package:provider/provider.dart';
 import '../components/customDrawer.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
-import '../provider/music_player.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -96,11 +95,7 @@ class ArtistScreen extends StatelessWidget {
                   left: 3,
                   right: 3,
                   // shows miniplayer if available
-                  child: Consumer<AudioPlayer>(
-                    builder: (context, value, child) => value.miniPlayerPresent
-                        ? MiniPlayer(mediaQuery: mediaQuery)
-                        : Container(),
-                  ),
+                  child: MiniPlayer(mediaQuery: mediaQuery),
                 ),
               ],
             )
@@ -209,12 +204,8 @@ class BuildColumn extends StatelessWidget {
             ),
           ),
         ),
-        Consumer<AudioPlayer>(
-          builder: (context, value, child) => value.miniPlayerPresent
-              ? SizedBox(
-                  height: 73,
-                )
-              : Container(),
+        SizedBox(
+          height: 73,
         ),
       ],
     );

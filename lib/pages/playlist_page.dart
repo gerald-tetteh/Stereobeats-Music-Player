@@ -27,7 +27,6 @@ import '../provider/songItem.dart';
 import '../components/mini_player.dart';
 import '../components/bottom _sheet.dart';
 import '../components/bottom_actions_bar.dart';
-import '../provider/music_player.dart';
 
 class PlayListScreen extends StatelessWidget {
   // name of route
@@ -106,11 +105,7 @@ class PlayListScreen extends StatelessWidget {
             bottom: 10,
             left: 3,
             right: 3,
-            child: Consumer<AudioPlayer>(
-              builder: (context, value, child) => value.miniPlayerPresent
-                  ? MiniPlayer(mediaQuery: mediaQuery)
-                  : Container(),
-            ),
+            child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],
       ),
