@@ -16,6 +16,7 @@ import 'package:stereo_beats_main/utils/default_util.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
@@ -32,7 +33,9 @@ class HomeScreen extends StatelessWidget {
   final _scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    // final themeData = Theme.of(context);
     var songProvider = Provider.of<SongProvider>(context);
+    var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     List<SongItem> songs = songProvider.songsFraction;
     final mediaQuery = MediaQuery.of(context);
     var viewHeight = mediaQuery.size.height;
@@ -42,11 +45,12 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       key: _scaffoldkey,
       drawer: CustomDrawer(),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       // returns empty widget if there are songs on the device
       body: songs != null && songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
-              mediaQuery, songProvider, context)
+              mediaQuery, songProvider, themeProvider, context)
           : _noSongs(context),
     );
   }
@@ -90,6 +94,7 @@ class HomeScreen extends StatelessWidget {
       GlobalKey<ScaffoldState> _scaffoldkey,
       MediaQueryData mediaQuery,
       SongProvider songProvider,
+      AppThemeMode themeProvider,
       BuildContext context) {
     return Stack(
       fit: StackFit.expand,
@@ -142,21 +147,30 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(40),
                         ),
-                        color: Color(0xffeeeeee),
+                        color: themeProvider.isDarkMode
+                            ? ColorUtil.dark2
+                            : Color(0xffeeeeee),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             songs[0].title,
-                            style: TextUtil.homeSongTitle,
+                            style: TextUtil.homeSongTitle.copyWith(
+                              color: themeProvider.isDarkMode
+                                  ? ColorUtil.white
+                                  : null,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.fade,
                           ),
                           Text(
                             songs[0].artist,
                             maxLines: 1,
-                            overflow: TextOverflow.fade,
+                            overflow: TextOverflow.clip,
+                            style: themeProvider.isDarkMode
+                                ? TextUtil.homeSongArtist
+                                : null,
                           ),
                         ],
                       ),
@@ -169,6 +183,7 @@ class HomeScreen extends StatelessWidget {
               child: _BottomSheet(
                 songs: songs,
                 songProvider: songProvider,
+                themeProvider: themeProvider,
               ),
             ),
           ],
@@ -193,10 +208,12 @@ class _BottomSheet extends StatelessWidget {
     Key key,
     @required this.songs,
     @required this.songProvider,
+    @required this.themeProvider,
   }) : super(key: key);
 
   final List<SongItem> songs;
   final SongProvider songProvider;
+  final AppThemeMode themeProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +227,7 @@ class _BottomSheet extends StatelessWidget {
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(100),
           ),
-          color: ColorUtil.white,
+          color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.only(
@@ -228,7 +245,10 @@ class _BottomSheet extends StatelessWidget {
                     ),
                     child: Text(
                       "Quick Pick",
-                      style: TextUtil.quickPick,
+                      style: TextUtil.quickPick.copyWith(
+                        color:
+                            themeProvider.isDarkMode ? ColorUtil.white : null,
+                      ),
                     ),
                   ),
                   Spacer(),

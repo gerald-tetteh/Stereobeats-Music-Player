@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'color_util.dart';
 
 class TextUtil {
-  // fon sizes
+  // font sizes
   static const double xsmall = 19;
   static const double small = 24;
   static const double medium = 30;
@@ -33,9 +33,30 @@ class TextUtil {
     fontFamily: "Grenze",
     fontSize: TextUtil.xsmall,
   );
+  static final TextStyle homeSongArtist = TextStyle(
+    color: ColorUtil.lightGrey,
+  );
   static const TextStyle quickPick = TextStyle(
     fontFamily: "Grenze",
     fontSize: TextUtil.medium,
+  );
+  static const TextStyle quickPickSongDetails = TextStyle(
+    color: ColorUtil.white,
+  );
+  static const TextStyle miniPlayerTitle = TextStyle(
+    color: ColorUtil.white,
+  );
+  static const TextStyle dropDownHint = TextStyle(
+    color: ColorUtil.white,
+  );
+  static const TextStyle allSongsTitle = TextStyle(
+    color: ColorUtil.white,
+  );
+  static const TextStyle allSongsArtist = TextStyle(
+    color: ColorUtil.lightGrey,
+  );
+  static const TextStyle allSongsPopUp = TextStyle(
+    color: ColorUtil.white,
   );
   static const TextStyle mutedText = TextStyle(
     fontSize: 15,

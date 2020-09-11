@@ -23,9 +23,11 @@ import 'package:provider/provider.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../components/box_image.dart';
 import '../provider/music_player.dart';
+import '../utils/text_util.dart';
 
 class CustomListView extends StatelessWidget {
   const CustomListView({
@@ -41,17 +43,20 @@ class CustomListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return ListTile(
       leading: BoxImage(
         path: song.artPath,
       ),
       title: Text(
         DefaultUtil.checkNotNull(song.title) ? song.title : DefaultUtil.unknown,
+        style: themeProvider.isDarkMode ? TextUtil.quickPickSongDetails : null,
       ),
       subtitle: Text(
         DefaultUtil.checkNotNull(song.artist)
             ? song.artist
             : DefaultUtil.unknown,
+        style: themeProvider.isDarkMode ? TextUtil.quickPickSongDetails : null,
       ),
       onTap: () =>
           Provider.of<AudioPlayer>(context, listen: false).play(songs, index),

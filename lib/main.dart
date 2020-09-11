@@ -38,6 +38,7 @@ import './pages/search_view_more.dart';
 import './pages/edit_song_page.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
+import './provider/theme_mode.dart';
 import './pages/play_page.dart';
 import './utils/text_util.dart';
 import './utils/color_util.dart';
@@ -67,45 +68,66 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AudioPlayer(),
         ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Stereobeats',
-        theme: ThemeData(
-          primaryColor: Color(0xff1565c0),
-          accentColor: Colors.black,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          fontFamily: "Montserrat",
-          iconTheme: IconThemeData(
-            color: Color(0xff1565c0),
-            size: TextUtil.large,
-          ),
-          appBarTheme: AppBarTheme(
-            elevation: 0,
-            iconTheme: Theme.of(context).iconTheme,
-            color: ColorUtil.white,
-          ),
+        ChangeNotifierProvider(
+          create: (_) => AppThemeMode(),
         ),
-        home: LoadingScreen(),
-        // below are all the predefined routes
-        routes: {
-          PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
-          HomeScreen.routeName: (ctx) => HomeScreen(),
-          AllSongsScreen.routeName: (ctx) => AllSongsScreen(),
-          FavouritesPage.routeName: (ctx) => FavouritesPage(),
-          PlayListScreen.routeName: (ctx) => PlayListScreen(),
-          PlaylistDetailScreen.routeName: (ctx) => PlaylistDetailScreen(),
-          AddToPage.routeName: (ctx) => AddToPage(),
-          AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
-          AlbumListScreen.routeName: (ctx) => AlbumListScreen(),
-          AlbumDetailScreen.routeName: (ctx) => AlbumDetailScreen(),
-          ArtistScreen.routeName: (ctx) => ArtistScreen(),
-          ArtistViewScreen.routeName: (ctx) => ArtistViewScreen(),
-          SearchView.routeName: (ctx) => SearchView(),
-          SearchViewMore.routeName: (ctx) => SearchViewMore(),
-          SongDetailPage.routeName: (ctx) => SongDetailPage(),
-          EditSongPage.routeName: (ctx) => EditSongPage(),
-        },
+      ],
+      child: Consumer<AppThemeMode>(
+        builder: (context, themeProvider, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Stereobeats',
+          theme: ThemeData(
+            primaryColor: Color(0xff1565c0),
+            accentColor: Colors.black,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            fontFamily: "Montserrat",
+            iconTheme: IconThemeData(
+              color: Color(0xff1565c0),
+              size: TextUtil.large,
+            ),
+            appBarTheme: AppBarTheme(
+              elevation: 0,
+              iconTheme: Theme.of(context).iconTheme,
+              color: ColorUtil.white,
+            ),
+          ),
+          darkTheme: ThemeData(
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            primaryColor: ColorUtil.purple,
+            accentColor: ColorUtil.dark2,
+            fontFamily: "Montserrat",
+            iconTheme: IconThemeData(
+              size: TextUtil.large,
+              color: ColorUtil.purple,
+            ),
+            appBarTheme: AppBarTheme(
+              elevation: 0,
+              iconTheme: Theme.of(context).iconTheme,
+              color: ColorUtil.purple,
+            ),
+          ),
+          themeMode: themeProvider.themeMode,
+          home: LoadingScreen(),
+          // below are all the predefined routes
+          routes: {
+            PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
+            HomeScreen.routeName: (ctx) => HomeScreen(),
+            AllSongsScreen.routeName: (ctx) => AllSongsScreen(),
+            FavouritesPage.routeName: (ctx) => FavouritesPage(),
+            PlayListScreen.routeName: (ctx) => PlayListScreen(),
+            PlaylistDetailScreen.routeName: (ctx) => PlaylistDetailScreen(),
+            AddToPage.routeName: (ctx) => AddToPage(),
+            AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
+            AlbumListScreen.routeName: (ctx) => AlbumListScreen(),
+            AlbumDetailScreen.routeName: (ctx) => AlbumDetailScreen(),
+            ArtistScreen.routeName: (ctx) => ArtistScreen(),
+            ArtistViewScreen.routeName: (ctx) => ArtistViewScreen(),
+            SearchView.routeName: (ctx) => SearchView(),
+            SearchViewMore.routeName: (ctx) => SearchViewMore(),
+            SongDetailPage.routeName: (ctx) => SongDetailPage(),
+            EditSongPage.routeName: (ctx) => EditSongPage(),
+          },
+        ),
       ),
     );
   }

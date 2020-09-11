@@ -31,9 +31,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../provider/music_player.dart';
 import '../pages/add_to_page.dart';
 import '../components/toast.dart';
+import '../utils/color_util.dart';
 
 import 'alert_dialog.dart';
 import 'change_playlist_name.dart';
@@ -53,32 +55,51 @@ class BottomActionsBar extends StatelessWidget {
   final void Function() deleteFunction;
   final String playlistName;
   final GlobalKey<ScaffoldState> scaffoldKey;
-  // the buttons shown on the bottom bar
-  List<BottomNavigationBarItem> _items = <BottomNavigationBarItem>[
-    BottomNavigationBarItem(
-      icon: Icon(Icons.play_arrow),
-      label: "Play",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.add),
-      label: "Add",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.share),
-      label: "Share",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.delete),
-      label: "Delete",
-    ),
-  ];
-  // this option is only visible on the playlist page
-  final renamePlaylistOption = BottomNavigationBarItem(
-    icon: Icon(Icons.edit_outlined),
-    label: "Rename",
-  );
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
+
+    // the buttons shown on the bottom bar
+    List<BottomNavigationBarItem> _items = <BottomNavigationBarItem>[
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.play_arrow,
+          color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+        ),
+        label: "Play",
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.add,
+          color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+        ),
+        label: "Add",
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.share,
+          color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+        ),
+        label: "Share",
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.delete,
+          color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+        ),
+        label: "Delete",
+      ),
+    ];
+    // this option is only visible on the playlist page
+    final renamePlaylistOption = BottomNavigationBarItem(
+      icon: Icon(
+        Icons.edit_outlined,
+        color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+      ),
+      label: "Rename",
+    );
+
     if (renameFunction != null) {
       _items.add(renamePlaylistOption);
     }
@@ -86,6 +107,7 @@ class BottomActionsBar extends StatelessWidget {
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
     final fToast = FToast(scaffoldKey.currentContext);
     return BottomNavigationBar(
+      backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
       onTap: (value) async {
         if (value == 0) {
           // the functions only work when the user has selected an item
@@ -187,8 +209,10 @@ class BottomActionsBar extends StatelessWidget {
       selectedIconTheme: IconThemeData(
         color: Colors.grey[700],
       ),
-      selectedItemColor: Colors.grey[700],
-      unselectedItemColor: Colors.grey[700],
+      selectedItemColor:
+          themeProvider.isDarkMode ? ColorUtil.white : Colors.grey[700],
+      unselectedItemColor:
+          themeProvider.isDarkMode ? ColorUtil.white : Colors.grey[700],
       selectedFontSize: 15,
       unselectedFontSize: 15,
     );

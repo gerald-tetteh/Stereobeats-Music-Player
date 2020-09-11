@@ -24,9 +24,11 @@ import 'package:provider/provider.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../utils/text_util.dart';
 import '../pages/play_page.dart';
 import '../utils/default_util.dart';
+import '../utils/color_util.dart';
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({
@@ -39,6 +41,7 @@ class MiniPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     // widget rebuilds each time the song changes.
     final audioProvider = Provider.of<AudioPlayer>(context);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     if (audioProvider.audioPlayer.playerState.value != PlayerState.stop) {
       Audio song = audioProvider.playing;
       return GestureDetector(
@@ -48,6 +51,7 @@ class MiniPlayer extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
           ),
           child: Card(
+            color: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
@@ -77,6 +81,9 @@ class MiniPlayer extends StatelessWidget {
                                   song.metas.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
+                                  style: themeProvider.isDarkMode
+                                      ? TextUtil.miniPlayerTitle
+                                      : null,
                                 ),
                                 Text(
                                   song.metas.artist,

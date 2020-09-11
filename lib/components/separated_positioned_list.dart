@@ -16,10 +16,12 @@
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:provider/provider.dart';
+import 'package:stereo_beats_main/utils/text_util.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 import 'build_check_box.dart';
@@ -42,16 +44,20 @@ class SeparatedPositionedList extends StatelessWidget {
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final songs = songProvider.songs;
     // returns empty widget if no songs are available
     return songs != null && songs.length != 0
-        ? _buildSongList(songProvider, songs, audioProvider)
+        ? _buildSongList(songProvider, songs, audioProvider, themeProvider)
         : DefaultUtil.empty("No songs found...");
   }
 
   // this method builds the list of songs(all songs on device)
-  GestureDetector _buildSongList(SongProvider songProvider,
-      List<SongItem> songs, AudioPlayer audioProvider) {
+  GestureDetector _buildSongList(
+      SongProvider songProvider,
+      List<SongItem> songs,
+      AudioPlayer audioProvider,
+      AppThemeMode themeProvider) {
     return GestureDetector(
       onTap: () {
         songProvider.changeBottomBar(false);
@@ -68,7 +74,7 @@ class SeparatedPositionedList extends StatelessWidget {
             : "",
         itemBuilder: (context, index) {
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
               onTap: () {
                 audioProvider.setShuffle(false);
@@ -96,6 +102,9 @@ class SeparatedPositionedList extends StatelessWidget {
                         : DefaultUtil.unknown,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: themeProvider.isDarkMode
+                        ? TextUtil.allSongsTitle
+                        : null,
                   ),
                   subtitle: Text(
                     DefaultUtil.checkNotNull(songs[index].artist)
@@ -103,6 +112,9 @@ class SeparatedPositionedList extends StatelessWidget {
                         : DefaultUtil.unknown,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: themeProvider.isDarkMode
+                        ? TextUtil.allSongsArtist
+                        : null,
                   ),
                   trailing: songProvider.showBottonBar
                       ? BuildCheckBox(path: songs[index].path)

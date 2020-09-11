@@ -19,12 +19,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:stereo_beats_main/utils/text_util.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../pages/add_to_page.dart';
 import '../pages/song_detail_page.dart';
+import '../utils/color_util.dart';
 
 import 'alert_dialog.dart';
 import 'toast.dart';
@@ -48,18 +51,28 @@ class AllSongsPopUp extends StatelessWidget {
     "Share",
   ];
   // generates a list of popUpMenuItems
-  final _items = _menuItems
-      .map((item) => PopupMenuItem<String>(
-            value: item,
-            child: Text(item),
-          ))
-      .toList();
   @override
   Widget build(BuildContext context) {
     final player = Provider.of<AudioPlayer>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final _items = _menuItems
+        .map((item) => PopupMenuItem<String>(
+              value: item,
+              child: Text(
+                item,
+                style: themeProvider.isDarkMode ? TextUtil.allSongsPopUp : null,
+              ),
+            ))
+        .toList();
     final fToast = FToast(scaffoldKey.currentContext);
     return PopupMenuButton<String>(
+      icon: Icon(
+        Icons.more_vert,
+        color:
+            themeProvider.isDarkMode ? ColorUtil.darkTeal : ColorUtil.darkGrey,
+      ),
+      color: themeProvider.isDarkMode ? ColorUtil.dark : null,
       itemBuilder: (context) => _items,
       onSelected: (String value) async {
         if (value == _menuItems[0]) {

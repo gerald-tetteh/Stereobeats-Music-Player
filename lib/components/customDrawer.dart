@@ -10,6 +10,7 @@
 
 // package imports
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // lib file imports
 import '../utils/default_util.dart';
@@ -20,10 +21,17 @@ import '../pages/favourites_page.dart';
 import '../pages/playlist_page.dart';
 import '../pages/album_page.dart';
 import '../pages/artist_page.dart';
+import '../provider/theme_mode.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
+  @override
+  _CustomDrawerState createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
+    var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
@@ -98,6 +106,24 @@ class CustomDrawer extends StatelessWidget {
               iconData: Icons.person_outline,
               function: () => Navigator.of(context)
                   .pushReplacementNamed(ArtistScreen.routeName),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.invert_colors,
+                color: Theme.of(context).primaryColor,
+                size: TextUtil.medium,
+              ),
+              title: Text("Dark Mode"),
+              trailing: Switch.adaptive(
+                value: themeProvider.isDarkMode,
+                onChanged: (value) {
+                  if (value) {
+                    themeProvider.setThemeMode(AppThemeMode.darkDbkey);
+                  } else {
+                    themeProvider.setThemeMode(AppThemeMode.lightDbKey);
+                  }
+                },
+              ),
             ),
           ],
         ),

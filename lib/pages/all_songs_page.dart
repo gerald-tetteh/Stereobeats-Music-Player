@@ -17,6 +17,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
@@ -36,6 +37,7 @@ class AllSongsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final provider =
         Provider.of<AudioPlayer>(context, listen: false); // audio player
     final songProvider3 = Provider.of<SongProvider>(context, listen: false);
@@ -56,7 +58,8 @@ class AllSongsScreen extends StatelessWidget {
           );
         },
       ),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       drawer: CustomDrawer(),
       key: _scaffoldKey,
       appBar: AppBar(
@@ -72,6 +75,7 @@ class AllSongsScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
+                  color: themeProvider.isDarkMode ? ColorUtil.dark : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -92,7 +96,10 @@ class AllSongsScreen extends StatelessWidget {
                       ),
                       Text(
                         "All Tracks",
-                        style: TextUtil.pageHeadingTop,
+                        style: TextUtil.pageHeadingTop.copyWith(
+                          color:
+                              themeProvider.isDarkMode ? ColorUtil.white : null,
+                        ),
                       ),
                       IconButton(
                         icon: Icon(
@@ -109,7 +116,9 @@ class AllSongsScreen extends StatelessWidget {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: ColorUtil.white,
+                    color: themeProvider.isDarkMode
+                        ? ColorUtil.dark
+                        : ColorUtil.white,
                     borderRadius: const BorderRadius.only(
                       topLeft: const Radius.circular(30),
                       topRight: const Radius.circular(30),
@@ -126,8 +135,12 @@ class AllSongsScreen extends StatelessWidget {
                           builder: (context, songProvider2, child) {
                             return songProvider2.songs != null &&
                                     songProvider2.songs.length != 0
-                                ? _topActionsBar(songProvider2,
-                                    itemScrollController, mediaQuery, provider)
+                                ? _topActionsBar(
+                                    songProvider2,
+                                    itemScrollController,
+                                    mediaQuery,
+                                    _scaffoldKey,
+                                    provider)
                                 : Container();
                           },
                         ),
@@ -172,13 +185,18 @@ class AllSongsScreen extends StatelessWidget {
       SongProvider songProvider2,
       ItemScrollController itemScrollController,
       MediaQueryData mediaQuery,
+      GlobalKey<ScaffoldState> scaffoldKey,
       AudioPlayer provider) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-          child: CustomDropDown(songProvider2.songs, itemScrollController),
+          child: CustomDropDown(
+            songProvider2.songs,
+            itemScrollController,
+            scaffoldKey,
+          ),
         ),
         QuickPlayOptions(
           mediaQuery: mediaQuery,
