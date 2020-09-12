@@ -105,7 +105,9 @@ class ArtistScreen extends StatelessWidget {
               ],
             )
           : Center(
-              child: DefaultUtil.empty("Could not find any..."),
+              child: themeProvider.isDarkMode
+                  ? DefaultUtil.emptyDarkMode("Could not find any...")
+                  : DefaultUtil.empty("Could not find any..."),
             ),
     );
   }

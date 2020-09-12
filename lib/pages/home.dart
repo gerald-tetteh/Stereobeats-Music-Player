@@ -51,7 +51,7 @@ class HomeScreen extends StatelessWidget {
       body: songs != null && songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
               mediaQuery, songProvider, themeProvider, context)
-          : _noSongs(context),
+          : _noSongs(context, themeProvider),
     );
   }
 
@@ -59,10 +59,11 @@ class HomeScreen extends StatelessWidget {
     This method returns a column that contains an AppBar 
     and the empty widget.
   */
-  Column _noSongs(BuildContext ctx) {
+  Column _noSongs(BuildContext ctx, AppThemeMode themeProvider) {
     return Column(
       children: [
         AppBar(
+          backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
           title: DefaultUtil.appName,
           iconTheme: Theme.of(ctx).iconTheme,
           leading: IconButton(
@@ -73,7 +74,11 @@ class HomeScreen extends StatelessWidget {
             onPressed: () => _scaffoldkey.currentState.openDrawer(),
           ),
         ),
-        Center(child: DefaultUtil.empty("No songs found...")),
+        Center(
+          child: themeProvider.isDarkMode
+              ? DefaultUtil.emptyDarkMode("No songs found...")
+              : DefaultUtil.empty("No songs found..."),
+        ),
       ],
     );
   }

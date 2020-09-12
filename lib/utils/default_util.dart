@@ -99,7 +99,7 @@ class DefaultUtil {
   static Widget emptyDarkMode(String text, [String subText]) {
     return CircleAvatar(
       backgroundColor: ColorUtil.dark2,
-      maxRadius: 190,
+      maxRadius: 160,
       minRadius: 50,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
