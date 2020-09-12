@@ -132,6 +132,7 @@ class MiniPlayer extends StatelessWidget {
     } else {
       // returned when no song is playing
       return Card(
+        color: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
         ),

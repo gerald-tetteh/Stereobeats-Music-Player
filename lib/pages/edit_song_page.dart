@@ -12,12 +12,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // lib file imports
 import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 import '../utils/default_util.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 
 class EditSongPage extends StatelessWidget {
   // name of route
@@ -62,6 +64,7 @@ class EditSongPage extends StatelessWidget {
   */
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final parameters =
         ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
     final song = parameters["song"] as SongItem;
@@ -113,6 +116,7 @@ class EditSongPage extends StatelessWidget {
     var actualHeight = viewHeight - (appBarHeight + extraPadding);
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       appBar: appBar,
       body: SingleChildScrollView(
         child: Column(

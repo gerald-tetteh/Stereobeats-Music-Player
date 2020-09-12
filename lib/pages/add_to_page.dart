@@ -22,9 +22,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 // lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../models/playlist.dart';
 import '../extensions/string_extension.dart';
 import '../utils/text_util.dart';
+import '../utils/color_util.dart';
 
 class AddToPage extends StatelessWidget {
   // Name of route
@@ -32,14 +34,17 @@ class AddToPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final player = Provider.of<AudioPlayer>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       appBar: AppBar(
+        backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
         title: Text(
           "Add To..",
           style: TextStyle(
-            color: Colors.black,
+            color: themeProvider.isDarkMode ? ColorUtil.white : Colors.black,
           ),
         ),
         iconTheme: Theme.of(context).iconTheme,
@@ -57,8 +62,14 @@ class AddToPage extends StatelessWidget {
       body: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.favorite_border_rounded),
-            title: Text("Favourites"),
+            leading: Icon(
+              Icons.favorite_border_rounded,
+              color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+            ),
+            title: Text(
+              "Favourites",
+              style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
+            ),
             onTap: () {
               songProvider.addToFavourites();
               songProvider.changeBottomBar(false);
@@ -67,8 +78,14 @@ class AddToPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.queue_music_outlined),
-            title: Text("Queue"),
+            leading: Icon(
+              Icons.queue_music_outlined,
+              color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+            ),
+            title: Text(
+              "Queue",
+              style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
+            ),
             onTap: () {
               player.addToQueue(songProvider.queue);
               songProvider.changeBottomBar(false);
@@ -78,7 +95,9 @@ class AddToPage extends StatelessWidget {
           ),
           Text(
             "Playlists",
-            style: TextUtil.addPageHeadings,
+            style: TextUtil.addPageHeadings.copyWith(
+              color: themeProvider.isDarkMode ? ColorUtil.white : null,
+            ),
           ),
           /*
             All playlist are retrived from the db and
@@ -103,9 +122,17 @@ class AddToPage extends StatelessWidget {
                   itemCount: playLists.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: Icon(Icons.my_library_music_outlined),
+                      leading: Icon(
+                        Icons.my_library_music_outlined,
+                        color: themeProvider.isDarkMode
+                            ? ColorUtil.darkTeal
+                            : null,
+                      ),
                       title: Text(
                         playLists[index].toString().trim().capitalize(),
+                        style: themeProvider.isDarkMode
+                            ? TextUtil.allSongsTitle
+                            : null,
                       ),
                       onTap: () {
                         songProvider.addToPlayList(playLists[index]);

@@ -21,8 +21,10 @@ import 'package:provider/provider.dart';
 // lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
+import '../utils/text_util.dart';
 import '../components/build_check_box.dart';
 
 class FavouriteSongListView extends StatelessWidget {
@@ -37,6 +39,7 @@ class FavouriteSongListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return GestureDetector(
       onTap: () {
         songProvider.changeBottomBar(false);
@@ -47,7 +50,7 @@ class FavouriteSongListView extends StatelessWidget {
         itemBuilder: (context, index) {
           final song = favouriteSongs[index];
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
               onTap: () {
                 audioProvider.setShuffle(false);
@@ -70,12 +73,18 @@ class FavouriteSongListView extends StatelessWidget {
                         ? song.title
                         : DefaultUtil.unknown,
                     overflow: TextOverflow.ellipsis,
+                    style: themeProvider.isDarkMode
+                        ? TextUtil.allSongsTitle
+                        : null,
                   ),
                   subtitle: Text(
                     DefaultUtil.checkNotNull(song.artist)
                         ? song.artist
                         : DefaultUtil.unknown,
                     overflow: TextOverflow.ellipsis,
+                    style: themeProvider.isDarkMode
+                        ? TextUtil.allSongsArtist
+                        : null,
                   ),
                   trailing: CircleAvatar(
                     backgroundColor: Colors.black,

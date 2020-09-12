@@ -20,6 +20,7 @@ import 'package:empty_widget/empty_widget.dart';
 
 // lib file imports
 import 'text_util.dart';
+import 'color_util.dart';
 
 class DefaultUtil {
   // constant values for images ans null values
@@ -87,6 +88,33 @@ class DefaultUtil {
       titleTextStyle: TextUtil.emptyTitle,
       subTitle: subText,
       subtitleTextStyle: TextUtil.emptySubTitle,
+    );
+  }
+
+  /*
+    This is the widget that is retured if a widget is not provided with 
+    the data it needs and can not be built without throwing a runtime error.
+    (DarkMode)
+  */
+  static Widget emptyDarkMode(String text, [String subText]) {
+    return CircleAvatar(
+      backgroundColor: ColorUtil.dark2,
+      maxRadius: 190,
+      minRadius: 50,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: 100,
+              maxWidth: 90,
+            ),
+            child: Image.asset(DefaultUtil.emptyImage),
+          ),
+          Text(text),
+          if (subText != null) Text(subText),
+        ],
+      ),
     );
   }
 }

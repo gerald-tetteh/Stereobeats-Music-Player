@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 import '../components/customDrawer.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -37,6 +38,7 @@ class ArtistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     final artists = songProvider.artists();
     return Scaffold(
@@ -50,7 +52,8 @@ class ArtistScreen extends StatelessWidget {
         curve: Curves.easeIn,
         height: songProvider.showBottonBar ? 59 : 0,
       ),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       drawer: CustomDrawer(),
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
@@ -89,6 +92,7 @@ class ArtistScreen extends StatelessWidget {
                     scrollController: _scrollController,
                     artists: artists,
                     mediaQuery: mediaQuery,
+                    themeProvider: themeProvider,
                     songProvider: songProvider),
                 Positioned(
                   bottom: 10,
@@ -117,6 +121,7 @@ class BuildColumn extends StatelessWidget {
     @required ScrollController scrollController,
     @required this.artists,
     @required this.mediaQuery,
+    @required this.themeProvider,
     @required this.songProvider,
   })  : _scrollController = scrollController,
         super(key: key);
@@ -125,6 +130,7 @@ class BuildColumn extends StatelessWidget {
   final List<String> artists;
   final MediaQueryData mediaQuery;
   final SongProvider songProvider;
+  final AppThemeMode themeProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -133,15 +139,24 @@ class BuildColumn extends StatelessWidget {
         ListTile(
           title: Text(
             "Artists",
-            style: TextUtil.pageHeadingTop,
+            style: TextUtil.pageHeadingTop.copyWith(
+              color: themeProvider.isDarkMode ? ColorUtil.white : null,
+            ),
           ),
-          subtitle: Text("for you"),
-          trailing: Icon(Icons.person_outline_sharp),
+          subtitle: Text(
+            "for you",
+            style: themeProvider.isDarkMode ? TextUtil.pageIntroSub : null,
+          ),
+          trailing: Icon(
+            Icons.person_outline_sharp,
+            color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+          ),
         ),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: ColorUtil.white,
+              color:
+                  themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),
@@ -159,20 +174,24 @@ class BuildColumn extends StatelessWidget {
                 in the list view.
               */
               child: DraggableScrollbar.semicircle(
+                backgroundColor:
+                    themeProvider.isDarkMode ? ColorUtil.dark2 : null,
                 child: ListView.separated(
                   controller: _scrollController,
                   itemCount: artists.length,
                   separatorBuilder: (context, index) =>
                       index != artists.length - 1
                           ? Divider(
-                              indent: mediaQuery.size.width * (1 / 4),
+                              endIndent: mediaQuery.size.width * (1 / 4),
                             )
                           : "",
                   itemBuilder: (context, index) {
                     final coverArt =
                         songProvider.artistCoverArt(artists[index]);
                     return Material(
-                      color: ColorUtil.white,
+                      color: themeProvider.isDarkMode
+                          ? ColorUtil.dark
+                          : ColorUtil.white,
                       child: InkWell(
                         onTap: () {
                           Navigator.of(context).pushNamed(
@@ -187,12 +206,19 @@ class BuildColumn extends StatelessWidget {
                             artists[index],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                            style: themeProvider.isDarkMode
+                                ? TextUtil.allSongsTitle
+                                : null,
                           ),
-                          trailing: CircleAvatar(
-                            backgroundColor: ColorUtil.dark,
-                            backgroundImage: DefaultUtil.checkNotAsset(coverArt)
-                                ? FileImage(File(coverArt))
-                                : AssetImage(coverArt),
+                          trailing: Hero(
+                            tag: artists[index],
+                            child: CircleAvatar(
+                              backgroundColor: ColorUtil.dark,
+                              backgroundImage:
+                                  DefaultUtil.checkNotAsset(coverArt)
+                                      ? FileImage(File(coverArt))
+                                      : AssetImage(coverArt),
+                            ),
                           ),
                         ),
                       ),
@@ -204,7 +230,8 @@ class BuildColumn extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
+        Container(
+          color: themeProvider.isDarkMode ? ColorUtil.dark : null,
           height: 73,
         ),
       ],

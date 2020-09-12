@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 import '../components/mini_player.dart';
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../utils/color_util.dart';
@@ -59,6 +60,7 @@ class ArtistViewScreen extends StatelessWidget {
     final coverArt = parameters["art"];
     final songProvider = Provider.of<SongProvider>(context);
     final player = Provider.of<AudioPlayer>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     final viewHeight = mediaQuery.size.height;
     final extraPadding = mediaQuery.padding.top;
@@ -66,7 +68,9 @@ class ArtistViewScreen extends StatelessWidget {
       iconTheme: Theme.of(context).iconTheme,
       title: Text(
         artist,
-        style: TextUtil.artistAppBar,
+        style: TextUtil.artistAppBar.copyWith(
+          color: themeProvider.isDarkMode ? ColorUtil.white : null,
+        ),
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
       ),
@@ -78,7 +82,8 @@ class ArtistViewScreen extends StatelessWidget {
     final artistSongs = songProvider.getArtistSongs(artist);
     final artistAlbums = songProvider.getArtistAlbums(artist);
     return Scaffold(
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       appBar: _appBar,
       body: Stack(
         fit: StackFit.expand,
@@ -97,15 +102,18 @@ class ArtistViewScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: DefaultUtil.checkNotAsset(coverArt)
-                            ? FileImage(File(coverArt))
-                            : AssetImage(coverArt),
-                        fit: BoxFit.cover,
+                  child: Hero(
+                    tag: artist,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: DefaultUtil.checkNotAsset(coverArt)
+                              ? FileImage(File(coverArt))
+                              : AssetImage(coverArt),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                      borderRadius: BorderRadius.circular(25),
                     ),
                   ),
                 ),
@@ -114,7 +122,9 @@ class ArtistViewScreen extends StatelessWidget {
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
                   decoration: BoxDecoration(
-                    color: ColorUtil.white,
+                    color: themeProvider.isDarkMode
+                        ? ColorUtil.dark
+                        : ColorUtil.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -132,10 +142,12 @@ class ArtistViewScreen extends StatelessWidget {
                     */
                     child: CustomScrollView(
                       slivers: [
-                        _buildsubHeading(artistSongs.length, "Songs"),
-                        _buildSongsList(player, artistSongs),
-                        _buildsubHeading(artistAlbums.length, "Albums"),
-                        _buildAlbumList(artistAlbums, context),
+                        _buildsubHeading(
+                            artistSongs.length, "Songs", themeProvider),
+                        _buildSongsList(player, artistSongs, themeProvider),
+                        _buildsubHeading(
+                            artistAlbums.length, "Albums", themeProvider),
+                        _buildAlbumList(artistAlbums, context, themeProvider),
                         _extraSpace(),
                       ],
                     ),
@@ -170,13 +182,14 @@ class ArtistViewScreen extends StatelessWidget {
     builds the list of all albums that were made by the
     artist provided 
   */
-  SliverList _buildAlbumList(List<Album> artistAlbums, BuildContext context) {
+  SliverList _buildAlbumList(List<Album> artistAlbums, BuildContext context,
+      AppThemeMode themeProvider) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext ctx, int index) {
           final artPath = getArtPath(artistAlbums[index]);
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
               onTap: () => Navigator.of(context).pushNamed(
                 AlbumDetailScreen.routeName,
@@ -195,11 +208,15 @@ class ArtistViewScreen extends StatelessWidget {
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
                 subtitle: Text(
                   "Tracks: ${artistAlbums[index].paths != null ? artistAlbums[index].paths.length : 0}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsArtist : null,
                 ),
               ),
             ),
@@ -214,12 +231,13 @@ class ArtistViewScreen extends StatelessWidget {
     builds the list of all songs that were made by the
     artist provided 
   */
-  SliverList _buildSongsList(AudioPlayer player, List<SongItem> artistSongs) {
+  SliverList _buildSongsList(AudioPlayer player, List<SongItem> artistSongs,
+      AppThemeMode themeProvider) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext ctx, int index) {
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
               onTap: () => player.play(artistSongs, index),
               child: ListTile(
@@ -236,6 +254,8 @@ class ArtistViewScreen extends StatelessWidget {
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
                 subtitle: Text(
                   DefaultUtil.checkNotNull(artistSongs[index].album)
@@ -243,6 +263,8 @@ class ArtistViewScreen extends StatelessWidget {
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsArtist : null,
                 ),
               ),
             ),
@@ -254,7 +276,8 @@ class ArtistViewScreen extends StatelessWidget {
   }
 
   // build a heading to identify different sections
-  SliverList _buildsubHeading(int length, String title) {
+  SliverList _buildsubHeading(
+      int length, String title, AppThemeMode themeProvider) {
     return SliverList(
       delegate: SliverChildListDelegate.fixed(
         [
@@ -266,10 +289,14 @@ class ArtistViewScreen extends StatelessWidget {
               children: [
                 Text(
                   "$title ($length)".toUpperCase(),
-                  style: TextUtil.subHeading,
+                  style: TextUtil.subHeading.copyWith(
+                    color: themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
+                  ),
                 ),
                 Divider(
-                  color: ColorUtil.dark,
+                  color: themeProvider.isDarkMode
+                      ? ColorUtil.white
+                      : ColorUtil.dark,
                 ),
               ],
             ),

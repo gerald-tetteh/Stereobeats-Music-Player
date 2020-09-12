@@ -25,6 +25,7 @@ import '../components/customDrawer.dart';
 import '../components/quick_play_options.dart';
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../components/mini_player.dart';
 import '../components/favourite_songs_list_view.dart';
 import '../components/bottom_actions_bar.dart';
@@ -43,6 +44,7 @@ class FavouritesPage extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context);
     final favouriteSongs = songProvider.favourites;
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     // used to show review dialog.
     reviweHelper.showReview();
@@ -56,7 +58,8 @@ class FavouritesPage extends StatelessWidget {
         curve: Curves.easeIn,
         height: songProvider.showBottonBar ? 59 : 0,
       ),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       drawer: CustomDrawer(),
       key: _scaffoldKey,
       appBar: AppBar(
@@ -95,15 +98,26 @@ class FavouritesPage extends StatelessWidget {
               ListTile(
                 title: Text(
                   "Favourites",
-                  style: TextUtil.pageHeadingTop,
+                  style: TextUtil.pageHeadingTop.copyWith(
+                    color: themeProvider.isDarkMode ? ColorUtil.white : null,
+                  ),
                 ),
-                subtitle: Text("by you"),
-                trailing: Icon(Icons.favorite),
+                subtitle: Text(
+                  "by you",
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.pageIntroSub : null,
+                ),
+                trailing: Icon(
+                  Icons.favorite,
+                  color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+                ),
               ),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: ColorUtil.white,
+                    color: themeProvider.isDarkMode
+                        ? ColorUtil.dark
+                        : ColorUtil.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -112,7 +126,11 @@ class FavouritesPage extends StatelessWidget {
                   child: favouriteSongs != null && favouriteSongs.length != 0
                       ? _buildSongColumn(
                           mediaQuery, audioProvider, favouriteSongs)
-                      : DefaultUtil.empty("No favourites yet..."),
+                      : themeProvider.isDarkMode
+                          ? Center(
+                              child: DefaultUtil.emptyDarkMode(
+                                  "No favourites yet..."))
+                          : DefaultUtil.empty("No favourites yet..."),
                 ),
               ),
             ],

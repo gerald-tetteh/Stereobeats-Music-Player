@@ -27,6 +27,7 @@ import '../utils/color_util.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../extensions/string_extension.dart';
 import '../provider/music_player.dart';
 
@@ -66,8 +67,15 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
               .toList();
           // if the playlist has 0 songs the empty widget is returned
           return songs != null && songs.length != 0
-              ? _buildList(actualHeight, context, playlist.toString(), songs,
-                  songProvider, audioProvider, isLandScape, mediaQuery)
+              ? _buildList(
+                  actualHeight,
+                  context,
+                  playlist.toString(),
+                  songs.reversed.toList(),
+                  songProvider,
+                  audioProvider,
+                  isLandScape,
+                  mediaQuery)
               : _noSongs(context);
         },
       );
@@ -104,15 +112,18 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: DefaultUtil.checkNotNull(songs[0].artPath)
-                        ? FileImage(File(songs[0].artPath))
-                        : AssetImage(DefaultUtil.defaultImage),
-                    fit: BoxFit.cover,
+              Hero(
+                tag: objectName,
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: DefaultUtil.checkNotNull(songs[0].artPath)
+                          ? FileImage(File(songs[0].artPath))
+                          : AssetImage(DefaultUtil.defaultImage),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -199,6 +210,7 @@ class BuildListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return GestureDetector(
       onTap: () {
         songProvider.changeBottomBar(false);
@@ -214,7 +226,7 @@ class BuildListView extends StatelessWidget {
         itemCount: songs.length,
         itemBuilder: (context, index) {
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
               onTap: () {
                 player.setShuffle(false);
@@ -239,6 +251,9 @@ class BuildListView extends StatelessWidget {
                             : DefaultUtil.unknown,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        style: themeProvider.isDarkMode
+                            ? TextUtil.allSongsTitle
+                            : null,
                       ),
                       subtitle: Text(
                         DefaultUtil.checkNotNull(songs[index].title)
@@ -246,6 +261,9 @@ class BuildListView extends StatelessWidget {
                             : DefaultUtil.unknown,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        style: themeProvider.isDarkMode
+                            ? TextUtil.allSongsArtist
+                            : null,
                       ),
                       trailing: provider1.showBottonBar
                           ? BuildCheckBox(

@@ -20,10 +20,12 @@ import 'package:provider/provider.dart';
 // lib file imports
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
+import '../utils/color_util.dart';
 import '../components/customDrawer.dart';
 import '../components/playlist_&_album_main.dart';
 import '../helpers/db_helper.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../components/mini_player.dart';
 import '../components/bottom _sheet.dart';
 import '../components/bottom_actions_bar.dart';
@@ -36,6 +38,7 @@ class PlayListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: Consumer<SongProvider>(
@@ -52,7 +55,8 @@ class PlayListScreen extends StatelessWidget {
           );
         },
       ),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
         leading: IconButton(

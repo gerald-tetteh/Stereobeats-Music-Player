@@ -22,6 +22,8 @@ import '../components/mini_player.dart';
 import '../models/album.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
+import '../utils/color_util.dart';
 
 class AlbumDetailScreen extends StatelessWidget {
   // name of route
@@ -30,8 +32,10 @@ class AlbumDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final album = ModalRoute.of(context).settings.arguments as Album;
     return Scaffold(
+      backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       key: _scaffoldKey,
       bottomNavigationBar:
           Consumer<SongProvider>(builder: (context, songProvider, _) {

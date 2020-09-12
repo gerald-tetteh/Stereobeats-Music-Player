@@ -58,6 +58,12 @@ class TextUtil {
   static const TextStyle allSongsPopUp = TextStyle(
     color: ColorUtil.white,
   );
+  static const TextStyle pageIntroSub = TextStyle(
+    color: ColorUtil.lightGrey,
+  );
+  static const TextStyle addPlaylistForm = TextStyle(
+    color: ColorUtil.purple,
+  );
   static const TextStyle mutedText = TextStyle(
     fontSize: 15,
     color: Color(0xff9e9e9e),

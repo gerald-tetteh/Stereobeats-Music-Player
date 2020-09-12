@@ -27,6 +27,7 @@ import '../pages/album_detail_screen.dart';
 import '../models/playlist.dart';
 import '../models/album.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
@@ -81,11 +82,13 @@ class PlayListAndAlbum extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     /*
       creats a space beneath the list to prevent
       the miniplayer from obstacting it.
     */
-    var extraSpace = SizedBox(
+    var extraSpace = Container(
+      color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
       height: 73,
     );
     /* 
@@ -97,46 +100,57 @@ class PlayListAndAlbum extends StatelessWidget {
         title: title,
         subTitle: subTitle,
         extraSpace: extraSpace,
-        child: _buildPlayList(mediaQuery, songProvider),
+        themeProvider: themeProvider,
+        child: _buildPlayList(mediaQuery, songProvider, themeProvider),
       );
     } else {
       return PageDefaults(
         title: title,
         subTitle: subTitle,
         extraSpace: extraSpace,
-        child: _buildAlbumList(mediaQuery, songProvider),
+        themeProvider: themeProvider,
+        child: _buildAlbumList(mediaQuery, songProvider, themeProvider),
       );
     }
   }
 
   // returns the album list
-  Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider) {
+  Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider,
+      AppThemeMode themeProvider) {
     final albumItems = songProvider.changeToAlbum(albums);
     if (albumItems == null || albumItems.length == 0) {
-      return DefaultUtil.empty("No Albums yet..");
+      return themeProvider.isDarkMode
+          ? DefaultUtil.emptyDarkMode("No Albums yet..")
+          : DefaultUtil.empty("No Albums yet..");
     }
     return _listBuilder(
       songProvider: songProvider,
       isPlaylist: false,
       items: albumItems,
       mediaQuery: mediaQuery,
+      themeProvider: themeProvider,
     );
   }
 
   // returns the playlist view
-  Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider) {
+  Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider,
+      AppThemeMode themeProvider) {
     return ValueListenableBuilder(
       valueListenable: Hive.box<PlayList>("playLists").listenable(),
       builder: (context, Box<PlayList> box, child) {
         var playLists = box.values.toList() ?? [];
         if (playLists == null || playLists.length == 0) {
-          return DefaultUtil.empty(
-              "No playlists yet..", "Click on blue icon (top right)");
+          return themeProvider.isDarkMode
+              ? DefaultUtil.emptyDarkMode(
+                  "No playlists yet..", "Click on purple icon (top most right)")
+              : DefaultUtil.empty(
+                  "No playlists yet..", "Click on blue icon (top right)");
         }
         return _listBuilder(
           songProvider: songProvider,
           mediaQuery: mediaQuery,
           items: playLists,
+          themeProvider: themeProvider,
         );
       },
     );
@@ -150,6 +164,7 @@ class PlayListAndAlbum extends StatelessWidget {
       {SongProvider songProvider,
       MediaQueryData mediaQuery,
       bool isPlaylist = true,
+      AppThemeMode themeProvider,
       List<dynamic> items}) {
     final _scrollController = ScrollController();
     return GestureDetector(
@@ -159,12 +174,13 @@ class PlayListAndAlbum extends StatelessWidget {
         songProvider.setKeysToNull();
       },
       child: DraggableScrollbar.semicircle(
+        backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
         controller: _scrollController,
         child: ListView.separated(
           controller: _scrollController,
           separatorBuilder: (context, index) => index != items.length - 1
               ? Divider(
-                  indent: mediaQuery.size.width * (1 / 4),
+                  endIndent: mediaQuery.size.width * (1 / 4),
                 )
               : "",
           itemCount: items.length,
@@ -180,7 +196,8 @@ class PlayListAndAlbum extends StatelessWidget {
               artPath = getArtPath(items[index]);
             }
             return Material(
-              color: ColorUtil.white,
+              color:
+                  themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
               child: InkWell(
                 onTap: () async {
                   await Navigator.of(context).pushNamed(
@@ -215,20 +232,35 @@ class PlayListAndAlbum extends StatelessWidget {
                         title: Text(
                           items[index].toString(),
                           style: isPlaylist
-                              ? TextUtil.playlistCardTitle
-                              : TextUtil.albumTitle,
+                              ? TextUtil.playlistCardTitle.copyWith(
+                                  color: themeProvider.isDarkMode
+                                      ? ColorUtil.white
+                                      : null,
+                                )
+                              : TextUtil.albumTitle.copyWith(
+                                  color: themeProvider.isDarkMode
+                                      ? ColorUtil.white
+                                      : null,
+                                ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}", // ensures null is not returned
+                          "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}",
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsArtist
+                              : null, // ensures null is not returned
                         ),
-                        trailing: CircleAvatar(
-                          backgroundColor: Colors.black,
-                          backgroundImage:
-                              artPath != null && artPath.length != 0
-                                  ? FileImage(File(artPath))
-                                  : AssetImage(DefaultUtil.defaultImage),
+                        trailing: Hero(
+                          tag: items[index].toString(),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.black,
+                            backgroundImage: artPath != null &&
+                                    artPath.length != 0 &&
+                                    DefaultUtil.checkNotAsset(artPath)
+                                ? FileImage(File(artPath))
+                                : AssetImage(DefaultUtil.defaultImage),
+                          ),
                         ),
                       ),
                     );
@@ -255,12 +287,14 @@ class PageDefaults extends StatelessWidget {
     @required this.subTitle,
     @required this.extraSpace,
     @required this.child,
+    @required this.themeProvider,
   }) : super(key: key);
 
   final String title;
   final String subTitle;
-  final SizedBox extraSpace;
+  final Container extraSpace;
   final Widget child;
+  final AppThemeMode themeProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -269,16 +303,26 @@ class PageDefaults extends StatelessWidget {
         ListTile(
           title: Text(
             title,
-            style: TextUtil.pageHeadingTop,
+            style: TextUtil.pageHeadingTop.copyWith(
+              color: themeProvider.isDarkMode ? ColorUtil.white : null,
+            ),
           ),
-          subtitle: Text(subTitle),
-          trailing: Icon(Icons.library_music_outlined),
+          subtitle: Text(
+            subTitle,
+            style: themeProvider.isDarkMode ? TextUtil.pageIntroSub : null,
+          ),
+          trailing: Icon(
+            Icons.library_music_outlined,
+            color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+          ),
         ),
         Expanded(
           child: Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: ColorUtil.white,
+              color:
+                  themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),

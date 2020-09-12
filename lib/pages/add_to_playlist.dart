@@ -25,6 +25,7 @@ import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 import '../utils/default_util.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../components/build_check_box.dart';
 
 class AddToPlayListPage extends StatelessWidget {
@@ -33,15 +34,19 @@ class AddToPlayListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final songs = songProvider.songs;
     return Scaffold(
-      backgroundColor: ColorUtil.white,
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
       appBar: AppBar(
-        backgroundColor: Color(0xffeeeeee),
+        iconTheme: Theme.of(context).iconTheme,
+        backgroundColor:
+            themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
         title: Text(
           "Add To Playlist",
           style: TextStyle(
-            color: Colors.black,
+            color: themeProvider.isDarkMode ? ColorUtil.white : Colors.black,
           ),
         ),
         leading: IconButton(
@@ -67,12 +72,12 @@ class AddToPlayListPage extends StatelessWidget {
       // if there are no songs on the device the empty
       // widget is retured instead.
       body: songs != null && songs.length != 0
-          ? _buildSongList(songs)
+          ? _buildSongList(songs, themeProvider)
           : DefaultUtil.empty("No songs found..."),
     );
   }
 
-  ListView _buildSongList(List<SongItem> songs) {
+  ListView _buildSongList(List<SongItem> songs, AppThemeMode themeProvider) {
     return ListView.builder(
       itemCount: songs.length,
       itemBuilder: (context, index) {
@@ -84,11 +89,13 @@ class AddToPlayListPage extends StatelessWidget {
             DefaultUtil.checkNotNull(songs[index].title)
                 ? songs[index].title
                 : DefaultUtil.unknown,
+            style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
           ),
           subtitle: Text(
             DefaultUtil.checkNotNull(songs[index].artist)
                 ? songs[index].artist
                 : DefaultUtil.unknown,
+            style: themeProvider.isDarkMode ? TextUtil.allSongsArtist : null,
           ),
         );
       },

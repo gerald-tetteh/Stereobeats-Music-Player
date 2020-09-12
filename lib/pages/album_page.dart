@@ -23,8 +23,10 @@ import '../components/playlist_&_album_main.dart';
 import '../components/customDrawer.dart';
 import '../components/mini_player.dart';
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
+import '../utils/color_util.dart';
 
 import 'search_view.dart';
 
@@ -35,6 +37,7 @@ class AlbumListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context);
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -47,7 +50,8 @@ class AlbumListScreen extends StatelessWidget {
         curve: Curves.easeIn,
         height: songProvider.showBottonBar ? 59 : 0,
       ),
-      backgroundColor: Color(0xffeeeeee),
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
         leading: IconButton(
