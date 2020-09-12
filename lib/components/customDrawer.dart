@@ -32,20 +32,33 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
+    var lightThemeGradient = [
+      Colors.blue[300],
+      Colors.blue[200],
+      Colors.blue[100],
+      Colors.blue[50],
+      Colors.red[50],
+      Colors.red[100],
+      Colors.red[200],
+      Colors.red[300],
+    ];
+    var darkThemeGradient = [
+      Colors.teal[300],
+      Colors.teal[200],
+      Colors.teal[100],
+      Colors.teal[50],
+      Colors.purple[50],
+      Colors.purple[100],
+      Colors.purple[200],
+      Colors.purple[300],
+    ];
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Colors.blue[300],
-              Colors.blue[200],
-              Colors.blue[100],
-              Colors.blue[50],
-              Colors.red[50],
-              Colors.red[100],
-              Colors.red[200],
-              Colors.red[300],
-            ],
+            colors: themeProvider.isDarkMode
+                ? darkThemeGradient
+                : lightThemeGradient,
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
           ),

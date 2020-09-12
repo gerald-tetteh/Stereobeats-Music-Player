@@ -51,12 +51,16 @@ class CustomListView extends StatelessWidget {
       title: Text(
         DefaultUtil.checkNotNull(song.title) ? song.title : DefaultUtil.unknown,
         style: themeProvider.isDarkMode ? TextUtil.quickPickSongDetails : null,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         DefaultUtil.checkNotNull(song.artist)
             ? song.artist
             : DefaultUtil.unknown,
         style: themeProvider.isDarkMode ? TextUtil.quickPickSongDetails : null,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
       onTap: () =>
           Provider.of<AudioPlayer>(context, listen: false).play(songs, index),

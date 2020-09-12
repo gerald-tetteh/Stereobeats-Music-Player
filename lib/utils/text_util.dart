@@ -62,7 +62,7 @@ class TextUtil {
     color: ColorUtil.lightGrey,
   );
   static const TextStyle addPlaylistForm = TextStyle(
-    color: ColorUtil.purple,
+    color: ColorUtil.darkTeal,
   );
   static const TextStyle mutedText = TextStyle(
     fontSize: 15,

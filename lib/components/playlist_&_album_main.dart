@@ -109,6 +109,7 @@ class PlayListAndAlbum extends StatelessWidget {
         subTitle: subTitle,
         extraSpace: extraSpace,
         themeProvider: themeProvider,
+        isAlbum: true,
         child: _buildAlbumList(mediaQuery, songProvider, themeProvider),
       );
     }
@@ -288,6 +289,7 @@ class PageDefaults extends StatelessWidget {
     @required this.extraSpace,
     @required this.child,
     @required this.themeProvider,
+    this.isAlbum = false,
   }) : super(key: key);
 
   final String title;
@@ -295,6 +297,7 @@ class PageDefaults extends StatelessWidget {
   final Container extraSpace;
   final Widget child;
   final AppThemeMode themeProvider;
+  final bool isAlbum;
 
   @override
   Widget build(BuildContext context) {
@@ -312,8 +315,8 @@ class PageDefaults extends StatelessWidget {
             style: themeProvider.isDarkMode ? TextUtil.pageIntroSub : null,
           ),
           trailing: Icon(
-            Icons.library_music_outlined,
-            color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+            isAlbum ? Icons.album_outlined : Icons.library_music_outlined,
+            color: themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
           ),
         ),
         Expanded(

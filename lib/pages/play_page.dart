@@ -36,6 +36,7 @@ import '../utils/text_util.dart';
 import '../components/play_page_song_info.dart';
 import '../components/slider_and_duration.dart';
 import '../components/play_page_controls.dart';
+import '../components/play_page_pop_up.dart';
 import '../components/toast.dart';
 import '../helpers/api_keys.dart';
 
@@ -77,48 +78,19 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
         onPressed: () => Navigator.of(context).pop(),
       ),
       actions: [
-        if (!_smallSize)
-          Consumer<AudioPlayer>(
-            builder: (context, player, child) {
-              var path = player.playing.path;
-              return IconButton(
-                icon: Icon(Icons.notes),
-                onPressed: () => Navigator.of(context)
-                    .pushNamed(SongDetailPage.routeName, arguments: path),
-                tooltip: "Song Details",
-              );
-            },
-          ),
-        Consumer<AudioPlayer>(
-          builder: (context, player2, child) {
-            return IconButton(
-              icon: Icon(Icons.equalizer_rounded),
-              onPressed: () async => await Equalizer.open(
-                  player2.audioPlayer.audioSessionId.value),
-            );
-          },
-        ),
-        Consumer<AudioPlayer>(
-          builder: (context, player3, child) {
-            var path = player3.playing.path;
-            return IconButton(
-              icon: Icon(
-                Icons.share_outlined,
-                size: TextUtil.xsmall,
-              ),
-              onPressed: () async {
-                songProvider.addToQueue(path);
-                await songProvider.shareFile();
-                songProvider.setQueueToNull();
-              },
-            );
-          },
-        ),
         if (_smallSize)
           YoutubeView(
             value: value,
             scaffoldKey: widget._scaffoldKey,
           ),
+        Consumer<AudioPlayer>(
+          builder: (context, player, child) {
+            return PlayPagePopUp(
+              audioProvider: player,
+              songProvider: songProvider,
+            );
+          },
+        ),
       ],
     ); // carousel slider
     var appBarHeight = appBar.preferredSize.height;
@@ -182,30 +154,34 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
       ),
       builder: (context, provider, child) {
         String path = provider.playing.metas.image.path;
-        return Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: DefaultUtil.checkNotNull(path) &&
-                      DefaultUtil.checkNotAsset(path)
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            FadeInImage(
+              placeholder: AssetImage(DefaultUtil.defaultImage),
+              image: DefaultUtil.checkNotAsset(path)
                   ? FileImage(File(path))
                   : AssetImage(DefaultUtil.defaultImage),
               fit: BoxFit.cover,
+              fadeOutDuration: Duration(milliseconds: 700),
             ),
-          ),
-          child: ClipRRect(
-            // creats a backgroud blur effect
-            // the songs album art is used as the background
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                alignment: Alignment.center,
-                color: Colors.grey.withOpacity(0.1),
-                child: child,
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: ClipRRect(
+                // creats a backgroud blur effect
+                // the songs album art is used as the background
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey.withOpacity(0.1),
+                    child: child,
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         );
       },
     );

@@ -109,7 +109,7 @@ class FavouritesPage extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.favorite,
-                  color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+                  color: themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
                 ),
               ),
               Expanded(

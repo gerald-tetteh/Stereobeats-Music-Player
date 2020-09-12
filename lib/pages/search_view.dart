@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 // lib file imports
 import '../provider/songItem.dart';
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
@@ -49,6 +50,7 @@ class _SearchViewState extends State<SearchView> {
   List<dynamic> _albums;
   List<dynamic> _artists;
   SongProvider songProvider;
+  AppThemeMode themeProvider;
   AudioPlayer player;
 
   @override
@@ -58,7 +60,9 @@ class _SearchViewState extends State<SearchView> {
     _albums = [];
     _artists = [];
     songProvider = Provider.of<SongProvider>(context, listen: false);
-    player = Provider.of<AudioPlayer>(context, listen: false); // audio player
+    player = Provider.of<AudioPlayer>(context, listen: false);
+    themeProvider =
+        Provider.of<AppThemeMode>(context, listen: false); // audio player
     super.initState();
   }
 
@@ -78,7 +82,8 @@ class _SearchViewState extends State<SearchView> {
       to recieve user input.
     */
     var appBar = AppBar(
-      backgroundColor: ColorUtil.dark,
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.dark,
       iconTheme: Theme.of(context).iconTheme,
       title: TextField(
         style: TextUtil.search,
@@ -102,7 +107,8 @@ class _SearchViewState extends State<SearchView> {
     var appBarHeight = appBar.preferredSize.height;
     var actualHeight = viewHeight - (extrapadding + appBarHeight);
     return Scaffold(
-      backgroundColor: ColorUtil.white,
+      backgroundColor:
+          themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
       appBar: appBar,
       /*
         The single child scroll view consists of  
@@ -146,7 +152,6 @@ class _SearchViewState extends State<SearchView> {
     that match the users input.
   */
   void _submit(SongProvider provider, String text) {
-    print(text);
     var results = provider.search(text.trim());
     _songs = results["songs"];
     _artists = results["artists"];
@@ -183,7 +188,7 @@ class _SearchViewState extends State<SearchView> {
           height: items.length * 80.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -192,10 +197,14 @@ class _SearchViewState extends State<SearchView> {
                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                 child: Text(
                   title,
-                  style: TextUtil.subHeading,
+                  style: TextUtil.subHeading.copyWith(
+                    color: themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
+                  ),
                 ),
               ),
-              Divider(),
+              Divider(
+                color: themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
+              ),
               _listType(type, context),
               if (items.length > 10)
                 FlatButton(
@@ -203,10 +212,15 @@ class _SearchViewState extends State<SearchView> {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
-                      color: Colors.blue,
+                      color: themeProvider.isDarkMode
+                          ? ColorUtil.purple
+                          : Colors.blue,
                     ),
                     child: Text(
                       "View More +${items.length - 10}",
+                      style: themeProvider.isDarkMode
+                          ? TextUtil.allSongsTitle
+                          : null,
                     ),
                   ),
                   onPressed: () async {
@@ -277,7 +291,9 @@ class _SearchViewState extends State<SearchView> {
               itemCount: songs.length,
               itemBuilder: (context, index) {
                 return Material(
-                  color: ColorUtil.white,
+                  color: themeProvider.isDarkMode
+                      ? ColorUtil.dark2
+                      : ColorUtil.white,
                   child: InkWell(
                     onTap: () => player.play(songs, index),
                     onLongPress: selectable
@@ -304,6 +320,9 @@ class _SearchViewState extends State<SearchView> {
                               : DefaultUtil.unknown,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
                         ),
                         subtitle: Text(
                           DefaultUtil.checkNotNull(songs[index]?.artist)
@@ -311,6 +330,9 @@ class _SearchViewState extends State<SearchView> {
                               : DefaultUtil.unknown,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
                         ),
                         trailing: provider.showBottonBar && selectable
                             ? BuildCheckBox(
@@ -344,7 +366,7 @@ class _SearchViewState extends State<SearchView> {
         itemBuilder: (context, index) {
           final cover = songProvider.artistCoverArt(artists[index]);
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
             child: InkWell(
               onTap: () => Navigator.of(context)
                   .pushNamed(ArtistViewScreen.routeName, arguments: {
@@ -362,6 +384,8 @@ class _SearchViewState extends State<SearchView> {
                   artists[index] != null ? artists[index] : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
               ),
             ),
@@ -386,7 +410,7 @@ class _SearchViewState extends State<SearchView> {
         itemBuilder: (context, index) {
           final cover = getArtPath(albums[index]);
           return Material(
-            color: ColorUtil.white,
+            color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
             child: InkWell(
               onTap: () => Navigator.of(context).pushNamed(
                 AlbumDetailScreen.routeName,
@@ -405,6 +429,8 @@ class _SearchViewState extends State<SearchView> {
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
                 subtitle: Text(
                   albums[index] != null
@@ -412,6 +438,8 @@ class _SearchViewState extends State<SearchView> {
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style:
+                      themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
               ),
             ),

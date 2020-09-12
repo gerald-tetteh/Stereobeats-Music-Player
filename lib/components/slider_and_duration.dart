@@ -20,6 +20,8 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
+import '../provider/theme_mode.dart';
+import '../utils/color_util.dart';
 
 class SliderAndDuration extends StatelessWidget {
   const SliderAndDuration({
@@ -28,6 +30,7 @@ class SliderAndDuration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return Consumer<AudioPlayer>(
       builder: (context, provider, child) {
         final songDuration = provider
@@ -44,6 +47,11 @@ class SliderAndDuration extends StatelessWidget {
               child: Column(
                 children: [
                   Slider(
+                    inactiveColor: themeProvider.isDarkMode
+                        ? ColorUtil.darkTeal.withOpacity(0.5)
+                        : null,
+                    activeColor:
+                        themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
                     value: songPosition.toDouble(),
                     min: 0,
                     max: double.parse(songDuration),
@@ -58,13 +66,17 @@ class SliderAndDuration extends StatelessWidget {
                       children: [
                         Text(
                           calculatedPosition ?? "0:00",
-                          style: TextStyle(color: Colors.blueAccent),
+                          style: themeProvider.isDarkMode
+                              ? TextStyle(color: ColorUtil.purple)
+                              : TextStyle(color: Colors.blueAccent),
                         ),
                         Text(
                           provider
                               .calculateDuration(int.parse(songDuration))
                               .toString(),
-                          style: TextStyle(color: Colors.blueAccent),
+                          style: themeProvider.isDarkMode
+                              ? TextStyle(color: ColorUtil.purple)
+                              : TextStyle(color: Colors.blueAccent),
                         ),
                       ],
                     ),

@@ -16,9 +16,13 @@
 
 // package imports
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
+import '../provider/theme_mode.dart';
+import '../utils/color_util.dart';
+import '../utils/text_util.dart';
 
 class ConfirmDeleteAlert extends StatelessWidget {
   const ConfirmDeleteAlert({
@@ -38,16 +42,30 @@ class ConfirmDeleteAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return AlertDialog(
-      title: Text("Are you sure ?"),
-      content: Text("Do you want to remove selected items ?"),
+      backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
+      title: Text(
+        "Are you sure ?",
+        style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
+      ),
+      content: Text(
+        "Do you want to remove selected items ?",
+        style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
+      ),
       actions: [
         FlatButton(
-          child: Text("No"),
+          child: Text(
+            "No",
+            style: themeProvider.isDarkMode ? TextUtil.addPlaylistForm : null,
+          ),
           onPressed: () => Navigator.of(context).pop(false),
         ),
         FlatButton(
-          child: Text("Yes"),
+          child: Text(
+            "Yes",
+            style: themeProvider.isDarkMode ? TextUtil.addPlaylistForm : null,
+          ),
           onPressed: () {
             if (deleteFunction != null) {
               deleteFunction();

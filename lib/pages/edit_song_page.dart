@@ -144,8 +144,25 @@ class EditSongPage extends StatelessWidget {
                     child: Column(
                       children: [
                         TextFormField(
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
+                          keyboardType: TextInputType.text,
                           initialValue: song.title ?? "",
                           decoration: InputDecoration(
+                            labelStyle: themeProvider.isDarkMode
+                                ? TextUtil.addPlaylistForm
+                                : null,
+                            hintStyle: themeProvider.isDarkMode
+                                ? TextUtil.allSongsTitle
+                                : null,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: themeProvider.isDarkMode
+                                    ? ColorUtil.darkTeal
+                                    : Color(0xff000000),
+                              ),
+                            ),
                             labelText: "Title",
                             hintText: "Title",
                           ),
@@ -162,8 +179,25 @@ class EditSongPage extends StatelessWidget {
                           },
                         ),
                         TextFormField(
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
+                          keyboardType: TextInputType.text,
                           initialValue: song.artist ?? "",
                           decoration: InputDecoration(
+                            labelStyle: themeProvider.isDarkMode
+                                ? TextUtil.addPlaylistForm
+                                : null,
+                            hintStyle: themeProvider.isDarkMode
+                                ? TextUtil.allSongsTitle
+                                : null,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: themeProvider.isDarkMode
+                                    ? ColorUtil.darkTeal
+                                    : Color(0xff000000),
+                              ),
+                            ),
                             labelText: "Artist",
                             hintText: "Artist",
                           ),
@@ -180,8 +214,25 @@ class EditSongPage extends StatelessWidget {
                           },
                         ),
                         TextFormField(
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
+                          keyboardType: TextInputType.text,
                           initialValue: song.album ?? "",
                           decoration: InputDecoration(
+                            labelStyle: themeProvider.isDarkMode
+                                ? TextUtil.addPlaylistForm
+                                : null,
+                            hintStyle: themeProvider.isDarkMode
+                                ? TextUtil.allSongsTitle
+                                : null,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: themeProvider.isDarkMode
+                                    ? ColorUtil.darkTeal
+                                    : Color(0xff000000),
+                              ),
+                            ),
                             labelText: "Album",
                             hintText: "Album",
                           ),
@@ -198,8 +249,25 @@ class EditSongPage extends StatelessWidget {
                           },
                         ),
                         TextFormField(
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
+                          keyboardType: TextInputType.text,
                           initialValue: song.albumArtist ?? "",
                           decoration: InputDecoration(
+                            labelStyle: themeProvider.isDarkMode
+                                ? TextUtil.addPlaylistForm
+                                : null,
+                            hintStyle: themeProvider.isDarkMode
+                                ? TextUtil.allSongsTitle
+                                : null,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: themeProvider.isDarkMode
+                                    ? ColorUtil.darkTeal
+                                    : Color(0xff000000),
+                              ),
+                            ),
                             labelText: "Album Artist",
                             hintText: "Album Artist",
                           ),
@@ -216,8 +284,25 @@ class EditSongPage extends StatelessWidget {
                           },
                         ),
                         TextFormField(
+                          style: themeProvider.isDarkMode
+                              ? TextUtil.allSongsTitle
+                              : null,
+                          keyboardType: TextInputType.numberWithOptions(),
                           initialValue: song.year ?? "",
                           decoration: InputDecoration(
+                            labelStyle: themeProvider.isDarkMode
+                                ? TextUtil.addPlaylistForm
+                                : null,
+                            hintStyle: themeProvider.isDarkMode
+                                ? TextUtil.allSongsTitle
+                                : null,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: themeProvider.isDarkMode
+                                    ? ColorUtil.darkTeal
+                                    : Color(0xff000000),
+                              ),
+                            ),
                             labelText: "Year",
                             hintText: "Year",
                           ),
@@ -239,11 +324,15 @@ class EditSongPage extends StatelessWidget {
                           ),
                           onPressed: () async => await _submit(
                               songProvider, songdDetails, context),
-                          color: Colors.blue,
-                          child: Text(
-                            "Submit",
-                            style: TextUtil.submitForm,
-                          ),
+                          color: themeProvider.isDarkMode
+                              ? ColorUtil.purple
+                              : Colors.blue,
+                          child: Text("Submit",
+                              style: TextUtil.submitForm.copyWith(
+                                color: themeProvider.isDarkMode
+                                    ? ColorUtil.white
+                                    : null,
+                              )),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),

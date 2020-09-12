@@ -89,11 +89,12 @@ class ArtistScreen extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 BuildColumn(
-                    scrollController: _scrollController,
-                    artists: artists,
-                    mediaQuery: mediaQuery,
-                    themeProvider: themeProvider,
-                    songProvider: songProvider),
+                  scrollController: _scrollController,
+                  artists: artists,
+                  mediaQuery: mediaQuery,
+                  themeProvider: themeProvider,
+                  songProvider: songProvider,
+                ),
                 Positioned(
                   bottom: 10,
                   left: 3,
@@ -149,7 +150,7 @@ class BuildColumn extends StatelessWidget {
           ),
           trailing: Icon(
             Icons.person_outline_sharp,
-            color: themeProvider.isDarkMode ? ColorUtil.purple : null,
+            color: themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
           ),
         ),
         Expanded(
