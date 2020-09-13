@@ -155,10 +155,14 @@ class FavouritesPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        QuickPlayOptions(
-          mediaQuery: mediaQuery,
-          provider: audioProvider,
-          songs: favouriteSongs,
+        Row(
+          children: [
+            Spacer(),
+            QuickPlayOptions(
+              provider: audioProvider,
+              songs: favouriteSongs,
+            ),
+          ],
         ),
         Expanded(
           child: FavouriteSongListView(

@@ -36,6 +36,7 @@ import './pages/search_view.dart';
 import './pages/song_detail_page.dart';
 import './pages/search_view_more.dart';
 import './pages/edit_song_page.dart';
+import './pages/new_feature_page.dart';
 import './provider/songItem.dart';
 import './provider/music_player.dart';
 import './provider/theme_mode.dart';
@@ -126,6 +127,7 @@ class MyApp extends StatelessWidget {
             SearchViewMore.routeName: (ctx) => SearchViewMore(),
             SongDetailPage.routeName: (ctx) => SongDetailPage(),
             EditSongPage.routeName: (ctx) => EditSongPage(),
+            NewFeature.routeName: (ctx) => NewFeature(),
           },
         ),
       ),

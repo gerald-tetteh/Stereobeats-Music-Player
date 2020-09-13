@@ -27,6 +27,7 @@ class DefaultUtil {
   static const defaultImage = "assets/images/default-image.png";
   static const unknown = "Unknown";
   static const emptyImage = "assets/images/empty_image.webp";
+  static const versionCode = "1.3.0";
 
   /*
     This function returns true if the parameters entered is

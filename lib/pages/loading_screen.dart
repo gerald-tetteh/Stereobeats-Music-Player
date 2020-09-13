@@ -18,17 +18,21 @@
 // package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hive/hive.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
 import '../provider/songItem.dart';
 import 'home.dart';
+import 'new_feature_page.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 
 class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var box = Hive.box<String>("settings");
+    var updateCode = box.get("updateCode");
     var songProvider = Provider.of<SongProvider>(context, listen: false);
     songProvider
         .getSongs()
@@ -36,7 +40,11 @@ class LoadingScreen extends StatelessWidget {
         .then((value) {
       Provider.of<AudioPlayer>(context, listen: false).prefs =
           songProvider.prefs;
-      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      if (updateCode == DefaultUtil.versionCode) {
+        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      } else {
+        Navigator.of(context).pushReplacementNamed(NewFeature.routeName);
+      }
     });
     return Scaffold(
       backgroundColor: Colors.black87,

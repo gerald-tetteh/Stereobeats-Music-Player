@@ -199,7 +199,6 @@ class AllSongsScreen extends StatelessWidget {
           ),
         ),
         QuickPlayOptions(
-          mediaQuery: mediaQuery,
           provider: provider,
           songs: songProvider2.songs,
         ),

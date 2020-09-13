@@ -26,19 +26,16 @@ import '../provider/music_player.dart';
 class QuickPlayOptions extends StatelessWidget {
   const QuickPlayOptions({
     Key key,
-    @required this.mediaQuery,
     @required this.provider,
     @required this.songs,
   }) : super(key: key);
 
-  final MediaQueryData mediaQuery;
   final AudioPlayer provider; // audio player
   final List<SongItem> songs;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: mediaQuery.size.width * 0.35,
       padding: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
