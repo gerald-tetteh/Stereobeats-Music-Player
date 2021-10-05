@@ -17,7 +17,6 @@
 // package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:circular_check_box/circular_check_box.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
@@ -47,7 +46,7 @@ class _BuildCheckBoxState extends State<BuildCheckBox> {
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
-    return CircularCheckBox(
+    return Checkbox(
       value: _boxValue,
       onChanged: (value) {
         if (value) {

@@ -151,7 +151,7 @@ class _ModalSheetState extends State<ModalSheet> {
     widget.formKey.currentState.save();
     DBHelper.createItem(
         "playLists", playListName.trim().capitalize(), provider.queuePath);
-    Navigator.of(context).pop();
     provider.setQueueToNull();
+    Navigator.of(context).pop();
   }
 }

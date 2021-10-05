@@ -119,9 +119,11 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                   height: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: DefaultUtil.checkNotNull(songs[0].artPath)
+                      image: DefaultUtil.checkNotAsset(songs[0].artPath)
                           ? FileImage(File(songs[0].artPath))
-                          : AssetImage(DefaultUtil.defaultImage),
+                          : DefaultUtil.checkListNotNull(songs[0].artPath2) 
+                            ? MemoryImage(songs[0].artPath2)
+                            : AssetImage(DefaultUtil.defaultImage),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -244,7 +246,10 @@ class BuildListView extends StatelessWidget {
                           }
                         : null,
                     child: ListTile(
-                      leading: BoxImage(path: songs[index].artPath),
+                      leading: BoxImage(
+                        path: songs[index].artPath,
+                        path2: songs[index].artPath2,
+                      ),
                       title: Text(
                         DefaultUtil.checkNotNull(songs[index].title)
                             ? songs[index].title

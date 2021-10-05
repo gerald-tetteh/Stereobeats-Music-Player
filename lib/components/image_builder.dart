@@ -15,6 +15,7 @@
 
 // package imports
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -25,9 +26,11 @@ class ImageBuilder extends StatelessWidget {
   ImageBuilder({
     Key key,
     @required this.path,
+    this.path2,
   }) : super(key: key);
 
   final String path;
+  final Uint8List path2;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +39,10 @@ class ImageBuilder extends StatelessWidget {
             File(path),
             fit: BoxFit.cover,
           )
-        : Image.asset(
+        : DefaultUtil.checkListNotNull(path2) ? Image.memory(
+            path2, fit: 
+            BoxFit.cover,
+          ) : Image.asset(
             DefaultUtil.defaultImage,
             fit: BoxFit.cover,
           );

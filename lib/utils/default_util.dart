@@ -15,6 +15,8 @@
 // imports
 
 // package imports
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:empty_widget/empty_widget.dart';
 
@@ -27,7 +29,7 @@ class DefaultUtil {
   static const defaultImage = "assets/images/default-image.png";
   static const unknown = "Unknown";
   static const emptyImage = "assets/images/empty_image.webp";
-  static const versionCode = "1.3.0";
+  static const versionCode = "1.3.1";
 
   /*
     This function returns true if the parameters entered is
@@ -35,6 +37,18 @@ class DefaultUtil {
     Returns false otherwise.
   */
   static bool checkNotNull(String value) {
+    if (value != null && value.length != 0) {
+      return true;
+    }
+    return false;
+  }
+
+  /*
+    This function returns true if the parameters entered is
+    not null or has a length greater that zero.
+    Returns false otherwise.
+  */
+  static bool checkListNotNull(Uint8List value) {
     if (value != null && value.length != 0) {
       return true;
     }
@@ -54,7 +68,7 @@ class DefaultUtil {
   }
 
   /*
-    This is the styked app name.
+    This is the styled app name.
   */
   static final appName = RichText(
     text: TextSpan(
@@ -83,7 +97,7 @@ class DefaultUtil {
     the data it needs and can not be built without throwing a runtime error.
   */
   static Widget empty(String text, [String subText]) {
-    return EmptyListWidget(
+    return EmptyWidget(
       image: DefaultUtil.emptyImage,
       title: text,
       titleTextStyle: TextUtil.emptyTitle,

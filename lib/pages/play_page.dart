@@ -18,6 +18,7 @@
 
 // package imports
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -153,7 +154,9 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
             _isLandScape ? Row(children: contents) : Column(children: contents),
       ),
       builder: (context, provider, child) {
-        String path = provider.playing.metas.image.path;
+        final song = provider.playing;
+        final path = song.metas.image.path;
+        final path2 = song.metas.extra["path2"] as Uint8List;
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -161,7 +164,9 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
               placeholder: AssetImage(DefaultUtil.defaultImage),
               image: DefaultUtil.checkNotAsset(path)
                   ? FileImage(File(path))
-                  : AssetImage(DefaultUtil.defaultImage),
+                  : DefaultUtil.checkListNotNull(path2) 
+                    ? MemoryImage(path2) 
+                    : AssetImage(DefaultUtil.defaultImage),
               fit: BoxFit.cover,
               fadeOutDuration: Duration(milliseconds: 700),
             ),

@@ -14,6 +14,7 @@
 // imports
 
 import 'dart:io';
+import 'dart:typed_data';
 
 // package imports
 import 'package:flutter/material.dart';
@@ -46,6 +47,15 @@ class ArtistViewScreen extends StatelessWidget {
         .artPath;
   }
 
+  Uint8List getArtPath2(Album album) {
+    return album.paths
+        .firstWhere(
+          (song) => song.artPath2 != null && song.artPath2.length != 0,
+          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+        )
+        .artPath2;
+  }
+
   @override
   Widget build(BuildContext context) {
     /*
@@ -55,9 +65,10 @@ class ArtistViewScreen extends StatelessWidget {
       image associated with the artist
     */
     final parameters =
-        ModalRoute.of(context).settings.arguments as Map<String, String>;
-    final artist = parameters["artist"];
-    final coverArt = parameters["art"];
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+    final artist = parameters["artist"] as String;
+    final coverArt = parameters["art"] as String;
+    final coverArt2 = parameters["art2"] as Uint8List;
     final songProvider = Provider.of<SongProvider>(context);
     final player = Provider.of<AudioPlayer>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
@@ -109,7 +120,9 @@ class ArtistViewScreen extends StatelessWidget {
                         image: DecorationImage(
                           image: DefaultUtil.checkNotAsset(coverArt)
                               ? FileImage(File(coverArt))
-                              : AssetImage(coverArt),
+                              : DefaultUtil.checkListNotNull(coverArt2) 
+                                ? MemoryImage(coverArt2) 
+                                : AssetImage(coverArt),
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(25),
@@ -187,7 +200,11 @@ class ArtistViewScreen extends StatelessWidget {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext ctx, int index) {
-          final artPath = getArtPath(artistAlbums[index]);
+          final artPath2 = getArtPath2(artistAlbums[index]);
+          String artPath;
+          if(artPath2 == null || artPath2.length < 1) {
+            artPath = getArtPath(artistAlbums[index]);
+          }
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
@@ -199,8 +216,10 @@ class ArtistViewScreen extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(artPath)
-                      ? FileImage(File(artPath))
-                      : AssetImage(artPath),
+                      ? FileImage(File(artPath)) 
+                      : DefaultUtil.checkListNotNull(artPath2) 
+                        ? MemoryImage(artPath2) 
+                        : AssetImage(artPath),
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistAlbums[index].name)
@@ -246,7 +265,9 @@ class ArtistViewScreen extends StatelessWidget {
                   backgroundImage:
                       DefaultUtil.checkNotNull(artistSongs[index].artPath)
                           ? FileImage(File(artistSongs[index].artPath))
-                          : AssetImage(DefaultUtil.defaultImage),
+                          : DefaultUtil.checkListNotNull(artistSongs[index].artPath2) 
+                            ? MemoryImage(artistSongs[index].artPath2) 
+                            : AssetImage(DefaultUtil.defaultImage),
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistSongs[index].title)

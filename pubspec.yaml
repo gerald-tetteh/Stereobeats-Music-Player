@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.3.0+8
+version: 1.3.1+9
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -23,24 +23,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^4.3.1
-  assets_audio_player: ^2.0.9+2
-  shared_preferences: ^0.5.8
+  provider: ^6.0.1
+  assets_audio_player: ^3.0.3+6
+  shared_preferences: ^2.0.8
   font_awesome_flutter: ^8.8.1
-  carousel_slider: ^2.2.1
-  scrollable_positioned_list: ^0.1.7
-  draggable_scrollbar: ^0.0.4
-  circular_check_box: ^1.0.2
+  carousel_slider: ^4.0.0
+  scrollable_positioned_list: ^0.1.10
+  draggable_scrollbar: ^0.1.0
   fluttertoast: ^7.0.2
-  hive: ^1.4.2
-  hive_flutter: ^0.3.1
-  empty_widget: ^0.0.1
-  equalizer: ^0.0.2+1
-  watcher: ^0.9.7+15
-  youtube_api: ^0.8.0
-  url_launcher: ^5.5.0
-  in_app_review: ^0.2.0+4
-  intro_slider: ^2.3.2
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  empty_widget: ^0.0.5
+  equalizer: ^0.0.2+2
+  watcher: ^1.0.1
+  youtube_api: ^1.0.4
+  url_launcher: ^6.0.12
+  in_app_review: ^2.0.3
+  flutter_audio_query: ^0.3.5+6
+  intro_slider: ^3.0.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -49,15 +49,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  hive_generator: ^0.7.1
-  build_runner: ^1.10.2
+  hive_generator: ^1.1.1
+  build_runner: ^2.1.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

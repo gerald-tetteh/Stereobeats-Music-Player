@@ -16,6 +16,7 @@
 
 // package imports
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -172,6 +173,15 @@ class _SearchViewState extends State<SearchView> {
         .artPath;
   }
 
+  Uint8List getArtPath2(Album album) {
+    return album.paths
+        .firstWhere(
+          (song) => song.artPath2 != null && song.artPath2.length != 0,
+          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+        )
+        .artPath2;
+  }
+
   // builds results list
   Widget _buildSearchResults(
       String title, List<dynamic> items, ListType type, BuildContext context) {
@@ -312,7 +322,9 @@ class _SearchViewState extends State<SearchView> {
                           backgroundImage:
                               DefaultUtil.checkNotNull(songs[index].artPath)
                                   ? FileImage(File(songs[index].artPath))
-                                  : AssetImage(DefaultUtil.defaultImage),
+                                  : DefaultUtil.checkListNotNull(songs[index].artPath2) 
+                                    ? MemoryImage(songs[index].artPath2) 
+                                    : AssetImage(DefaultUtil.defaultImage),
                         ),
                         title: Text(
                           songs[index] != null
@@ -364,7 +376,11 @@ class _SearchViewState extends State<SearchView> {
         shrinkWrap: true,
         itemCount: artists.length,
         itemBuilder: (context, index) {
-          final cover = songProvider.artistCoverArt(artists[index]);
+          String cover;
+          final coverArt2 = songProvider.artistCoverArt2(artists[index]);
+          if(coverArt2 == null || coverArt2.length < 1) {
+            cover = songProvider.artistCoverArt(artists[index]);
+          }
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
             child: InkWell(
@@ -372,13 +388,16 @@ class _SearchViewState extends State<SearchView> {
                   .pushNamed(ArtistViewScreen.routeName, arguments: {
                 "artist": artists[index] as String,
                 "art": cover,
+                "art2": coverArt2,
               }),
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(cover)
                       ? FileImage(File(cover))
-                      : AssetImage(cover),
+                      : DefaultUtil.checkListNotNull(coverArt2) 
+                        ? MemoryImage(coverArt2) 
+                        : AssetImage(cover),
                 ),
                 title: Text(
                   artists[index] != null ? artists[index] : DefaultUtil.unknown,
@@ -408,7 +427,11 @@ class _SearchViewState extends State<SearchView> {
         shrinkWrap: true,
         itemCount: albums.length,
         itemBuilder: (context, index) {
-          final cover = getArtPath(albums[index]);
+          String cover;
+          final cover2 = getArtPath2(albums[index]);
+          if(cover2 == null || cover2.length < 1) {
+            cover = getArtPath(albums[index]);
+          }
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
             child: InkWell(
@@ -421,7 +444,9 @@ class _SearchViewState extends State<SearchView> {
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(cover)
                       ? FileImage(File(cover))
-                      : AssetImage(cover),
+                      : DefaultUtil.checkListNotNull(cover2) 
+                        ? MemoryImage(cover2) 
+                        : AssetImage(cover),
                 ),
                 title: Text(
                   albums[index] != null

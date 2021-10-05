@@ -15,6 +15,7 @@
 
 // package imports
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -63,10 +64,22 @@ class PlayListAndAlbum extends StatelessWidget {
   String getArtPath(Album album) {
     return album.paths
         .firstWhere(
-          (song) => song.artPath != null && song.artPath.length != 0,
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+          (song) => (song.artPath != null && song.artPath.length != 0),
+          orElse: () => SongItem(artPath: DefaultUtil.defaultImage,),
         )
         .artPath;
+  }
+
+  /*
+    This method returns the album art.
+  */
+  Uint8List getArtPath2(Album album) {
+    return album.paths
+        .firstWhere(
+          (song) => (song.artPath2 != null && song.artPath2.length != 0),
+          orElse: () => SongItem(artPath: DefaultUtil.defaultImage,),
+        )
+        .artPath2;
   }
 
   /*
@@ -187,14 +200,21 @@ class PlayListAndAlbum extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             String artPath;
+            Uint8List artPath2;
 
             if (items[index].paths != null &&
                 items[index].paths.length > 0 &&
                 isPlaylist) {
               artPath = songProvider
                   .getArtPath(items[index].paths.reversed.toList()[0]);
+              if(artPath == null || artPath.length == 0) {
+                artPath2 = songProvider.getArtPath2(items[index].paths.reversed.toList()[0]);
+              }
             } else if (!isPlaylist) {
               artPath = getArtPath(items[index]);
+              if(!DefaultUtil.checkNotAsset(artPath)) {
+                artPath2 = getArtPath2(items[index]);
+              }
             }
             return Material(
               color:
@@ -260,7 +280,9 @@ class PlayListAndAlbum extends StatelessWidget {
                                     artPath.length != 0 &&
                                     DefaultUtil.checkNotAsset(artPath)
                                 ? FileImage(File(artPath))
-                                : AssetImage(DefaultUtil.defaultImage),
+                                : DefaultUtil.checkListNotNull(artPath2) 
+                                  ? MemoryImage(artPath2) 
+                                  : AssetImage(DefaultUtil.defaultImage),
                           ),
                         ),
                       ),

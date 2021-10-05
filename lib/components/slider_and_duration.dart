@@ -52,7 +52,8 @@ class SliderAndDuration extends StatelessWidget {
                         : null,
                     activeColor:
                         themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
-                    value: songPosition.toDouble(),
+                    value: songPosition.toDouble() > double.parse(songDuration) 
+                      ? double.parse(songDuration) : songPosition.toDouble(),
                     min: 0,
                     max: double.parse(songDuration),
                     onChanged: (value) {

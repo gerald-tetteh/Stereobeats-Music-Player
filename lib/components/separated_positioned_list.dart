@@ -97,6 +97,7 @@ class SeparatedPositionedList extends StatelessWidget {
                 child: ListTile(
                   leading: BoxImage(
                     path: songs[index].artPath,
+                    path2: songs[index].artPath2,
                   ),
                   title: Text(
                     DefaultUtil.checkNotNull(songs[index].title)

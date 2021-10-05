@@ -38,6 +38,7 @@ class PageViewCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           child: ImageBuilder(
             path: song.artPath,
+            path2: song.artPath2,
           ),
         ),
       ),

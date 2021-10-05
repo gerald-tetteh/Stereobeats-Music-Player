@@ -18,9 +18,10 @@
 // imports
 
 // package imports
+import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -56,7 +57,7 @@ class AudioPlayer with ChangeNotifier {
     slider = CarouselSlider.builder(
       carouselController: pageController,
       itemCount: songsQueue.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (context, index, id) {
         return PageViewCard(songsQueue[index]);
       },
       options: CarouselOptions(
@@ -131,7 +132,10 @@ class AudioPlayer with ChangeNotifier {
               title: DefaultUtil.checkNotNull(song.title)
                   ? song.title
                   : DefaultUtil.unknown,
-              image: MetasImage.file(song.artPath),
+              image: DefaultUtil.checkNotNull(song.artPath) 
+                ? MetasImage.file(song.artPath) 
+                : MetasImage.asset(DefaultUtil.defaultImage) ,
+              extra: <String,Uint8List>{"path2":song.artPath2},
             ),
           ),
         )

@@ -16,6 +16,8 @@
 // imports
 
 // package imports
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 // lib file imports
@@ -25,9 +27,11 @@ class BoxImage extends StatelessWidget {
   const BoxImage({
     Key key,
     @required this.path,
+    this.path2
   }) : super(key: key);
 
   final String path;
+  final Uint8List path2;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,7 @@ class BoxImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         child: ImageBuilder(
           path: path,
+          path2: path2,
         ),
       ),
     );

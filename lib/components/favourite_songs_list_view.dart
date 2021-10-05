@@ -90,7 +90,9 @@ class FavouriteSongListView extends StatelessWidget {
                     backgroundColor: Colors.black,
                     backgroundImage: DefaultUtil.checkNotNull(song.artPath)
                         ? FileImage(File(song.artPath))
-                        : AssetImage(DefaultUtil.defaultImage),
+                        : DefaultUtil.checkListNotNull(song.artPath2) 
+                          ? MemoryImage(song.artPath2) 
+                          : AssetImage(DefaultUtil.defaultImage),
                   ),
                 ),
               ),

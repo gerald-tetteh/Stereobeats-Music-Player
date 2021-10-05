@@ -47,6 +47,7 @@ class CustomListView extends StatelessWidget {
     return ListTile(
       leading: BoxImage(
         path: song.artPath,
+        path2: song.artPath2,
       ),
       title: Text(
         DefaultUtil.checkNotNull(song.title) ? song.title : DefaultUtil.unknown,

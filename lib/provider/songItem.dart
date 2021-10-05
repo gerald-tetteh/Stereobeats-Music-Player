@@ -20,10 +20,13 @@
 // imports
 
 // package imports
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_audio_query/flutter_audio_query.dart';
 
 // lib file imports
 import '../models/playlist.dart';
@@ -44,6 +47,7 @@ class SongItem {
   final String path;
   String artPath; // artPath is not final because it is determined after
   // the item is created.
+  Uint8List artPath2;
 
   SongItem({
     this.songId,
@@ -57,6 +61,7 @@ class SongItem {
     this.year,
     this.path,
     this.artPath,
+    this.artPath2,
   });
 }
 
@@ -109,7 +114,7 @@ class SongProvider with ChangeNotifier {
       return fraction;
     }
     fraction.shuffle();
-    return fraction.sublist(0, 21);
+    return fraction.sublist(0, 20);
   }
 
   // returns the SongItems whose path matches the string provided
@@ -163,25 +168,60 @@ class SongProvider with ChangeNotifier {
   */
   Future<void> getSongs() async {
     prefs = await SharedPreferences.getInstance();
-    const platform = MethodChannel("stereo.beats/metadata");
-    final songList =
-        await platform.invokeMethod("getDeviceAudio") as List<dynamic>;
+    // const platform = MethodChannel("stereo.beats/metadata");
+    // final songList =
+    //     await platform.invokeMethod("getDeviceAudio") as List<dynamic>;
+    final audioQuery = FlutterAudioQuery();
+    final songList = await audioQuery.getSongs();
     _songs = songList
         .map(
-          (song) => SongItem(
-            title: song["title"],
-            album: song["album"],
-            albumArtist: song["albumArtist"],
-            albumId: song["albumId"],
-            artist: song["artist"],
-            dateAdded: song["dateAdded"],
-            duration: song["duration"],
-            year: song["year"],
-            path: song["path"],
-            songId: song["songId"],
-          ),
+          (song) {
+            return SongItem(
+              title: song.title,
+              album: song.album,
+              albumArtist: song.artist,
+              albumId: song.albumId,
+              artist: song.artist,
+              dateAdded: song.year,
+              duration: song.duration,
+              year: song.year,
+              path: song.filePath,
+              songId: song.id,
+              artPath: song.albumArtwork,
+            );
+          },
         )
         .toList();
+    await Future.forEach(_songs, (SongItem song) async {
+      try {
+        if(song.artPath == null) {
+          song.artPath2 = await audioQuery.getArtwork(type: ResourceType.ALBUM, id: song.albumId);
+        }
+        if(song.artPath2 == null) {
+          song.artPath2 = await audioQuery.getArtwork(type: ResourceType.ARTIST, id: song.artist);
+        }
+        if(song.artPath2 == null) {
+          song.artPath2 = await audioQuery.getArtwork(type: ResourceType.SONG, id: song.songId);
+        }
+      } catch(e) {
+      }
+    });
+    // _songs = songList
+    //     .map(
+    //       (song) => SongItem(
+    //         title: song["title"],
+    //         album: song["album"],
+    //         albumArtist: song["albumArtist"],
+    //         albumId: song["albumId"],
+    //         artist: song["artist"],
+    //         dateAdded: song["dateAdded"],
+    //         duration: song["duration"],
+    //         year: song["year"],
+    //         path: song["path"],
+    //         songId: song["songId"],
+    //       ),
+    //     )
+    //     .toList();
     _favourites = prefs.getStringList("favourites") ?? [];
   }
 
@@ -319,6 +359,20 @@ class SongProvider with ChangeNotifier {
                 song.artPath.length != 0,
             orElse: () => SongItem(artPath: DefaultUtil.defaultImage))
         .artPath;
+  }
+
+  // returns the path to an image
+  // used on one of the songs made
+  // by the artist provided.
+  Uint8List artistCoverArt2(String artist) {
+    return _songs
+        .firstWhere(
+            (song) =>
+                song.artist == artist &&
+                song.artPath2 != null &&
+                song.artPath2.length != 0,
+            orElse: () => SongItem(artPath: DefaultUtil.defaultImage))
+        .artPath2;
   }
 
   /*
@@ -499,6 +553,10 @@ class SongProvider with ChangeNotifier {
   // returns the artPath for a song with the path == input
   String getArtPath(String path) =>
       _songs.firstWhere((song) => song.path == path).artPath;
+
+  // returns the artPath for a song with the path == input
+  Uint8List getArtPath2(String path) =>
+      _songs.firstWhere((song) => song.path == path).artPath2;
 
   /*
     Returns a list of SongItems whose path is == to the 

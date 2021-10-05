@@ -189,8 +189,8 @@ class BuildColumn extends StatelessWidget {
                             )
                           : "",
                   itemBuilder: (context, index) {
-                    final coverArt =
-                        songProvider.artistCoverArt(artists[index]);
+                    final coverArt2 = songProvider.artistCoverArt2(artists[index]);
+                    final coverArt = songProvider.artistCoverArt(artists[index]);
                     return Material(
                       color: themeProvider.isDarkMode
                           ? ColorUtil.dark
@@ -202,6 +202,7 @@ class BuildColumn extends StatelessWidget {
                               arguments: {
                                 "artist": artists[index],
                                 "art": coverArt,
+                                "art2": coverArt2,
                               });
                         },
                         child: ListTile(
@@ -220,7 +221,9 @@ class BuildColumn extends StatelessWidget {
                               backgroundImage:
                                   DefaultUtil.checkNotAsset(coverArt)
                                       ? FileImage(File(coverArt))
-                                      : AssetImage(coverArt),
+                                      : DefaultUtil.checkListNotNull(coverArt2) 
+                                        ? MemoryImage(coverArt2) 
+                                        : AssetImage(coverArt),
                             ),
                           ),
                         ),

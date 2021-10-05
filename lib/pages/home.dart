@@ -111,7 +111,10 @@ class HomeScreen extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  ImageBuilder(path: songs[0].artPath),
+                  ImageBuilder(
+                    path: songs[0].artPath, 
+                    path2: songs[0].artPath2,
+                  ),
                   Positioned(
                     right: 10,
                     top: 15,
