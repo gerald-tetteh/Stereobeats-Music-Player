@@ -105,7 +105,7 @@ class BottomActionsBar extends StatelessWidget {
     }
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);
-    final fToast = FToast(scaffoldKey.currentContext);
+    final fToast = FToast();
     return BottomNavigationBar(
       backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
       onTap: (value) async {

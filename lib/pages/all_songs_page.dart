@@ -11,6 +11,7 @@
 //imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -30,12 +31,20 @@ import '../components/bottom_actions_bar.dart';
 import '../components/separated_positioned_list.dart';
 
 import 'search_view.dart';
+import 'play_page.dart';
 
 class AllSongsScreen extends StatelessWidget {
   // name of route
   static const routeName = "/all-songs";
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     final mediaQuery = MediaQuery.of(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final provider =

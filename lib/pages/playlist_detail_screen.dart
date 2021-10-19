@@ -13,6 +13,7 @@
 // imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,12 +27,21 @@ import '../provider/theme_mode.dart';
 import '../utils/color_util.dart';
 import '../helpers/db_helper.dart';
 
+import 'play_page.dart';
+
 class PlaylistDetailScreen extends StatelessWidget {
   // name of route
   static const routeName = "/playlist-detail";
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     final mediaQuery = MediaQuery.of(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final playlist = ModalRoute.of(context).settings.arguments as PlayList;

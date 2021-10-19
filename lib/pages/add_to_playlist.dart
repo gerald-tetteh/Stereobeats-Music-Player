@@ -17,6 +17,7 @@
 // imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,11 +29,20 @@ import '../provider/songItem.dart';
 import '../provider/theme_mode.dart';
 import '../components/build_check_box.dart';
 
+import 'play_page.dart';
+
 class AddToPlayListPage extends StatelessWidget {
   // name of route
   static const routeName = "/add_to_playlist";
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final songs = songProvider.songs;

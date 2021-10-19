@@ -25,20 +25,23 @@ class PageViewCard extends StatelessWidget {
   PageViewCard(this.song);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      margin: const EdgeInsets.all(5),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        elevation: 5,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: ImageBuilder(
-            path: song.artPath,
-            path2: song.artPath2,
+    return Hero(
+      tag: song.path,
+      child: Container(
+        height: double.infinity,
+        width: double.infinity,
+        margin: const EdgeInsets.all(5),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          elevation: 5,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: ImageBuilder(
+              path: song.artPath,
+              path2: song.artPath2,
+            ),
           ),
         ),
       ),

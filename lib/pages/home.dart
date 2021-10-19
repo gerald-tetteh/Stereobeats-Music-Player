@@ -9,10 +9,9 @@
 // imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stereo_beats_main/provider/music_player.dart';
-import 'package:stereo_beats_main/utils/default_util.dart';
 
 // lib file imports
 import '../provider/songItem.dart';
@@ -24,7 +23,9 @@ import '../components/image_builder.dart';
 import '../components/mini_player.dart';
 import '../components/custum_list_view.dart';
 import '../components/customDrawer.dart';
+import '../provider/music_player.dart';
 
+import 'play_page.dart';
 import 'search_view.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -33,6 +34,13 @@ class HomeScreen extends StatelessWidget {
   final _scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     // final themeData = Theme.of(context);
     var songProvider = Provider.of<SongProvider>(context);
     var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
@@ -112,7 +120,7 @@ class HomeScreen extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   ImageBuilder(
-                    path: songs[0].artPath, 
+                    path: songs[0].artPath,
                     path2: songs[0].artPath2,
                   ),
                   Positioned(

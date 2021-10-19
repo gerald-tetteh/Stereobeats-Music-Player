@@ -14,9 +14,9 @@
 // imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // lib file imports
@@ -28,11 +28,20 @@ import '../extensions/string_extension.dart';
 import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 
+import 'play_page.dart';
+
 class AddToPage extends StatelessWidget {
   // Name of route
   static const routeName = "/add-page";
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final player = Provider.of<AudioPlayer>(context, listen: false);

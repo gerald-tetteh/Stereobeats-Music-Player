@@ -14,6 +14,7 @@
 // imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -51,6 +52,7 @@ void main() async {
   Hive.registerAdapter(PlayListAdapter());
   await Hive.openBox<PlayList>("playLists");
   await Hive.openBox<String>("settings");
+  AssetsAudioPlayer.setupNotificationsOpenAction((notification) => false);
   runApp(MyApp());
 }
 
@@ -73,62 +75,64 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: Consumer<AppThemeMode>(
-        builder: (context, themeProvider, child) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Stereobeats',
-          theme: ThemeData(
-            primaryColor: Color(0xff1565c0),
-            accentColor: Colors.black,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            fontFamily: "Montserrat",
-            iconTheme: IconThemeData(
-              color: Color(0xff1565c0),
-              size: TextUtil.large,
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Stereobeats',
+            theme: ThemeData(
+              primaryColor: Color(0xff1565c0),
+              accentColor: Colors.black,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              fontFamily: "Montserrat",
+              iconTheme: IconThemeData(
+                color: Color(0xff1565c0),
+                size: TextUtil.large,
+              ),
+              appBarTheme: AppBarTheme(
+                elevation: 0,
+                iconTheme: Theme.of(context).iconTheme,
+                color: ColorUtil.white,
+              ),
             ),
-            appBarTheme: AppBarTheme(
-              elevation: 0,
-              iconTheme: Theme.of(context).iconTheme,
-              color: ColorUtil.white,
+            darkTheme: ThemeData(
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              primaryColor: ColorUtil.purple,
+              accentColor: ColorUtil.dark2,
+              fontFamily: "Montserrat",
+              iconTheme: IconThemeData(
+                size: TextUtil.large,
+                color: ColorUtil.purple,
+              ),
+              appBarTheme: AppBarTheme(
+                elevation: 0,
+                iconTheme: Theme.of(context).iconTheme,
+                color: ColorUtil.purple,
+              ),
             ),
-          ),
-          darkTheme: ThemeData(
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            primaryColor: ColorUtil.purple,
-            accentColor: ColorUtil.dark2,
-            fontFamily: "Montserrat",
-            iconTheme: IconThemeData(
-              size: TextUtil.large,
-              color: ColorUtil.purple,
-            ),
-            appBarTheme: AppBarTheme(
-              elevation: 0,
-              iconTheme: Theme.of(context).iconTheme,
-              color: ColorUtil.purple,
-            ),
-          ),
-          themeMode: themeProvider.themeMode,
-          home: LoadingScreen(),
-          // below are all the predefined routes
-          routes: {
-            PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
-            HomeScreen.routeName: (ctx) => HomeScreen(),
-            AllSongsScreen.routeName: (ctx) => AllSongsScreen(),
-            FavouritesPage.routeName: (ctx) => FavouritesPage(),
-            PlayListScreen.routeName: (ctx) => PlayListScreen(),
-            PlaylistDetailScreen.routeName: (ctx) => PlaylistDetailScreen(),
-            AddToPage.routeName: (ctx) => AddToPage(),
-            AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
-            AlbumListScreen.routeName: (ctx) => AlbumListScreen(),
-            AlbumDetailScreen.routeName: (ctx) => AlbumDetailScreen(),
-            ArtistScreen.routeName: (ctx) => ArtistScreen(),
-            ArtistViewScreen.routeName: (ctx) => ArtistViewScreen(),
-            SearchView.routeName: (ctx) => SearchView(),
-            SearchViewMore.routeName: (ctx) => SearchViewMore(),
-            SongDetailPage.routeName: (ctx) => SongDetailPage(),
-            EditSongPage.routeName: (ctx) => EditSongPage(),
-            NewFeature.routeName: (ctx) => NewFeature(),
-          },
-        ),
+            themeMode: themeProvider.themeMode,
+            home: LoadingScreen(),
+            // below are all the predefined routes
+            routes: {
+              PlayMusicScreen.routeName: (ctx) => PlayMusicScreen(),
+              HomeScreen.routeName: (ctx) => HomeScreen(),
+              AllSongsScreen.routeName: (ctx) => AllSongsScreen(),
+              FavouritesPage.routeName: (ctx) => FavouritesPage(),
+              PlayListScreen.routeName: (ctx) => PlayListScreen(),
+              PlaylistDetailScreen.routeName: (ctx) => PlaylistDetailScreen(),
+              AddToPage.routeName: (ctx) => AddToPage(),
+              AddToPlayListPage.routeName: (ctx) => AddToPlayListPage(),
+              AlbumListScreen.routeName: (ctx) => AlbumListScreen(),
+              AlbumDetailScreen.routeName: (ctx) => AlbumDetailScreen(),
+              ArtistScreen.routeName: (ctx) => ArtistScreen(),
+              ArtistViewScreen.routeName: (ctx) => ArtistViewScreen(),
+              SearchView.routeName: (ctx) => SearchView(),
+              SearchViewMore.routeName: (ctx) => SearchViewMore(),
+              SongDetailPage.routeName: (ctx) => SongDetailPage(),
+              EditSongPage.routeName: (ctx) => EditSongPage(),
+              NewFeature.routeName: (ctx) => NewFeature(),
+            },
+          );
+        },
       ),
     );
   }

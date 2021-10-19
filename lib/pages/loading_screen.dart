@@ -18,7 +18,6 @@
 // package imports
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hive/hive.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
@@ -34,9 +33,14 @@ class LoadingScreen extends StatelessWidget {
     // var box = Hive.box<String>("settings");
     // var updateCode = box.get("updateCode");
     var songProvider = Provider.of<SongProvider>(context, listen: false);
-    songProvider.getSongs()
-        // .then((value) => songProvider.getAllAlbumArt())
-        .then((value) {
+    songProvider
+        .getSongs()
+        .then((_) => songProvider.deviceInfo.androidInfo)
+        .then((deviceInfo) {
+      if (deviceInfo.version.sdkInt < 29) {
+        return songProvider.getAllAlbumArt();
+      }
+    }).then((_) {
       Provider.of<AudioPlayer>(context, listen: false).prefs =
           songProvider.prefs;
       // Include for feature updates
@@ -56,6 +60,10 @@ class LoadingScreen extends StatelessWidget {
         children: [
           Spacer(),
           Center(child: DefaultUtil.appName),
+          Spacer(),
+          Center(
+            child: CircularProgressIndicator(),
+          ),
           Spacer(),
           Text(
             "created by".toLowerCase(),

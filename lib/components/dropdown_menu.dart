@@ -52,7 +52,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
   String _selectedValue;
   @override
   Widget build(BuildContext context) {
-    final fToast = FToast(widget.scaffoldKey.currentContext);
+    final fToast = FToast();
     var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // genarates a list from the string of alphabets

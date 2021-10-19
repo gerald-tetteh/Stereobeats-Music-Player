@@ -65,7 +65,7 @@ class AllSongsPopUp extends StatelessWidget {
               ),
             ))
         .toList();
-    final fToast = FToast(scaffoldKey.currentContext);
+    final fToast = FToast();
     return PopupMenuButton<String>(
       icon: Icon(
         Icons.more_vert,

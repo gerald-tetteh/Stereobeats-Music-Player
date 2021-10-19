@@ -13,6 +13,7 @@
 // package imports
 import 'dart:io';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,7 @@ import '../components/mini_player.dart';
 
 import 'artist_view_page.dart';
 import 'search_view.dart';
+import 'play_page.dart';
 
 class ArtistScreen extends StatelessWidget {
   // name of route
@@ -37,6 +39,13 @@ class ArtistScreen extends StatelessWidget {
   final _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     final songProvider = Provider.of<SongProvider>(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
@@ -189,8 +198,10 @@ class BuildColumn extends StatelessWidget {
                             )
                           : "",
                   itemBuilder: (context, index) {
-                    final coverArt2 = songProvider.artistCoverArt2(artists[index]);
-                    final coverArt = songProvider.artistCoverArt(artists[index]);
+                    final coverArt2 =
+                        songProvider.artistCoverArt2(artists[index]);
+                    final coverArt =
+                        songProvider.artistCoverArt(artists[index]);
                     return Material(
                       color: themeProvider.isDarkMode
                           ? ColorUtil.dark
@@ -221,9 +232,9 @@ class BuildColumn extends StatelessWidget {
                               backgroundImage:
                                   DefaultUtil.checkNotAsset(coverArt)
                                       ? FileImage(File(coverArt))
-                                      : DefaultUtil.checkListNotNull(coverArt2) 
-                                        ? MemoryImage(coverArt2) 
-                                        : AssetImage(coverArt),
+                                      : DefaultUtil.checkListNotNull(coverArt2)
+                                          ? MemoryImage(coverArt2)
+                                          : AssetImage(coverArt),
                             ),
                           ),
                         ),

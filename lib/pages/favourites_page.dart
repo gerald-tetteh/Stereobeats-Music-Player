@@ -14,6 +14,7 @@
 // imports
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +33,7 @@ import '../components/bottom_actions_bar.dart';
 import '../helpers/reviewHelper.dart';
 
 import 'search_view.dart';
+import 'play_page.dart';
 
 class FavouritesPage extends StatelessWidget {
   // name of the route
@@ -41,6 +43,13 @@ class FavouritesPage extends StatelessWidget {
   final reviweHelper = ReviewHelper(DateTime.now());
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     final songProvider = Provider.of<SongProvider>(context);
     final favouriteSongs = songProvider.favourites;
     final audioProvider = Provider.of<AudioPlayer>(context, listen: false);

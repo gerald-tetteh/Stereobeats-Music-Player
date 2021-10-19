@@ -322,9 +322,10 @@ class _SearchViewState extends State<SearchView> {
                           backgroundImage:
                               DefaultUtil.checkNotNull(songs[index].artPath)
                                   ? FileImage(File(songs[index].artPath))
-                                  : DefaultUtil.checkListNotNull(songs[index].artPath2) 
-                                    ? MemoryImage(songs[index].artPath2) 
-                                    : AssetImage(DefaultUtil.defaultImage),
+                                  : DefaultUtil.checkListNotNull(
+                                          songs[index].artPath2)
+                                      ? MemoryImage(songs[index].artPath2)
+                                      : AssetImage(DefaultUtil.defaultImage),
                         ),
                         title: Text(
                           songs[index] != null
@@ -378,7 +379,7 @@ class _SearchViewState extends State<SearchView> {
         itemBuilder: (context, index) {
           String cover;
           final coverArt2 = songProvider.artistCoverArt2(artists[index]);
-          if(coverArt2 == null || coverArt2.length < 1) {
+          if (coverArt2 == null || coverArt2.length < 1) {
             cover = songProvider.artistCoverArt(artists[index]);
           }
           return Material(
@@ -395,9 +396,9 @@ class _SearchViewState extends State<SearchView> {
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(cover)
                       ? FileImage(File(cover))
-                      : DefaultUtil.checkListNotNull(coverArt2) 
-                        ? MemoryImage(coverArt2) 
-                        : AssetImage(cover),
+                      : DefaultUtil.checkListNotNull(coverArt2)
+                          ? MemoryImage(coverArt2)
+                          : AssetImage(cover),
                 ),
                 title: Text(
                   artists[index] != null ? artists[index] : DefaultUtil.unknown,
@@ -429,7 +430,7 @@ class _SearchViewState extends State<SearchView> {
         itemBuilder: (context, index) {
           String cover;
           final cover2 = getArtPath2(albums[index]);
-          if(cover2 == null || cover2.length < 1) {
+          if (cover2 == null || cover2.length < 1) {
             cover = getArtPath(albums[index]);
           }
           return Material(
@@ -444,9 +445,9 @@ class _SearchViewState extends State<SearchView> {
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(cover)
                       ? FileImage(File(cover))
-                      : DefaultUtil.checkListNotNull(cover2) 
-                        ? MemoryImage(cover2) 
-                        : AssetImage(cover),
+                      : DefaultUtil.checkListNotNull(cover2)
+                          ? MemoryImage(cover2)
+                          : AssetImage(cover),
                 ),
                 title: Text(
                   albums[index] != null

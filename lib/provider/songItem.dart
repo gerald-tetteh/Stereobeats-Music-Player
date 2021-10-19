@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 // lib file imports
 import '../models/playlist.dart';
@@ -72,6 +73,7 @@ class SongProvider with ChangeNotifier {
   List<String> _playlistKey = [];
   SharedPreferences prefs;
   bool showBottonBar = false;
+  final deviceInfo = DeviceInfoPlugin();
 
   // returns a copy of all SongItems
   List<SongItem> get songs {
@@ -168,60 +170,40 @@ class SongProvider with ChangeNotifier {
   */
   Future<void> getSongs() async {
     prefs = await SharedPreferences.getInstance();
-    // const platform = MethodChannel("stereo.beats/metadata");
-    // final songList =
-    //     await platform.invokeMethod("getDeviceAudio") as List<dynamic>;
+    const platform = MethodChannel("stereo.beats/metadata");
+    final songList =
+        await platform.invokeMethod("getDeviceAudio") as List<dynamic>;
     final audioQuery = FlutterAudioQuery();
-    final songList = await audioQuery.getSongs();
+    // final songList = await audioQuery.getSongs();
     _songs = songList
         .map(
-          (song) {
-            return SongItem(
-              title: song.title,
-              album: song.album,
-              albumArtist: song.artist,
-              albumId: song.albumId,
-              artist: song.artist,
-              dateAdded: song.year,
-              duration: song.duration,
-              year: song.year,
-              path: song.filePath,
-              songId: song.id,
-              artPath: song.albumArtwork,
-            );
-          },
+          (song) => SongItem(
+            title: song["title"],
+            album: song["album"],
+            albumArtist: song["albumArtist"],
+            albumId: song["albumId"],
+            artist: song["artist"],
+            dateAdded: song["dateAdded"],
+            duration: song["duration"],
+            year: song["year"],
+            path: song["path"],
+            songId: song["songId"],
+          ),
         )
         .toList();
-    await Future.forEach(_songs, (SongItem song) async {
-      try {
-        if(song.artPath == null) {
-          song.artPath2 = await audioQuery.getArtwork(type: ResourceType.ALBUM, id: song.albumId);
-        }
-        if(song.artPath2 == null) {
-          song.artPath2 = await audioQuery.getArtwork(type: ResourceType.ARTIST, id: song.artist);
-        }
-        if(song.artPath2 == null) {
-          song.artPath2 = await audioQuery.getArtwork(type: ResourceType.SONG, id: song.songId);
-        }
-      } catch(e) {
-      }
-    });
-    // _songs = songList
-    //     .map(
-    //       (song) => SongItem(
-    //         title: song["title"],
-    //         album: song["album"],
-    //         albumArtist: song["albumArtist"],
-    //         albumId: song["albumId"],
-    //         artist: song["artist"],
-    //         dateAdded: song["dateAdded"],
-    //         duration: song["duration"],
-    //         year: song["year"],
-    //         path: song["path"],
-    //         songId: song["songId"],
-    //       ),
-    //     )
-    //     .toList();
+    final androidInfo = await deviceInfo.androidInfo;
+    if (androidInfo.version.sdkInt >= 29) {
+      await Future.forEach(_songs, (SongItem song) async {
+        try {
+          if (song.artPath == null) {
+            song.artPath2 = await audioQuery.getArtwork(
+              type: ResourceType.SONG,
+              id: song.songId,
+            );
+          }
+        } catch (e) {}
+      });
+    }
     _favourites = prefs.getStringList("favourites") ?? [];
   }
 
@@ -308,8 +290,7 @@ class SongProvider with ChangeNotifier {
         )
         .values
         .toList()
-          ..sort((a, b) =>
-              a.name?.toUpperCase()?.compareTo(b.name?.toUpperCase()));
+      ..sort((a, b) => a.name?.toUpperCase()?.compareTo(b.name?.toUpperCase()));
   }
 
   // retrives all songs whose artist == input
@@ -344,7 +325,7 @@ class SongProvider with ChangeNotifier {
         .map((song) => song.artist ?? DefaultUtil.unknown)
         .toSet()
         .toList()
-          ..sort((a, b) => a?.toUpperCase()?.compareTo(b?.toUpperCase()));
+      ..sort((a, b) => a?.toUpperCase()?.compareTo(b?.toUpperCase()));
   }
 
   // returns the path to an image

@@ -17,6 +17,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 // package imports
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,8 @@ import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 import '../models/album.dart';
 import '../pages/album_detail_screen.dart';
+
+import 'play_page.dart';
 
 class ArtistViewScreen extends StatelessWidget {
   // name of route
@@ -58,6 +61,13 @@ class ArtistViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AssetsAudioPlayer.addNotificationOpenAction((notification) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        PlayMusicScreen.routeName,
+        (route) => route.isFirst,
+      );
+      return true;
+    });
     /*
       This screen requires data from the previous 
       route to build.
@@ -120,9 +130,9 @@ class ArtistViewScreen extends StatelessWidget {
                         image: DecorationImage(
                           image: DefaultUtil.checkNotAsset(coverArt)
                               ? FileImage(File(coverArt))
-                              : DefaultUtil.checkListNotNull(coverArt2) 
-                                ? MemoryImage(coverArt2) 
-                                : AssetImage(coverArt),
+                              : DefaultUtil.checkListNotNull(coverArt2)
+                                  ? MemoryImage(coverArt2)
+                                  : AssetImage(coverArt),
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(25),
@@ -202,7 +212,7 @@ class ArtistViewScreen extends StatelessWidget {
         (BuildContext ctx, int index) {
           final artPath2 = getArtPath2(artistAlbums[index]);
           String artPath;
-          if(artPath2 == null || artPath2.length < 1) {
+          if (artPath2 == null || artPath2.length < 1) {
             artPath = getArtPath(artistAlbums[index]);
           }
           return Material(
@@ -216,10 +226,10 @@ class ArtistViewScreen extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(artPath)
-                      ? FileImage(File(artPath)) 
-                      : DefaultUtil.checkListNotNull(artPath2) 
-                        ? MemoryImage(artPath2) 
-                        : AssetImage(artPath),
+                      ? FileImage(File(artPath))
+                      : DefaultUtil.checkListNotNull(artPath2)
+                          ? MemoryImage(artPath2)
+                          : AssetImage(artPath),
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistAlbums[index].name)
@@ -265,9 +275,10 @@ class ArtistViewScreen extends StatelessWidget {
                   backgroundImage:
                       DefaultUtil.checkNotNull(artistSongs[index].artPath)
                           ? FileImage(File(artistSongs[index].artPath))
-                          : DefaultUtil.checkListNotNull(artistSongs[index].artPath2) 
-                            ? MemoryImage(artistSongs[index].artPath2) 
-                            : AssetImage(DefaultUtil.defaultImage),
+                          : DefaultUtil.checkListNotNull(
+                                  artistSongs[index].artPath2)
+                              ? MemoryImage(artistSongs[index].artPath2)
+                              : AssetImage(DefaultUtil.defaultImage),
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistSongs[index].title)

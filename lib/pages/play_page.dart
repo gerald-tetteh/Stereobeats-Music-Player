@@ -211,7 +211,7 @@ class YoutubeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fToast = FToast(scaffoldKey.currentContext);
+    final fToast = FToast();
     return PlayerBuilder.current(
       player: value.audioPlayer,
       builder: (context, current) {

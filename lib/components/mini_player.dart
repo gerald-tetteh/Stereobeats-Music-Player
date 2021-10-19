@@ -17,6 +17,9 @@
 // imports
 
 // package imports
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -44,6 +47,7 @@ class MiniPlayer extends StatelessWidget {
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     if (audioProvider.audioPlayer.playerState.value != PlayerState.stop) {
       Audio song = audioProvider.playing;
+      final artPath2 = song.metas.extra["path2"] as Uint8List;
       return GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(PlayMusicScreen.routeName),
         child: Container(
@@ -63,10 +67,18 @@ class MiniPlayer extends StatelessWidget {
                   Expanded(
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              AssetImage("assets/images/ic_launcher.png"),
-                          backgroundColor: Color(0xff212121),
+                        Hero(
+                          tag: song.path,
+                          child: CircleAvatar(
+                            backgroundImage:
+                                DefaultUtil.checkNotAsset(song.metas.image.path)
+                                    ? FileImage(File(song.metas.image.path))
+                                    : DefaultUtil.checkListNotNull(artPath2)
+                                        ? MemoryImage(artPath2)
+                                        : AssetImage(
+                                            "assets/images/default-image.png"),
+                            backgroundColor: Color(0xff212121),
+                          ),
                         ),
                         Expanded(
                           child: Container(
