@@ -14,9 +14,11 @@ package com.herokuapp.addodevelop.stereo_beats_main;
 * */
 
 import android.Manifest;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -31,7 +33,9 @@ import org.cmc.music.metadata.MusicMetadata;
 import org.cmc.music.metadata.MusicMetadataSet;
 import org.cmc.music.myid3.MyID3;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,21 +86,21 @@ public class MainActivity extends FlutterActivity {
                             });
                             break;
                         }
-                        case "getAllAlbumArt": {
-                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
-                                @Override
-                                public void onGranted() {
-                                    getAllAlbumArt(result);
-                                }
-
-                                @Override
-                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-                                    result.error("1", "Permission denied", null);
-                                }
-                            });
-                            break;
-                        }
+//                        case "getAllAlbumArt": {
+//                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+//                            Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
+//                                @Override
+//                                public void onGranted() {
+//                                    getAllAlbumArt(result);
+//                                }
+//
+//                                @Override
+//                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+//                                    result.error("1", "Permission denied", null);
+//                                }
+//                            });
+//                            break;
+//                        }
                         case "shareFile": {
                             String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
                             Permissions.check(MainActivity.this, permissions, null, null, new PermissionHandler() {
@@ -177,7 +181,22 @@ public class MainActivity extends FlutterActivity {
                     metaData.put("albumArtist",c.getString(8));
                     metaData.put("year",c.getString(9));
                     metaData.put("songId",c.getString(10));
-                    songData.add(metaData);
+                    Uri sArtworkUri = Uri
+                            .parse("content://media/external/audio/albumart");
+                    Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, Long.parseLong(c.getString(5)));
+                    Bitmap bitmap;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), albumArtUri);
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byte[] byteArray = stream.toByteArray();
+                        stream.close();
+                        bitmap.recycle();
+                        metaData.put("artPath2",byteArray);
+                    } catch (IOException exception) {
+                        metaData.put("artPath2",null);
+                    }
+                songData.add(metaData);
             }
             c.close();
         }
@@ -246,19 +265,19 @@ public class MainActivity extends FlutterActivity {
     * The paths are stored in a map with the album id the
     * key and the path the value.
     * */
-    private void getAllAlbumArt(MethodChannel.Result result) {
-        HashMap<String,Object> albumArts = new HashMap<>();
-            Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART},null,
-                    null,null);
-            if(cursor != null) {
-                for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
-                    albumArts.put(cursor.getString(0),cursor.getString(1));
-                }
-                cursor.close();
-            }
-        result.success(albumArts);
-    }
+//    private void getAllAlbumArt(MethodChannel.Result result) {
+//        HashMap<String,Object> albumArts = new HashMap<>();
+//            Cursor cursor = MainActivity.this.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+//                    new String[] {MediaStore.Audio.Albums._ID,MediaStore.Audio.Albums.ALBUM_ART},null,
+//                    null,null);
+//            if(cursor != null) {
+//                for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+//                    albumArts.put(cursor.getString(0),cursor.getString(1));
+//                }
+//                cursor.close();
+//            }
+//        result.success(albumArts);
+//    }
 
     /*
     * The method is used to permanently remove an audio file from

@@ -138,30 +138,30 @@ class SongProvider with ChangeNotifier {
     and sorts the songs in alphabetical order.
     This completed using java code through the platform channel.
   */
-  Future<void> getAllAlbumArt() async {
-    const platform = MethodChannel("stereo.beats/metadata");
-    final path =
-        await platform.invokeMethod("getAllAlbumArt") as Map<dynamic, dynamic>;
-    _songs = _songs
-        .map(
-          (song) => SongItem(
-            songId: song.songId,
-            title: song.title,
-            album: song.album,
-            albumArtist: song.albumArtist,
-            albumId: song.albumId,
-            artist: song.artist,
-            dateAdded: song.duration,
-            duration: song.duration,
-            year: song.year,
-            path: song.path,
-            artPath: path[song.albumId],
-          ),
-        )
-        .toList();
-    _songs.sort(
-        (a, b) => a.title?.toUpperCase()?.compareTo(b.title?.toUpperCase()));
-  }
+  // Future<void> getAllAlbumArt() async {
+  //   const platform = MethodChannel("stereo.beats/metadata");
+  //   final path =
+  //       await platform.invokeMethod("getAllAlbumArt") as Map<dynamic, dynamic>;
+  //   _songs = _songs
+  //       .map(
+  //         (song) => SongItem(
+  //           songId: song.songId,
+  //           title: song.title,
+  //           album: song.album,
+  //           albumArtist: song.albumArtist,
+  //           albumId: song.albumId,
+  //           artist: song.artist,
+  //           dateAdded: song.duration,
+  //           duration: song.duration,
+  //           year: song.year,
+  //           path: song.path,
+  //           artPath: path[song.albumId],
+  //         ),
+  //       )
+  //       .toList();
+  //   _songs.sort(
+  //       (a, b) => a.title?.toUpperCase()?.compareTo(b.title?.toUpperCase()));
+  // }
 
   /*
     Retrieves all songs available on the device and all favourites from
@@ -188,22 +188,23 @@ class SongProvider with ChangeNotifier {
             year: song["year"],
             path: song["path"],
             songId: song["songId"],
+            artPath2: song["artPath2"],
           ),
         )
         .toList();
-    final androidInfo = await deviceInfo.androidInfo;
-    if (androidInfo.version.sdkInt >= 29) {
-      await Future.forEach(_songs, (SongItem song) async {
-        try {
-          if (song.artPath == null) {
-            song.artPath2 = await audioQuery.getArtwork(
-              type: ResourceType.SONG,
-              id: song.songId,
-            );
-          }
-        } catch (e) {}
-      });
-    }
+    // final androidInfo = await deviceInfo.androidInfo;
+    // if (androidInfo.version.sdkInt >= 29) {
+    //   await Future.forEach(_songs, (SongItem song) async {
+    //     try {
+    //       if (song.artPath == null) {
+    //         song.artPath2 = await audioQuery.getArtwork(
+    //           type: ResourceType.SONG,
+    //           id: song.songId,
+    //         );
+    //       }
+    //     } catch (e) {}
+    //   });
+    // }
     _favourites = prefs.getStringList("favourites") ?? [];
   }
 

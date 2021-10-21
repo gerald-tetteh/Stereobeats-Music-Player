@@ -33,14 +33,14 @@ class LoadingScreen extends StatelessWidget {
     // var box = Hive.box<String>("settings");
     // var updateCode = box.get("updateCode");
     var songProvider = Provider.of<SongProvider>(context, listen: false);
-    songProvider
-        .getSongs()
-        .then((_) => songProvider.deviceInfo.androidInfo)
-        .then((deviceInfo) {
-      if (deviceInfo.version.sdkInt < 29) {
-        return songProvider.getAllAlbumArt();
-      }
-    }).then((_) {
+    songProvider.getSongs()
+        // .then((_) => songProvider.deviceInfo.androidInfo)
+        // .then((deviceInfo) {
+        //   if (deviceInfo.version.sdkInt < 29) {
+        //     return songProvider.getAllAlbumArt();
+        //   }
+        // })
+        .then((_) {
       Provider.of<AudioPlayer>(context, listen: false).prefs =
           songProvider.prefs;
       // Include for feature updates
