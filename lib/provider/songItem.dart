@@ -196,35 +196,12 @@ class SongProvider with ChangeNotifier {
     return albums;
   }
 
-  /// Converts Map<String,List<<SongItem>>(key,value) to List<Album>
-  /// with the name of each album being the key and the album
-  /// songs the value.
-  List<Album> changeToAlbum(Map<String, List<SongItem>> albums) {
-    return albums
-        .map(
-          (key, value) {
-            return MapEntry(
-              key,
-              Album(
-                albumArtist: value
-                    .firstWhere(
-                      (song) => song.albumArtist != null,
-                      orElse: () => SongItem(
-                        albumArtist: DefaultUtil.unknown,
-                        isMusic: true,
-                        size: 0,
-                      ),
-                    )
-                    .albumArtist,
-                name: key,
-                paths: value,
-              ),
-            );
-          },
-        )
-        .values
-        .toList()
-      ..sort((a, b) => a.name!.toUpperCase().compareTo(b.name!.toUpperCase()));
+  /// returns album songs
+  List<SongItem> getAlbumSongs(String albumName, String albumArtist) {
+    return _songs
+        .where((song) =>
+            song.album == albumName || song.albumArtist == albumArtist)
+        .toList();
   }
 
   /// retrieves all songs whose artist == input
@@ -233,24 +210,8 @@ class SongProvider with ChangeNotifier {
   }
 
   /// retrieves all albums whose albumArtist == input
-  List<Album> getArtistAlbums(String albumArtist) {
-    Map<String?, Album> albums = Map();
-    _songs.map((song) {
-      if ((song.albumArtist ?? DefaultUtil.unknown) == albumArtist) {
-        if (song.album != null && song.album!.length != 0) {
-          if (albums.keys.contains(song.album)) {
-            albums[song.album]!.paths!.add(song);
-          } else {
-            albums[song.album] = Album(
-              albumArtist: song.albumArtist,
-              name: song.album,
-              paths: [song],
-            );
-          }
-        }
-      }
-    }).toList();
-    return albums.values.toList();
+  List<AlbumModel> getArtistAlbums(String albumArtist) {
+    return _albums.where((album) => album.artist == albumArtist).toList();
   }
 
   /// returns the path to an image

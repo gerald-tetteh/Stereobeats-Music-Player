@@ -11,8 +11,6 @@
 // imports
 
 // package imports
-import 'dart:io';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +108,7 @@ class ArtistScreen extends StatelessWidget {
                   bottom: 10,
                   left: 3,
                   right: 3,
-                  // shows miniplayer if available
+                  // shows mini player if available
                   child: MiniPlayer(mediaQuery: mediaQuery),
                 ),
               ],
@@ -126,7 +124,7 @@ class ArtistScreen extends StatelessWidget {
 
 /*
   This widget shows the list of all artist on the device.
-  It creats a list view with each item have the artist name
+  It creates a list view with each item have the artist name
   and an image to represent the artist in a circular widget.
 */
 class BuildColumn extends StatelessWidget {

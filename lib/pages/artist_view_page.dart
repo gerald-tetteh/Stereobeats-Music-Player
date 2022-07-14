@@ -6,19 +6,14 @@
  * Artist View Page
 */
 
-/*
-  This page shows all songs and albums 
-  that have been produced by a paticular artist.
-*/
+/// This page shows all songs and albums
+/// that have been produced by a particular artist.
 
 // imports
-
-import 'dart:io';
-import 'dart:typed_data';
-
 // package imports
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 // lib file imports
@@ -29,43 +24,14 @@ import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../utils/text_util.dart';
 import '../utils/color_util.dart';
-import '../models/album.dart';
 import '../pages/album_detail_screen.dart';
+import '../components/circular_image.dart';
 
 import 'play_page.dart';
 
 class ArtistViewScreen extends StatelessWidget {
-  // name of route
+  /// name of route
   static const routeName = "/artist-view-page";
-  /*
-    This method finds the find song in the album 
-    with album art and returns the path to the image
-  */
-  String? getArtPath(Album album) {
-    return album.paths!
-        .firstWhere(
-          (song) => song.artPath != null && song.artPath!.length != 0,
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath;
-  }
-
-  Uint8List? getArtPath2(Album album) {
-    return album.paths!
-        .firstWhere(
-          (song) => song.artPath2 != null && song.artPath2!.length != 0,
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath2;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +45,12 @@ class ArtistViewScreen extends StatelessWidget {
     /*
       This screen requires data from the previous 
       route to build.
-      It recieves the name of the artist and the
+      It receives the name of the artist and the
       image associated with the artist
     */
     final parameters =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final artist = parameters["artist"] as String;
-    final coverArt = parameters["art"] as String?;
-    final coverArt2 = parameters["art2"] as Uint8List?;
+        ModalRoute.of(context)!.settings.arguments as Map<String, ArtistModel>;
+    final artist = parameters["artist"];
     final songProvider = Provider.of<SongProvider>(context);
     final player = Provider.of<AudioPlayer>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
@@ -96,7 +60,7 @@ class ArtistViewScreen extends StatelessWidget {
     final _appBar = AppBar(
       iconTheme: Theme.of(context).iconTheme,
       title: Text(
-        artist,
+        artist!.artist,
         style: TextUtil.artistAppBar.copyWith(
           color: themeProvider.isDarkMode ? ColorUtil.white : null,
         ),
@@ -107,9 +71,9 @@ class ArtistViewScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
     );
     final appBarHeight = _appBar.preferredSize.height;
-    final actualheight = viewHeight - (extraPadding + appBarHeight);
-    final artistSongs = songProvider.getArtistSongs(artist);
-    final artistAlbums = songProvider.getArtistAlbums(artist);
+    final actualHeight = viewHeight - (extraPadding + appBarHeight);
+    final artistSongs = songProvider.getArtistSongs(artist.artist);
+    final artistAlbums = songProvider.getArtistAlbums(artist.artist);
     return Scaffold(
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
@@ -121,9 +85,9 @@ class ArtistViewScreen extends StatelessWidget {
             children: [
               Container(
                 constraints: BoxConstraints(
-                  maxHeight: actualheight * 1 / 5,
+                  maxHeight: actualHeight * 1 / 5,
                 ),
-                height: actualheight * 1 / 5,
+                height: actualHeight * 1 / 5,
                 width: mediaQuery.size.width * 0.5,
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Card(
@@ -134,17 +98,15 @@ class ArtistViewScreen extends StatelessWidget {
                   child: Hero(
                     tag: artist,
                     child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: DefaultUtil.checkNotAsset(coverArt)
-                              ? FileImage(File(coverArt!))
-                              : (DefaultUtil.checkListNotNull(coverArt2)
-                                      ? MemoryImage(coverArt2!)
-                                      : AssetImage(coverArt!))
-                                  as ImageProvider<Object>,
+                      child: QueryArtworkWidget(
+                        id: artist.id,
+                        type: ArtworkType.ARTIST,
+                        artworkFit: BoxFit.cover,
+                        artworkBorder: BorderRadius.circular(25),
+                        nullArtworkWidget: Image.asset(
+                          DefaultUtil.defaultImage,
                           fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.circular(25),
                       ),
                     ),
                   ),
@@ -168,18 +130,32 @@ class ArtistViewScreen extends StatelessWidget {
                       topRight: Radius.circular(30),
                     ),
                     /*
-                      This widgets creats a scroll views
+                      This widgets creates a scroll views
                       which contains the artist cover image,
                       the artist songs and albums. 
                     */
                     child: CustomScrollView(
                       slivers: [
-                        _buildsubHeading(
-                            artistSongs.length, "Songs", themeProvider),
-                        _buildSongsList(player, artistSongs, themeProvider),
-                        _buildsubHeading(
-                            artistAlbums.length, "Albums", themeProvider),
-                        _buildAlbumList(artistAlbums, context, themeProvider),
+                        _buildSubHeading(
+                          artistSongs.length,
+                          "Songs",
+                          themeProvider,
+                        ),
+                        _buildSongsList(
+                          player,
+                          artistSongs,
+                          themeProvider,
+                        ),
+                        _buildSubHeading(
+                          artistAlbums.length,
+                          "Albums",
+                          themeProvider,
+                        ),
+                        _buildAlbumList(
+                          artistAlbums,
+                          context,
+                          themeProvider,
+                        ),
                         _extraSpace(),
                       ],
                     ),
@@ -192,7 +168,7 @@ class ArtistViewScreen extends StatelessWidget {
             bottom: 10,
             left: 3,
             right: 3,
-            // shows the miniplayer if present
+            // shows the mini player if present
             child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],
@@ -200,30 +176,21 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
-  /*
-    Creats a spce beneath the custom scroll view to prevent 
-    the mini player from obstructing it.  
-  */
+  /// Creates a space beneath the custom scroll view to prevent
+  /// the mini player from obstructing it.
   SliverList _extraSpace() {
     return SliverList(
       delegate: SliverChildListDelegate.fixed([SizedBox(height: 73)]),
     );
   }
 
-  /*
-    builds the list of all albums that were made by the
-    artist provided 
-  */
-  SliverList _buildAlbumList(List<Album> artistAlbums, BuildContext context,
-      AppThemeMode themeProvider) {
+  /// builds the list of all albums that were made by the
+  /// artist provided
+  SliverList _buildAlbumList(List<AlbumModel> artistAlbums,
+      BuildContext context, AppThemeMode themeProvider) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext ctx, int index) {
-          final artPath2 = getArtPath2(artistAlbums[index]);
-          String? artPath;
-          if (artPath2 == null || artPath2.length < 1) {
-            artPath = getArtPath(artistAlbums[index]);
-          }
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
@@ -232,25 +199,20 @@ class ArtistViewScreen extends StatelessWidget {
                 arguments: artistAlbums[index],
               ),
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: ColorUtil.dark,
-                  backgroundImage: DefaultUtil.checkNotAsset(artPath)
-                      ? FileImage(File(artPath!))
-                      : (DefaultUtil.checkListNotNull(artPath2)
-                          ? MemoryImage(artPath2!)
-                          : AssetImage(artPath!)) as ImageProvider<Object>?,
+                leading: CircularImage(
+                  albumId: artistAlbums[index].id,
+                  songId: -1,
+                  artistId: -1,
                 ),
                 title: Text(
-                  DefaultUtil.checkNotNull(artistAlbums[index].name)
-                      ? artistAlbums[index].name!
-                      : DefaultUtil.unknown,
+                  artistAlbums[index].album,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
                       themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
                 subtitle: Text(
-                  "Tracks: ${artistAlbums[index].paths != null ? artistAlbums[index].paths!.length : 0}",
+                  "Tracks: ${artistAlbums[index].numOfSongs}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
@@ -265,12 +227,13 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
-  /*
-    builds the list of all songs that were made by the
-    artist provided 
-  */
-  SliverList _buildSongsList(AudioPlayer player, List<SongItem> artistSongs,
-      AppThemeMode themeProvider) {
+  /// builds the list of all songs that were made by the
+  /// artist provided
+  SliverList _buildSongsList(
+    AudioPlayer player,
+    List<SongItem> artistSongs,
+    AppThemeMode themeProvider,
+  ) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext ctx, int index) {
@@ -279,16 +242,10 @@ class ArtistViewScreen extends StatelessWidget {
             child: InkWell(
               onTap: () => player.play(artistSongs, index),
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: ColorUtil.dark,
-                  backgroundImage:
-                      DefaultUtil.checkNotNull(artistSongs[index].artPath)
-                          ? FileImage(File(artistSongs[index].artPath!))
-                          : (DefaultUtil.checkListNotNull(
-                                      artistSongs[index].artPath2)
-                                  ? MemoryImage(artistSongs[index].artPath2!)
-                                  : AssetImage(DefaultUtil.defaultImage))
-                              as ImageProvider<Object>?,
+                leading: CircularImage(
+                  albumId: artistSongs[index].albumId,
+                  songId: -1,
+                  artistId: -1,
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistSongs[index].title)
@@ -317,9 +274,12 @@ class ArtistViewScreen extends StatelessWidget {
     );
   }
 
-  // build a heading to identify different sections
-  SliverList _buildsubHeading(
-      int length, String title, AppThemeMode themeProvider) {
+  /// build a heading to identify different sections
+  SliverList _buildSubHeading(
+    int length,
+    String title,
+    AppThemeMode themeProvider,
+  ) {
     return SliverList(
       delegate: SliverChildListDelegate.fixed(
         [

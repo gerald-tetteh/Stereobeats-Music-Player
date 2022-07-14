@@ -14,6 +14,7 @@
 
 // package imports
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -22,7 +23,6 @@ import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 import '../models/playlist.dart';
-import '../models/album.dart';
 import '../provider/songItem.dart';
 import '../provider/theme_mode.dart';
 import '../extensions/string_extension.dart';
@@ -34,7 +34,7 @@ import 'circular_image.dart';
 
 class PlaylistAndAlbumDetail extends StatelessWidget {
   final PlayList? playlist;
-  final Album? album;
+  final AlbumModel? album;
   PlaylistAndAlbumDetail({this.playlist, this.album});
   // either the album or playlist must be null
   @override
@@ -48,9 +48,17 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
     if (playlist == null) {
       final songProvider = Provider.of<SongProvider>(context);
       // it the album songs are null or 0 the empty widget is returned
-      return album!.paths != null && album!.paths!.length != 0
-          ? _buildList(actualHeight, context, album.toString(), album!.paths!,
-              songProvider, audioProvider, isLandScape, mediaQuery)
+      return album!.numOfSongs > 0
+          ? _buildList(
+              actualHeight,
+              context,
+              album!.album,
+              songProvider.getAlbumSongs(album!.album, album!.artist ?? ""),
+              songProvider,
+              audioProvider,
+              isLandScape,
+              mediaQuery,
+            )
           : _noSongs(context);
     } else {
       final songProvider = Provider.of<SongProvider>(context, listen: false);
@@ -73,7 +81,8 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                   songProvider,
                   audioProvider,
                   isLandScape,
-                  mediaQuery)
+                  mediaQuery,
+                )
               : _noSongs(context);
         },
       );
@@ -95,14 +104,15 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
 
   // this widget constructs the layout for the page
   Column _buildList(
-      double actualHeight,
-      BuildContext context,
-      String objectName,
-      List<SongItem> songs,
-      SongProvider provider,
-      AudioPlayer player,
-      bool isLandScape,
-      MediaQueryData mediaQuery) {
+    double actualHeight,
+    BuildContext context,
+    String objectName,
+    List<SongItem> songs,
+    SongProvider provider,
+    AudioPlayer player,
+    bool isLandScape,
+    MediaQueryData mediaQuery,
+  ) {
     return Column(
       children: [
         Container(

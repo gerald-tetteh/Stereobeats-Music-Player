@@ -15,12 +15,12 @@
 // package imports
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 // lib file imports
 import '../components/playlist_&_album_detail.dart';
 import '../components/mini_player.dart';
-import '../models/album.dart';
 import '../components/bottom_actions_bar.dart';
 import '../provider/songItem.dart';
 import '../provider/theme_mode.dart';
@@ -43,7 +43,7 @@ class AlbumDetailScreen extends StatelessWidget {
     });
     final mediaQuery = MediaQuery.of(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
-    final album = ModalRoute.of(context)!.settings.arguments as Album?;
+    final album = ModalRoute.of(context)!.settings.arguments as AlbumModel?;
     return Scaffold(
       backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       key: _scaffoldKey,

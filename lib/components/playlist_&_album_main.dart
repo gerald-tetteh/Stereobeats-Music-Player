@@ -14,11 +14,7 @@
 // imports
 
 // package imports
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
@@ -54,47 +50,14 @@ class PlayListAndAlbum extends StatelessWidget {
     this.purpose,
   });
 
-  // this method returns the path of each song
-  // in the album
+  /// this method returns the path of each song
+  /// in the album
   List<String> albumPaths(Album album) {
     return album.paths!.map((song) => song.path!).toList();
   }
 
-  /*
-    This method returns the album art.
-  */
-  String? getArtPath(Album album) {
-    return album.paths!
-        .firstWhere(
-          (song) => (song.artPath != null && song.artPath!.length != 0),
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath;
-  }
-
-  /*
-    This method returns the album art.
-  */
-  Uint8List? getArtPath2(Album album) {
-    return album.paths!
-        .firstWhere(
-          (song) => (song.artPath2 != null && song.artPath2!.length != 0),
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath2;
-  }
-
-  /*
-    This method deselectes all selected items.
-  */
+  /// This method deselectes all selected items.
+  ///
   void _resetActions(SongProvider songProvider) {
     songProvider.changeBottomBar(false);
     songProvider.setQueueToNull();
@@ -138,7 +101,7 @@ class PlayListAndAlbum extends StatelessWidget {
     }
   }
 
-  // returns the album list
+  /// returns the album list
   Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider,
       AppThemeMode themeProvider) {
     if (albums!.length == 0) {
@@ -155,7 +118,7 @@ class PlayListAndAlbum extends StatelessWidget {
     );
   }
 
-  // returns the playlist view
+  /// returns the playlist view
   Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider,
       AppThemeMode themeProvider) {
     return ValueListenableBuilder(
@@ -179,10 +142,8 @@ class PlayListAndAlbum extends StatelessWidget {
     );
   }
 
-  /*
-    This Method returns a list of items.
-    Ethier all the playlists or all the albums.
-  */
+  /// This Method returns a list of items.
+  /// Either all the playlists or all the albums.
   GestureDetector _listBuilder({
     SongProvider? songProvider,
     MediaQueryData? mediaQuery,
