@@ -17,7 +17,6 @@
 
 // package imports
 import 'package:flutter/material.dart';
-import 'package:equalizer/equalizer.dart';
 import 'package:provider/provider.dart';
 
 // lib file imports
@@ -39,8 +38,8 @@ class PlayPagePopUp extends StatelessWidget {
   ];
 
   PlayPagePopUp({
-    @required this.audioProvider,
-    @required this.songProvider,
+    required this.audioProvider,
+    required this.songProvider,
   });
 
   @override
@@ -102,7 +101,7 @@ class PlayPagePopUp extends StatelessWidget {
       onSelected: (value) async {
         var path = audioProvider.playing.path;
         if (value == _menuItemsText[0]) {
-          await Equalizer.open(audioProvider.audioPlayer.audioSessionId.value);
+          print("show equalizer");
         } else if (value == _menuItemsText[1]) {
           Navigator.of(context)
               .pushNamed(SongDetailPage.routeName, arguments: path);

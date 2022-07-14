@@ -49,12 +49,12 @@ class BottomActionsBar extends StatelessWidget {
     this.playListDeleteSingle,
     this.playlistName,
   });
-  final void Function(String, List<String>) playListDelete;
-  final void Function(String, String, List<String>) playListDeleteSingle;
-  final void Function(String, String, String) renameFunction;
-  final void Function() deleteFunction;
-  final String playlistName;
-  final GlobalKey<ScaffoldState> scaffoldKey;
+  final void Function(String, List<String>)? playListDelete;
+  final void Function(String, String, List<String>)? playListDeleteSingle;
+  final void Function(String, String, String)? renameFunction;
+  final void Function()? deleteFunction;
+  final String? playlistName;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +123,7 @@ class BottomActionsBar extends StatelessWidget {
             var result =
                 await Navigator.of(context).pushNamed(AddToPage.routeName) ??
                     false;
-            if (result) {
+            if (result as bool) {
               // creats a toast to show action was completed
               fToast.showToast(
                 child: ToastComponent(
@@ -146,9 +146,9 @@ class BottomActionsBar extends StatelessWidget {
           }
         } else if (value == 3) {
           if (songProvider.queueNotNull() || songProvider.keysNotNull()) {
-            var value = await showDialog<bool>(
+            var value = await (showDialog<bool>(
               barrierDismissible: false,
-              context: scaffoldKey.currentContext,
+              context: scaffoldKey!.currentContext!,
               builder: (context) {
                 // displays a dialog box to warn the user before deleting
                 return ConfirmDeleteAlert(
@@ -159,7 +159,7 @@ class BottomActionsBar extends StatelessWidget {
                   playlistName: playlistName,
                 );
               },
-            );
+            ) as Future<bool>);
             if (value) {
               fToast.showToast(
                 child: ToastComponent(
@@ -178,11 +178,11 @@ class BottomActionsBar extends StatelessWidget {
             // displays a modal sheet with a text field to change the
             // playlist name
             await showModalBottomSheet(
-              context: scaffoldKey.currentContext,
+              context: scaffoldKey!.currentContext!,
               builder: (ctx) {
                 return ChangePlaylistName(
                   songProvider: songProvider,
-                  renameFunction: renameFunction,
+                  renameFunction: renameFunction!,
                 );
               },
             );

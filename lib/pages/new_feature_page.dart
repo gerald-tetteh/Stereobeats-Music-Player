@@ -15,7 +15,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:intro_slider/slide_object.dart';
 
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';

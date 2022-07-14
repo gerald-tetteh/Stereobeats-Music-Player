@@ -117,8 +117,8 @@ class AddToPage extends StatelessWidget {
             child: ValueListenableBuilder(
               valueListenable: Hive.box<PlayList>("playLists").listenable(),
               builder: (context, Box<PlayList> box, child) {
-                var playLists = box.values.toList() ?? [];
-                if (playLists == null || playLists.length < 1) {
+                var playLists = box.values.toList();
+                if (playLists.length < 1) {
                   return Container();
                 }
                 return ListView.separated(
@@ -127,7 +127,7 @@ class AddToPage extends StatelessWidget {
                           ? Divider(
                               indent: mediaQuery.size.width * (1 / 4),
                             )
-                          : "",
+                          : "" as Widget,
                   itemCount: playLists.length,
                   itemBuilder: (context, index) {
                     return ListTile(

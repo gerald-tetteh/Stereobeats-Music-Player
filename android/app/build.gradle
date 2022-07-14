@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     lintOptions {
         disable 'InvalidPackage'
@@ -41,7 +41,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.herokuapp.addodevelop.stereo_beats_main"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -68,8 +68,6 @@ android {
 }
 
 dependencies {
-    implementation 'com.nabinbhandari.android:permissions:3.8'
-    implementation files('lib/MyID3_for_Android.jar')
 }
 
 flutter {

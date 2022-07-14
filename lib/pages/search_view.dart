@@ -46,13 +46,13 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
-  TextEditingController _controller;
-  List<dynamic> _songs;
-  List<dynamic> _albums;
-  List<dynamic> _artists;
-  SongProvider songProvider;
-  AppThemeMode themeProvider;
-  AudioPlayer player;
+  TextEditingController? _controller;
+  List<dynamic>? _songs;
+  List<dynamic>? _albums;
+  List<dynamic>? _artists;
+  late SongProvider songProvider;
+  late AppThemeMode themeProvider;
+  late AudioPlayer player;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _SearchViewState extends State<SearchView> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -101,7 +101,7 @@ class _SearchViewState extends State<SearchView> {
       actions: [
         IconButton(
           icon: Icon(Icons.cancel_outlined),
-          onPressed: () => _controller.clear(),
+          onPressed: () => _controller!.clear(),
         ),
       ],
     );
@@ -123,19 +123,19 @@ class _SearchViewState extends State<SearchView> {
             children: [
               _buildSearchResults(
                 "Songs",
-                _songs,
+                _songs!,
                 ListType.Songs,
                 context,
               ),
               _buildSearchResults(
                 "Albums",
-                _albums,
+                _albums!,
                 ListType.Albums,
                 context,
               ),
               _buildSearchResults(
                 "Artists",
-                _artists,
+                _artists!,
                 ListType.Artists,
                 context,
               ),
@@ -164,20 +164,25 @@ class _SearchViewState extends State<SearchView> {
     This methods finds the album art that would be used 
     to identify an album
   */
-  String getArtPath(Album album) {
-    return album.paths
+  String? getArtPath(Album album) {
+    return album.paths!
         .firstWhere(
-          (song) => song.artPath != null && song.artPath.length != 0,
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+          (song) => song.artPath != null && song.artPath!.length != 0,
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
         )
         .artPath;
   }
 
-  Uint8List getArtPath2(Album album) {
-    return album.paths
+  Uint8List? getArtPath2(Album album) {
+    return album.paths!
         .firstWhere(
-          (song) => song.artPath2 != null && song.artPath2.length != 0,
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+          (song) => song.artPath2 != null && song.artPath2!.length != 0,
+          orElse: () => SongItem(
+              artPath: DefaultUtil.defaultImage, isMusic: true, size: 0),
         )
         .artPath2;
   }
@@ -217,7 +222,7 @@ class _SearchViewState extends State<SearchView> {
               ),
               _listType(type, context),
               if (items.length > 10)
-                FlatButton(
+                TextButton(
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -276,13 +281,13 @@ class _SearchViewState extends State<SearchView> {
 
   // builds a list of all songs that match the users search
   Widget _buildSongList(BuildContext context, bool all, bool selectable) {
-    List<dynamic> songs;
+    List<dynamic>? songs;
     /*
       Depending on th current context the full list of results
       or a portion of it is shown.
     */
-    if (_songs.length > 10 && !all) {
-      songs = _songs.sublist(0, 5);
+    if (_songs!.length > 10 && !all) {
+      songs = _songs!.sublist(0, 5);
     } else {
       songs = _songs;
     }
@@ -290,7 +295,7 @@ class _SearchViewState extends State<SearchView> {
       builder: (context, provider, child) {
         return Expanded(
           child: GestureDetector(
-            onTap: provider.showBottonBar && selectable
+            onTap: provider.showBottomBar && selectable
                 ? () {
                     provider.changeBottomBar(false);
                     provider.setQueueToNull();
@@ -298,19 +303,19 @@ class _SearchViewState extends State<SearchView> {
                 : null,
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: songs.length,
+              itemCount: songs!.length,
               itemBuilder: (context, index) {
                 return Material(
                   color: themeProvider.isDarkMode
                       ? ColorUtil.dark2
                       : ColorUtil.white,
                   child: InkWell(
-                    onTap: () => player.play(songs, index),
+                    onTap: () => player.play(songs as List<SongItem?>, index),
                     onLongPress: selectable
                         ? () => provider.changeBottomBar(true)
                         : null,
                     child: GestureDetector(
-                      onTap: provider.showBottonBar && selectable
+                      onTap: provider.showBottomBar && selectable
                           ? () {
                               provider.changeBottomBar(false);
                               provider.setQueueToNull();
@@ -319,13 +324,14 @@ class _SearchViewState extends State<SearchView> {
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: ColorUtil.dark,
-                          backgroundImage:
-                              DefaultUtil.checkNotNull(songs[index].artPath)
-                                  ? FileImage(File(songs[index].artPath))
-                                  : DefaultUtil.checkListNotNull(
+                          backgroundImage: DefaultUtil.checkNotNull(
+                                  songs![index].artPath)
+                              ? FileImage(File(songs[index].artPath))
+                              : (DefaultUtil.checkListNotNull(
                                           songs[index].artPath2)
                                       ? MemoryImage(songs[index].artPath2)
-                                      : AssetImage(DefaultUtil.defaultImage),
+                                      : AssetImage(DefaultUtil.defaultImage))
+                                  as ImageProvider<Object>?,
                         ),
                         title: Text(
                           songs[index] != null
@@ -347,7 +353,7 @@ class _SearchViewState extends State<SearchView> {
                               ? TextUtil.allSongsTitle
                               : null,
                         ),
-                        trailing: provider.showBottonBar && selectable
+                        trailing: provider.showBottomBar && selectable
                             ? BuildCheckBox(
                                 path: songs[index].path,
                               )
@@ -366,19 +372,19 @@ class _SearchViewState extends State<SearchView> {
 
   // build a list of all artists that match the users input
   Widget _buildArtistList(BuildContext context, bool all) {
-    List<dynamic> artists;
-    if (_artists.length > 10 && !all) {
-      artists = _artists.sublist(0, 10);
+    List<dynamic>? artists;
+    if (_artists!.length > 10 && !all) {
+      artists = _artists!.sublist(0, 10);
     } else {
       artists = _artists;
     }
     return Expanded(
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: artists.length,
+        itemCount: artists!.length,
         itemBuilder: (context, index) {
-          String cover;
-          final coverArt2 = songProvider.artistCoverArt2(artists[index]);
+          String? cover;
+          final coverArt2 = songProvider.artistCoverArt2(artists![index]);
           if (coverArt2 == null || coverArt2.length < 1) {
             cover = songProvider.artistCoverArt(artists[index]);
           }
@@ -387,7 +393,7 @@ class _SearchViewState extends State<SearchView> {
             child: InkWell(
               onTap: () => Navigator.of(context)
                   .pushNamed(ArtistViewScreen.routeName, arguments: {
-                "artist": artists[index] as String,
+                "artist": artists![index] as String?,
                 "art": cover,
                 "art2": coverArt2,
               }),
@@ -395,10 +401,10 @@ class _SearchViewState extends State<SearchView> {
                 leading: CircleAvatar(
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(cover)
-                      ? FileImage(File(cover))
-                      : DefaultUtil.checkListNotNull(coverArt2)
-                          ? MemoryImage(coverArt2)
-                          : AssetImage(cover),
+                      ? FileImage(File(cover!))
+                      : (DefaultUtil.checkListNotNull(coverArt2)
+                          ? MemoryImage(coverArt2!)
+                          : AssetImage(cover!)) as ImageProvider<Object>?,
                 ),
                 title: Text(
                   artists[index] != null ? artists[index] : DefaultUtil.unknown,
@@ -417,19 +423,19 @@ class _SearchViewState extends State<SearchView> {
 
   // builds a list of albums that match the users input
   Widget _buildAlbumList(BuildContext context, bool all) {
-    List<dynamic> albums;
-    if (_albums.length > 10 && !all) {
-      albums = _albums.sublist(0, 10);
+    List<dynamic>? albums;
+    if (_albums!.length > 10 && !all) {
+      albums = _albums!.sublist(0, 10);
     } else {
       albums = _albums;
     }
     return Expanded(
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: albums.length,
+        itemCount: albums!.length,
         itemBuilder: (context, index) {
-          String cover;
-          final cover2 = getArtPath2(albums[index]);
+          String? cover;
+          final cover2 = getArtPath2(albums![index]);
           if (cover2 == null || cover2.length < 1) {
             cover = getArtPath(albums[index]);
           }
@@ -438,16 +444,16 @@ class _SearchViewState extends State<SearchView> {
             child: InkWell(
               onTap: () => Navigator.of(context).pushNamed(
                 AlbumDetailScreen.routeName,
-                arguments: albums[index],
+                arguments: albums![index],
               ),
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(cover)
-                      ? FileImage(File(cover))
-                      : DefaultUtil.checkListNotNull(cover2)
-                          ? MemoryImage(cover2)
-                          : AssetImage(cover),
+                      ? FileImage(File(cover!))
+                      : (DefaultUtil.checkListNotNull(cover2)
+                          ? MemoryImage(cover2!)
+                          : AssetImage(cover!)) as ImageProvider<Object>?,
                 ),
                 title: Text(
                   albums[index] != null

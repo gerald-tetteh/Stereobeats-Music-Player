@@ -25,12 +25,14 @@ import '../provider/theme_mode.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
-import '../components/build_check_box.dart';
+
+import './build_check_box.dart';
+import './circular_image.dart';
 
 class FavouriteSongListView extends StatelessWidget {
   FavouriteSongListView({
-    @required this.favouriteSongs,
-    @required this.audioProvider,
+    required this.favouriteSongs,
+    required this.audioProvider,
   });
 
   final List<SongItem> favouriteSongs;
@@ -58,19 +60,19 @@ class FavouriteSongListView extends StatelessWidget {
               },
               onLongPress: () => songProvider.changeBottomBar(true),
               child: GestureDetector(
-                onTap: songProvider.showBottonBar
+                onTap: songProvider.showBottomBar
                     ? () {
                         songProvider.changeBottomBar(false);
                         songProvider.setQueueToNull();
                       }
                     : null,
                 child: ListTile(
-                  leading: songProvider.showBottonBar
+                  leading: songProvider.showBottomBar
                       ? BuildCheckBox(path: song.path)
                       : null,
                   title: Text(
                     DefaultUtil.checkNotNull(song.title)
-                        ? song.title
+                        ? song.title!
                         : DefaultUtil.unknown,
                     overflow: TextOverflow.ellipsis,
                     style: themeProvider.isDarkMode
@@ -79,20 +81,16 @@ class FavouriteSongListView extends StatelessWidget {
                   ),
                   subtitle: Text(
                     DefaultUtil.checkNotNull(song.artist)
-                        ? song.artist
+                        ? song.artist!
                         : DefaultUtil.unknown,
                     overflow: TextOverflow.ellipsis,
                     style: themeProvider.isDarkMode
                         ? TextUtil.allSongsArtist
                         : null,
                   ),
-                  trailing: CircleAvatar(
-                    backgroundColor: Colors.black,
-                    backgroundImage: DefaultUtil.checkNotNull(song.artPath)
-                        ? FileImage(File(song.artPath))
-                        : DefaultUtil.checkListNotNull(song.artPath2) 
-                          ? MemoryImage(song.artPath2) 
-                          : AssetImage(DefaultUtil.defaultImage),
+                  trailing: CircularImage(
+                    albumId: song.albumId,
+                    songId: song.songId,
                   ),
                 ),
               ),

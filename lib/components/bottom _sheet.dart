@@ -39,7 +39,7 @@ class ModalSheet extends StatefulWidget {
 class _ModalSheetState extends State<ModalSheet> {
   final keys = DBHelper.getkeys("playLists");
 
-  String playListName;
+  String? playListName;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class _ModalSheetState extends State<ModalSheet> {
                 validator: (value) {
                   if (keys.contains(value)) {
                     return "A Playlist with the name entered already exists";
-                  } else if (value.isEmpty) {
+                  } else if (value!.isEmpty) {
                     return "Nothing was entered for this field";
                   }
                 },
@@ -94,7 +94,7 @@ class _ModalSheetState extends State<ModalSheet> {
                 The check box next to the button is filled
                 when the user has selected songs to add to the playlist.
               */
-              FlatButton.icon(
+              TextButton.icon(
                 label: Text(
                   "Add Songs",
                   style:
@@ -118,16 +118,19 @@ class _ModalSheetState extends State<ModalSheet> {
                 },
               ),
               Spacer(),
-              RaisedButton(
+              ElevatedButton(
                 child: Text(
                   "Submit",
                   style:
                       themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
-                color:
-                    themeProvider.isDarkMode ? ColorUtil.darkTeal : Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: themeProvider.isDarkMode
+                      ? ColorUtil.darkTeal
+                      : Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 onPressed: () {
                   _submit(songProvider);
@@ -145,12 +148,12 @@ class _ModalSheetState extends State<ModalSheet> {
     and call creatItem form the DBHelper.
   */
   void _submit(SongProvider provider) {
-    if (!widget.formKey.currentState.validate()) {
+    if (!widget.formKey.currentState!.validate()) {
       return;
     }
-    widget.formKey.currentState.save();
+    widget.formKey.currentState!.save();
     DBHelper.createItem(
-        "playLists", playListName.trim().capitalize(), provider.queuePath);
+        "playLists", playListName!.trim().capitalize(), provider.queuePath);
     provider.setQueueToNull();
     Navigator.of(context).pop();
   }

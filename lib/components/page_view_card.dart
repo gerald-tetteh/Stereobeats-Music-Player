@@ -26,7 +26,7 @@ class PageViewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: song.path,
+      tag: song.path!,
       child: Container(
         height: double.infinity,
         width: double.infinity,
@@ -39,8 +39,8 @@ class PageViewCard extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
             child: ImageBuilder(
-              path: song.artPath,
-              path2: song.artPath2,
+              albumId: song.albumId ?? -1,
+              songId: song.songId ?? -1,
             ),
           ),
         ),

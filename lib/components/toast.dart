@@ -13,15 +13,15 @@
 import 'package:flutter/material.dart';
 
 class ToastComponent extends StatelessWidget {
-  final Color color;
+  final Color? color;
   final String message;
   final IconData icon;
-  final Color iconColor;
+  final Color? iconColor;
   ToastComponent({
-    @required this.color,
-    @required this.icon,
-    @required this.message,
-    @required this.iconColor,
+    required this.color,
+    required this.icon,
+    required this.message,
+    required this.iconColor,
   });
   @override
   Widget build(BuildContext context) {

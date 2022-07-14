@@ -33,24 +33,24 @@ class _CustomDrawerState extends State<CustomDrawer> {
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     var lightThemeGradient = [
-      Colors.blue[300],
-      Colors.blue[200],
-      Colors.blue[100],
-      Colors.blue[50],
-      Colors.red[50],
-      Colors.red[100],
-      Colors.red[200],
-      Colors.red[300],
+      Colors.blue[300]!,
+      Colors.blue[200]!,
+      Colors.blue[100]!,
+      Colors.blue[50]!,
+      Colors.red[50]!,
+      Colors.red[100]!,
+      Colors.red[200]!,
+      Colors.red[300]!,
     ];
     var darkThemeGradient = [
-      Colors.teal[300],
-      Colors.teal[200],
-      Colors.teal[100],
-      Colors.teal[50],
-      Colors.purple[50],
-      Colors.purple[100],
-      Colors.purple[200],
-      Colors.purple[300],
+      Colors.teal[300]!,
+      Colors.teal[200]!,
+      Colors.teal[100]!,
+      Colors.teal[50]!,
+      Colors.purple[50]!,
+      Colors.purple[100]!,
+      Colors.purple[200]!,
+      Colors.purple[300]!,
     ];
     return Drawer(
       child: Container(
@@ -151,10 +151,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
 */
 class CustomListTile extends StatelessWidget {
   const CustomListTile({
-    Key key,
-    @required this.iconData,
-    @required this.text,
-    @required this.function,
+    Key? key,
+    required this.iconData,
+    required this.text,
+    required this.function,
   }) : super(key: key);
 
   final IconData iconData;

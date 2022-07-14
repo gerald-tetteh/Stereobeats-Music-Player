@@ -44,7 +44,7 @@ class PlaylistDetailScreen extends StatelessWidget {
     });
     final mediaQuery = MediaQuery.of(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
-    final playlist = ModalRoute.of(context).settings.arguments as PlayList;
+    final playlist = ModalRoute.of(context)!.settings.arguments as PlayList?;
     return Scaffold(
       backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       key: _scaffoldKey,
@@ -58,7 +58,7 @@ class PlaylistDetailScreen extends StatelessWidget {
           ),
           duration: Duration(milliseconds: 400),
           curve: Curves.easeIn,
-          height: songProvider.showBottonBar ? 59 : 0,
+          height: songProvider.showBottomBar ? 59 : 0,
         );
       }),
       body: Stack(

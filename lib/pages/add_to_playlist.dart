@@ -97,13 +97,13 @@ class AddToPlayListPage extends StatelessWidget {
           ),
           title: Text(
             DefaultUtil.checkNotNull(songs[index].title)
-                ? songs[index].title
+                ? songs[index].title!
                 : DefaultUtil.unknown,
             style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
           ),
           subtitle: Text(
             DefaultUtil.checkNotNull(songs[index].artist)
-                ? songs[index].artist
+                ? songs[index].artist!
                 : DefaultUtil.unknown,
             style: themeProvider.isDarkMode ? TextUtil.allSongsArtist : null,
           ),

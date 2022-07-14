@@ -31,10 +31,10 @@ import '../utils/text_util.dart';
 
 class CustomListView extends StatelessWidget {
   const CustomListView({
-    Key key,
-    @required this.song,
-    @required this.songs,
-    @required this.index,
+    Key? key,
+    required this.song,
+    required this.songs,
+    required this.index,
   }) : super(key: key);
 
   final SongItem song;
@@ -46,18 +46,20 @@ class CustomListView extends StatelessWidget {
     var themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return ListTile(
       leading: BoxImage(
-        path: song.artPath,
-        path2: song.artPath2,
+        albumId: song.albumId ?? -1,
+        songId: song.songId ?? -1,
       ),
       title: Text(
-        DefaultUtil.checkNotNull(song.title) ? song.title : DefaultUtil.unknown,
+        DefaultUtil.checkNotNull(song.title)
+            ? song.title!
+            : DefaultUtil.unknown,
         style: themeProvider.isDarkMode ? TextUtil.quickPickSongDetails : null,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         DefaultUtil.checkNotNull(song.artist)
-            ? song.artist
+            ? song.artist!
             : DefaultUtil.unknown,
         style: themeProvider.isDarkMode ? TextUtil.quickPickSongDetails : null,
         maxLines: 1,

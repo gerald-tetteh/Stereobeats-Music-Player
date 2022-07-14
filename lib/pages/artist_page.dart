@@ -16,6 +16,7 @@ import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 // lib file imports
@@ -27,6 +28,7 @@ import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 import '../components/mini_player.dart';
+import '../components/circular_image.dart';
 
 import 'artist_view_page.dart';
 import 'search_view.dart';
@@ -49,7 +51,7 @@ class ArtistScreen extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
-    final artists = songProvider.artists();
+    final artists = songProvider.artists;
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: AnimatedContainer(
@@ -59,7 +61,7 @@ class ArtistScreen extends StatelessWidget {
         ),
         duration: Duration(milliseconds: 400),
         curve: Curves.easeIn,
-        height: songProvider.showBottonBar ? 59 : 0,
+        height: songProvider.showBottomBar ? 59 : 0,
       ),
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
@@ -72,7 +74,7 @@ class ArtistScreen extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
+            _scaffoldKey.currentState!.openDrawer();
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
             songProvider.setKeysToNull();
@@ -93,7 +95,7 @@ class ArtistScreen extends StatelessWidget {
         ],
       ),
       // shows empty widget if there are no artists
-      body: artists != null && artists.length != 0
+      body: artists.length != 0
           ? Stack(
               fit: StackFit.expand,
               children: [
@@ -129,17 +131,17 @@ class ArtistScreen extends StatelessWidget {
 */
 class BuildColumn extends StatelessWidget {
   const BuildColumn({
-    Key key,
-    @required ScrollController scrollController,
-    @required this.artists,
-    @required this.mediaQuery,
-    @required this.themeProvider,
-    @required this.songProvider,
+    Key? key,
+    required ScrollController scrollController,
+    required this.artists,
+    required this.mediaQuery,
+    required this.themeProvider,
+    required this.songProvider,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
-  final List<String> artists;
+  final List<ArtistModel> artists;
   final MediaQueryData mediaQuery;
   final SongProvider songProvider;
   final AppThemeMode themeProvider;
@@ -187,7 +189,7 @@ class BuildColumn extends StatelessWidget {
               */
               child: DraggableScrollbar.semicircle(
                 backgroundColor:
-                    themeProvider.isDarkMode ? ColorUtil.dark2 : null,
+                    themeProvider.isDarkMode ? ColorUtil.dark2 : Colors.white,
                 child: ListView.separated(
                   controller: _scrollController,
                   itemCount: artists.length,
@@ -196,12 +198,8 @@ class BuildColumn extends StatelessWidget {
                           ? Divider(
                               endIndent: mediaQuery.size.width * (1 / 4),
                             )
-                          : "",
+                          : "" as Widget,
                   itemBuilder: (context, index) {
-                    final coverArt2 =
-                        songProvider.artistCoverArt2(artists[index]);
-                    final coverArt =
-                        songProvider.artistCoverArt(artists[index]);
                     return Material(
                       color: themeProvider.isDarkMode
                           ? ColorUtil.dark
@@ -212,13 +210,11 @@ class BuildColumn extends StatelessWidget {
                               ArtistViewScreen.routeName,
                               arguments: {
                                 "artist": artists[index],
-                                "art": coverArt,
-                                "art2": coverArt2,
                               });
                         },
                         child: ListTile(
                           title: Text(
-                            artists[index],
+                            artists[index].artist,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: themeProvider.isDarkMode
@@ -227,14 +223,10 @@ class BuildColumn extends StatelessWidget {
                           ),
                           trailing: Hero(
                             tag: artists[index],
-                            child: CircleAvatar(
-                              backgroundColor: ColorUtil.dark,
-                              backgroundImage:
-                                  DefaultUtil.checkNotAsset(coverArt)
-                                      ? FileImage(File(coverArt))
-                                      : DefaultUtil.checkListNotNull(coverArt2)
-                                          ? MemoryImage(coverArt2)
-                                          : AssetImage(coverArt),
+                            child: CircularImage(
+                              albumId: -1,
+                              songId: -1,
+                              artistId: artists[index].id,
                             ),
                           ),
                         ),

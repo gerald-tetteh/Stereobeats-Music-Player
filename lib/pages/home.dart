@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       // returns empty widget if there are songs on the device
-      body: songs != null && songs.length != 0
+      body: songs.length != 0
           ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
               mediaQuery, songProvider, themeProvider, context)
           : _noSongs(context, themeProvider),
@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
               Icons.menu,
               size: TextUtil.medium,
             ),
-            onPressed: () => _scaffoldkey.currentState.openDrawer(),
+            onPressed: () => _scaffoldkey.currentState!.openDrawer(),
           ),
         ),
         Center(
@@ -120,8 +120,8 @@ class HomeScreen extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   ImageBuilder(
-                    path: songs[0].artPath,
-                    path2: songs[0].artPath2,
+                    albumId: songs[0].albumId ?? -1,
+                    songId: songs[0].songId ?? -1,
                   ),
                   Positioned(
                     right: 10,
@@ -136,7 +136,7 @@ class HomeScreen extends StatelessWidget {
                             size: TextUtil.large,
                           ),
                           onPressed: () {
-                            _scaffoldkey.currentState.openDrawer();
+                            _scaffoldkey.currentState!.openDrawer();
                           },
                         ),
                         DefaultUtil.appName,
@@ -171,7 +171,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            songs[0].title,
+                            songs[0].title!,
                             style: TextUtil.homeSongTitle.copyWith(
                               color: themeProvider.isDarkMode
                                   ? ColorUtil.white
@@ -181,7 +181,7 @@ class HomeScreen extends StatelessWidget {
                             overflow: TextOverflow.fade,
                           ),
                           Text(
-                            songs[0].artist,
+                            songs[0].artist!,
                             maxLines: 1,
                             overflow: TextOverflow.clip,
                             style: themeProvider.isDarkMode
@@ -221,10 +221,10 @@ class HomeScreen extends StatelessWidget {
 */
 class _BottomSheet extends StatelessWidget {
   const _BottomSheet({
-    Key key,
-    @required this.songs,
-    @required this.songProvider,
-    @required this.themeProvider,
+    Key? key,
+    required this.songs,
+    required this.songProvider,
+    required this.themeProvider,
   }) : super(key: key);
 
   final List<SongItem> songs;

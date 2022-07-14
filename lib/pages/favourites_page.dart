@@ -40,7 +40,7 @@ class FavouritesPage extends StatelessWidget {
   static const routeName = "/favourites-page";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
-  final reviweHelper = ReviewHelper(DateTime.now());
+  final reviewHelper = ReviewHelper(DateTime.now());
   @override
   Widget build(BuildContext context) {
     AssetsAudioPlayer.addNotificationOpenAction((notification) {
@@ -56,7 +56,7 @@ class FavouritesPage extends StatelessWidget {
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final mediaQuery = MediaQuery.of(context);
     // used to show review dialog.
-    reviweHelper.showReview();
+    reviewHelper.showReview();
     return Scaffold(
       bottomNavigationBar: AnimatedContainer(
         child: BottomActionsBar(
@@ -65,7 +65,7 @@ class FavouritesPage extends StatelessWidget {
         ),
         duration: Duration(milliseconds: 400),
         curve: Curves.easeIn,
-        height: songProvider.showBottonBar ? 59 : 0,
+        height: songProvider.showBottomBar ? 59 : 0,
       ),
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
@@ -79,7 +79,7 @@ class FavouritesPage extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
+            _scaffoldKey.currentState!.openDrawer();
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
             songProvider.setKeysToNull();

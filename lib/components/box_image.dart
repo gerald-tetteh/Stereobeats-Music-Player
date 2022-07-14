@@ -25,13 +25,13 @@ import '../components/image_builder.dart';
 
 class BoxImage extends StatelessWidget {
   const BoxImage({
-    Key key,
-    @required this.path,
-    this.path2
+    Key? key,
+    required this.albumId,
+    required this.songId,
   }) : super(key: key);
 
-  final String path;
-  final Uint8List path2;
+  final int albumId;
+  final int songId;
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +45,8 @@ class BoxImage extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: ImageBuilder(
-          path: path,
-          path2: path2,
+          albumId: albumId,
+          songId: songId,
         ),
       ),
     );

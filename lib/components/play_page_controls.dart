@@ -30,8 +30,8 @@ import '../utils/color_util.dart';
 
 class PlayPageControls extends StatelessWidget {
   const PlayPageControls({
-    Key key,
-    @required this.value,
+    Key? key,
+    required this.value,
   }) : super(key: key);
 
   final AudioPlayer value;
@@ -57,16 +57,14 @@ class PlayPageControls extends StatelessWidget {
                 inform the user of the current shuffle moode.
                 The PlayBuider rebuilds every time the shuffle button is clicked.
               */
-              StreamBuilder(
+              StreamBuilder<bool>(
                 stream: value.audioPlayer.isShuffling,
-                initialData: value.prefs.getBool("shuffle"),
+                initialData: value.prefs!.getBool("shuffle") ?? false,
                 builder: (context, snapshot) {
                   return IconButton(
                     icon: Icon(
                       Icons.shuffle,
-                      color: snapshot.data ??
-                              value.prefs.getBool("shuffle") ??
-                              false
+                      color: (snapshot.hasData ? snapshot.data! : false)
                           ? themeProvider.isDarkMode
                               ? ColorUtil.darkTeal
                               : Colors.blue
@@ -77,7 +75,7 @@ class PlayPageControls extends StatelessWidget {
                 },
               ),
               IconButton(
-                  icon: FaIcon(FontAwesomeIcons.stepBackward),
+                  icon: FaIcon(FontAwesomeIcons.backwardStep),
                   onPressed: () async => await value.previousTrack()),
               PlayerBuilder.playerState(
                 player: value.audioPlayer,
@@ -90,7 +88,7 @@ class PlayPageControls extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.stepForward),
+                icon: FaIcon(FontAwesomeIcons.forwardStep),
                 onPressed: () async => await value.nextTrack(),
               ),
               /*

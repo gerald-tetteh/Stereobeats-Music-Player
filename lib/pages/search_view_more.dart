@@ -38,7 +38,7 @@ class SearchViewMore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final parameters =
-        ModalRoute.of(context).settings.arguments as Map<String, Object>;
+        ModalRoute.of(context)!.settings.arguments as Map<String, Object>;
     final title = parameters["title"] as String;
     final listWidget = parameters["widget"] as Widget;
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
@@ -54,7 +54,7 @@ class SearchViewMore extends StatelessWidget {
             ),
             duration: Duration(milliseconds: 400),
             curve: Curves.easeIn,
-            height: songProvider.showBottonBar ? 59 : 0,
+            height: songProvider.showBottomBar ? 59 : 0,
           );
         },
       ),

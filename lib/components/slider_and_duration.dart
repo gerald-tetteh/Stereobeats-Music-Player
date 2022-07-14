@@ -25,7 +25,7 @@ import '../utils/color_util.dart';
 
 class SliderAndDuration extends StatelessWidget {
   const SliderAndDuration({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -34,13 +34,13 @@ class SliderAndDuration extends StatelessWidget {
     return Consumer<AudioPlayer>(
       builder: (context, provider, child) {
         final songDuration = provider
-            .songsQueue[provider.findCurrentIndex(provider.playing.path)]
+            .songsQueue[provider.findCurrentIndex(provider.playing.path)]!
             .duration;
         // the PlayBuilder updates every second in sync with the current song.
         return PlayerBuilder.currentPosition(
           player: provider.audioPlayer,
           builder: (context, position) {
-            final songPosition = position.inMilliseconds ?? 0;
+            final songPosition = position.inMilliseconds;
             // converts songPosition from milliseconds => minutes:seconds || hours:minutes:seconds
             final calculatedPosition = provider.calculateDuration(songPosition);
             return Container(
@@ -52,10 +52,12 @@ class SliderAndDuration extends StatelessWidget {
                         : null,
                     activeColor:
                         themeProvider.isDarkMode ? ColorUtil.darkTeal : null,
-                    value: songPosition.toDouble() > double.parse(songDuration) 
-                      ? double.parse(songDuration) : songPosition.toDouble(),
+                    value: songPosition.toDouble() >
+                            (songDuration?.toDouble() ?? 0.0)
+                        ? songDuration!.toDouble()
+                        : songPosition.toDouble(),
                     min: 0,
-                    max: double.parse(songDuration),
+                    max: songDuration?.toDouble() ?? 0.0,
                     onChanged: (value) {
                       provider.seekTrack(value);
                     },
@@ -66,14 +68,14 @@ class SliderAndDuration extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          calculatedPosition ?? "0:00",
+                          calculatedPosition,
                           style: themeProvider.isDarkMode
                               ? TextStyle(color: ColorUtil.purple)
                               : TextStyle(color: Colors.blueAccent),
                         ),
                         Text(
                           provider
-                              .calculateDuration(int.parse(songDuration))
+                              .calculateDuration(songDuration ?? 0)
                               .toString(),
                           style: themeProvider.isDarkMode
                               ? TextStyle(color: ColorUtil.purple)

@@ -22,12 +22,13 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:equalizer/equalizer.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:youtube_api/youtube_api.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
@@ -155,8 +156,8 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
       ),
       builder: (context, provider, child) {
         final song = provider.playing;
-        final path = song.metas.image.path;
-        final path2 = song.metas.extra["path2"] as Uint8List;
+        final path = song.metas.image!.path;
+        final path2 = song.metas.extra!["path2"] as Uint8List?;
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -164,9 +165,10 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
               placeholder: AssetImage(DefaultUtil.defaultImage),
               image: DefaultUtil.checkNotAsset(path)
                   ? FileImage(File(path))
-                  : DefaultUtil.checkListNotNull(path2) 
-                    ? MemoryImage(path2) 
-                    : AssetImage(DefaultUtil.defaultImage),
+                  : (DefaultUtil.checkListNotNull(path2)
+                          ? MemoryImage(path2!)
+                          : AssetImage(DefaultUtil.defaultImage))
+                      as ImageProvider<Object>,
               fit: BoxFit.cover,
               fadeOutDuration: Duration(milliseconds: 700),
             ),
@@ -201,9 +203,9 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
 */
 class YoutubeView extends StatelessWidget {
   const YoutubeView({
-    Key key,
-    @required this.value,
-    @required this.scaffoldKey,
+    Key? key,
+    required this.value,
+    required this.scaffoldKey,
   }) : super(key: key);
 
   final AudioPlayer value;
@@ -221,23 +223,22 @@ class YoutubeView extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () async {
-            var artist = value.playing.metas.artist.toLowerCase();
+            var artist = value.playing.metas.artist!.toLowerCase();
             var finalArtistName = artist.contains("unknown") ? "" : artist;
             var title = value.playing.metas.title;
             if (title != null) {
-              _showSnackBar();
+              _showSnackBar(context);
               try {
                 var response = await ApiKeys.youtubeApiHandler
                     .search(title + " $finalArtistName");
-                var url = response
-                    .firstWhere(
-                        (result) =>
-                            result.url != null && result.url.length != 0,
-                        orElse: () => null)
+                String? url = response
+                    .firstWhereOrNull(
+                      (result) => result.url.length != 0,
+                    )
                     ?.url;
-                await _launch(url, fToast);
+                await _launch(url ?? "", fToast, context);
               } catch (e) {
-                scaffoldKey.currentState.removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
                 fToast.showToast(
                   child: ToastComponent(
                     color: Colors.orangeAccent,
@@ -261,15 +262,14 @@ class YoutubeView extends StatelessWidget {
     This method is used to launch the music video.
     If the URL is valid the browser of youtube app is launched.
   */
-  Future<void> _launch(String url, FToast fToast) async {
-    if (await launcher.canLaunch(url)) {
-      scaffoldKey.currentState.removeCurrentSnackBar();
-      launcher.launch(
-        url,
-        forceWebView: false,
+  Future<void> _launch(String url, FToast fToast, BuildContext context) async {
+    if (await launcher.canLaunchUrl(Uri.parse(url))) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      launcher.launchUrl(
+        Uri.parse(url),
       );
     } else {
-      scaffoldKey.currentState.removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       fToast.showToast(
         child: ToastComponent(
           color: Colors.orangeAccent,
@@ -286,8 +286,8 @@ class YoutubeView extends StatelessWidget {
   /*
     This method returns a snackbar while the video is loading. 
   */
-  void _showSnackBar() {
-    scaffoldKey.currentState.showSnackBar(
+  void _showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [

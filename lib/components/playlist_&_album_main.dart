@@ -20,6 +20,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
@@ -35,15 +36,16 @@ import '../utils/color_util.dart';
 import '../pages/playlist_detail_screen.dart';
 
 import 'build_check_box.dart';
+import './circular_image.dart';
 
 // enum to determine data type
 enum Purpose { PlayListView, AlbumView }
 
 class PlayListAndAlbum extends StatelessWidget {
-  final String title;
-  final String subTitle;
-  final Map<String, List<SongItem>> albums;
-  final Purpose purpose;
+  final String? title;
+  final String? subTitle;
+  final List<AlbumModel>? albums;
+  final Purpose? purpose;
 
   PlayListAndAlbum({
     this.title,
@@ -55,17 +57,21 @@ class PlayListAndAlbum extends StatelessWidget {
   // this method returns the path of each song
   // in the album
   List<String> albumPaths(Album album) {
-    return album.paths.map((song) => song.path).toList();
+    return album.paths!.map((song) => song.path!).toList();
   }
 
   /*
     This method returns the album art.
   */
-  String getArtPath(Album album) {
-    return album.paths
+  String? getArtPath(Album album) {
+    return album.paths!
         .firstWhere(
-          (song) => (song.artPath != null && song.artPath.length != 0),
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage,),
+          (song) => (song.artPath != null && song.artPath!.length != 0),
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
         )
         .artPath;
   }
@@ -73,11 +79,15 @@ class PlayListAndAlbum extends StatelessWidget {
   /*
     This method returns the album art.
   */
-  Uint8List getArtPath2(Album album) {
-    return album.paths
+  Uint8List? getArtPath2(Album album) {
+    return album.paths!
         .firstWhere(
-          (song) => (song.artPath2 != null && song.artPath2.length != 0),
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage,),
+          (song) => (song.artPath2 != null && song.artPath2!.length != 0),
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
         )
         .artPath2;
   }
@@ -97,8 +107,8 @@ class PlayListAndAlbum extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     /*
-      creats a space beneath the list to prevent
-      the miniplayer from obstacting it.
+      creates a space beneath the list to prevent
+      the mini player from obstructing it.
     */
     var extraSpace = Container(
       color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
@@ -131,8 +141,7 @@ class PlayListAndAlbum extends StatelessWidget {
   // returns the album list
   Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider,
       AppThemeMode themeProvider) {
-    final albumItems = songProvider.changeToAlbum(albums);
-    if (albumItems == null || albumItems.length == 0) {
+    if (albums!.length == 0) {
       return themeProvider.isDarkMode
           ? DefaultUtil.emptyDarkMode("No Albums yet..")
           : DefaultUtil.empty("No Albums yet..");
@@ -140,7 +149,7 @@ class PlayListAndAlbum extends StatelessWidget {
     return _listBuilder(
       songProvider: songProvider,
       isPlaylist: false,
-      items: albumItems,
+      items: albums!,
       mediaQuery: mediaQuery,
       themeProvider: themeProvider,
     );
@@ -152,8 +161,8 @@ class PlayListAndAlbum extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: Hive.box<PlayList>("playLists").listenable(),
       builder: (context, Box<PlayList> box, child) {
-        var playLists = box.values.toList() ?? [];
-        if (playLists == null || playLists.length == 0) {
+        var playLists = box.values.toList();
+        if (playLists.length == 0) {
           return themeProvider.isDarkMode
               ? DefaultUtil.emptyDarkMode(
                   "No playlists yet..", "Click on purple icon (top most right)")
@@ -174,47 +183,40 @@ class PlayListAndAlbum extends StatelessWidget {
     This Method returns a list of items.
     Ethier all the playlists or all the albums.
   */
-  GestureDetector _listBuilder(
-      {SongProvider songProvider,
-      MediaQueryData mediaQuery,
-      bool isPlaylist = true,
-      AppThemeMode themeProvider,
-      List<dynamic> items}) {
+  GestureDetector _listBuilder({
+    SongProvider? songProvider,
+    MediaQueryData? mediaQuery,
+    bool isPlaylist = true,
+    required AppThemeMode themeProvider,
+    required List<dynamic> items,
+  }) {
     final _scrollController = ScrollController();
     return GestureDetector(
       onTap: () {
-        songProvider.changeBottomBar(false);
+        songProvider!.changeBottomBar(false);
         songProvider.setQueueToNull();
         songProvider.setKeysToNull();
       },
       child: DraggableScrollbar.semicircle(
-        backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark2 : null,
+        backgroundColor:
+            themeProvider.isDarkMode ? ColorUtil.dark2 : Colors.white,
         controller: _scrollController,
         child: ListView.separated(
           controller: _scrollController,
           separatorBuilder: (context, index) => index != items.length - 1
               ? Divider(
-                  endIndent: mediaQuery.size.width * (1 / 4),
+                  endIndent: mediaQuery!.size.width * (1 / 4),
                 )
-              : "",
+              : "" as Widget,
           itemCount: items.length,
           itemBuilder: (context, index) {
-            String artPath;
-            Uint8List artPath2;
+            SongItem? listSong;
 
-            if (items[index].paths != null &&
-                items[index].paths.length > 0 &&
-                isPlaylist) {
-              artPath = songProvider
-                  .getArtPath(items[index].paths.reversed.toList()[0]);
-              if(artPath == null || artPath.length == 0) {
-                artPath2 = songProvider.getArtPath2(items[index].paths.reversed.toList()[0]);
-              }
-            } else if (!isPlaylist) {
-              artPath = getArtPath(items[index]);
-              if(!DefaultUtil.checkNotAsset(artPath)) {
-                artPath2 = getArtPath2(items[index]);
-              }
+            if (isPlaylist &&
+                items[index].paths != null &&
+                items[index].paths.length > 0) {
+              listSong =
+                  songProvider!.getSongFromPath(items[index].paths.toList()[0]);
             }
             return Material(
               color:
@@ -222,36 +224,39 @@ class PlayListAndAlbum extends StatelessWidget {
               child: InkWell(
                 onTap: () async {
                   await Navigator.of(context).pushNamed(
-                      isPlaylist
-                          ? PlaylistDetailScreen.routeName
-                          : AlbumDetailScreen.routeName,
-                      arguments: items[index]);
-                  _resetActions(songProvider);
+                    isPlaylist
+                        ? PlaylistDetailScreen.routeName
+                        : AlbumDetailScreen.routeName,
+                    arguments: items[index],
+                  );
+                  _resetActions(songProvider!);
                 },
-                onLongPress: () => songProvider.changeBottomBar(true),
+                onLongPress: isPlaylist
+                    ? () => songProvider!.changeBottomBar(true)
+                    : null,
                 child: Consumer<SongProvider>(
                   builder: (context, songProvider1, child) {
                     return GestureDetector(
-                      onTap: songProvider1.showBottonBar
+                      onTap: songProvider1.showBottomBar
                           ? () {
-                              songProvider.changeBottomBar(false);
+                              songProvider!.changeBottomBar(false);
                               songProvider.setQueueToNull();
                               songProvider.setKeysToNull();
                             }
                           : null,
                       child: ListTile(
-                        leading: songProvider1.showBottonBar
+                        leading: songProvider1.showBottomBar
                             ? isPlaylist
                                 ? BuildCheckBox(
                                     paths: items[index].paths ?? [],
                                     playListName: items[index].toString(),
                                   )
-                                : BuildCheckBox(
-                                    paths: albumPaths(items[index]),
-                                  )
+                                : null
                             : null,
                         title: Text(
-                          items[index].toString(),
+                          isPlaylist
+                              ? items[index].toString()
+                              : items[index].album,
                           style: isPlaylist
                               ? TextUtil.playlistCardTitle.copyWith(
                                   color: themeProvider.isDarkMode
@@ -267,22 +272,19 @@ class PlayListAndAlbum extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}",
+                          isPlaylist
+                              ? "Tracks: ${items[index].paths == null ? 0 : items[index].paths.length}"
+                              : "Tracks: ${items[index].numOfSongs}",
                           style: themeProvider.isDarkMode
                               ? TextUtil.allSongsArtist
                               : null, // ensures null is not returned
                         ),
                         trailing: Hero(
                           tag: items[index].toString(),
-                          child: CircleAvatar(
-                            backgroundColor: Colors.black,
-                            backgroundImage: artPath != null &&
-                                    artPath.length != 0 &&
-                                    DefaultUtil.checkNotAsset(artPath)
-                                ? FileImage(File(artPath))
-                                : DefaultUtil.checkListNotNull(artPath2) 
-                                  ? MemoryImage(artPath2) 
-                                  : AssetImage(DefaultUtil.defaultImage),
+                          child: CircularImage(
+                            songId: listSong?.songId ?? -1,
+                            albumId: listSong?.albumId ?? -1,
+                            artistId: !isPlaylist ? items[index]?.artistId : -1,
                           ),
                         ),
                       ),
@@ -305,17 +307,17 @@ class PlayListAndAlbum extends StatelessWidget {
 */
 class PageDefaults extends StatelessWidget {
   const PageDefaults({
-    Key key,
-    @required this.title,
-    @required this.subTitle,
-    @required this.extraSpace,
-    @required this.child,
-    @required this.themeProvider,
+    Key? key,
+    required this.title,
+    required this.subTitle,
+    required this.extraSpace,
+    required this.child,
+    required this.themeProvider,
     this.isAlbum = false,
   }) : super(key: key);
 
-  final String title;
-  final String subTitle;
+  final String? title;
+  final String? subTitle;
   final Container extraSpace;
   final Widget child;
   final AppThemeMode themeProvider;
@@ -327,13 +329,13 @@ class PageDefaults extends StatelessWidget {
       children: [
         ListTile(
           title: Text(
-            title,
+            title!,
             style: TextUtil.pageHeadingTop.copyWith(
               color: themeProvider.isDarkMode ? ColorUtil.white : null,
             ),
           ),
           subtitle: Text(
-            subTitle,
+            subTitle!,
             style: themeProvider.isDarkMode ? TextUtil.pageIntroSub : null,
           ),
           trailing: Icon(

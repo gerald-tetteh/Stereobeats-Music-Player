@@ -44,12 +44,12 @@ class _CustomDropDownState extends State<CustomDropDown> {
     This methods finds the index of the first song 
     whose title has the first letter == input.
   */
-  int findSongPosition(String value) {
+  int findSongPosition(String? value) {
     return widget.songs
-        .indexWhere((song) => song.title[0].toUpperCase() == value);
+        .indexWhere((song) => song.title![0].toUpperCase() == value);
   }
 
-  String _selectedValue;
+  String? _selectedValue;
   @override
   Widget build(BuildContext context) {
     final fToast = FToast();
@@ -69,7 +69,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
     return DropdownButton(
       dropdownColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       items: alphabetList,
-      onChanged: ((String value) {
+      onChanged: ((String? value) {
         var index = findSongPosition(value);
         if (index != -1) {
           widget.controller.jumpTo(index: findSongPosition(value));

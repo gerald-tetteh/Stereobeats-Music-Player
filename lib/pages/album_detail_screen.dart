@@ -43,7 +43,7 @@ class AlbumDetailScreen extends StatelessWidget {
     });
     final mediaQuery = MediaQuery.of(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
-    final album = ModalRoute.of(context).settings.arguments as Album;
+    final album = ModalRoute.of(context)!.settings.arguments as Album?;
     return Scaffold(
       backgroundColor: themeProvider.isDarkMode ? ColorUtil.dark : null,
       key: _scaffoldKey,
@@ -56,7 +56,7 @@ class AlbumDetailScreen extends StatelessWidget {
           ),
           duration: Duration(milliseconds: 400),
           curve: Curves.easeIn,
-          height: songProvider.showBottonBar ? 59 : 0,
+          height: songProvider.showBottomBar ? 59 : 0,
         );
       }),
       body: Stack(

@@ -16,8 +16,8 @@ import '../provider/songItem.dart';
 import '../extensions/string_extension.dart';
 
 class ChangePlaylistName extends StatefulWidget {
-  final SongProvider songProvider;
-  final void Function(String, String, String) renameFunction;
+  final SongProvider? songProvider;
+  final void Function(String, String, String)? renameFunction;
   ChangePlaylistName({
     this.songProvider,
     this.renameFunction,
@@ -27,19 +27,19 @@ class ChangePlaylistName extends StatefulWidget {
 }
 
 class _ChangePlaylistNameState extends State<ChangePlaylistName> {
-  TextEditingController _controller;
+  TextEditingController? _controller;
 
   @override
   void initState() {
     // initialize controller
     _controller = TextEditingController();
-    _controller.text = widget.songProvider.keys[0].trim().capitalize();
+    _controller!.text = widget.songProvider!.keys[0].trim().capitalize();
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -60,10 +60,12 @@ class _ChangePlaylistNameState extends State<ChangePlaylistName> {
               contentPadding: const EdgeInsets.all(8),
             ),
           ),
-          RaisedButton(
-            color: Colors.blue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadiusDirectional.circular(20),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(20),
+              ),
             ),
             onPressed: _submit,
             child: Text("Submit"),
@@ -76,8 +78,8 @@ class _ChangePlaylistNameState extends State<ChangePlaylistName> {
   // this method is called when the user clicks submit
   // it updates the playlist and notifies listners.
   void _submit() {
-    widget.renameFunction(
-        "playLists", widget.songProvider.keys[0], _controller.text);
+    widget.renameFunction!(
+        "playLists", widget.songProvider!.keys[0], _controller!.text);
     Navigator.of(context).pop();
   }
 }

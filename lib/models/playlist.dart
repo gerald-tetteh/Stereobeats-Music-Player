@@ -20,11 +20,11 @@ part 'playlist.g.dart';
 @HiveType(typeId: 0)
 class PlayList {
   @HiveField(0)
-  String name;
+  String? name;
 
   @HiveField(1)
-  List<String> paths;
+  List<String?>? paths;
 
   @override
-  String toString() => this.name;
+  String toString() => this.name!;
 }

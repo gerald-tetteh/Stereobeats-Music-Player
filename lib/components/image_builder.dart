@@ -6,45 +6,47 @@
  * Image Builder (Component)
 */
 
-/*
-  This widget returns the approprite image based
-  on the path to the album art provided.
-*/
+/// This widget returns the appropriated image based
+/// on the path to the album art provided.
 
 // imports
 
 // package imports
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 // lib file imports
 import '../utils/default_util.dart';
 
 class ImageBuilder extends StatelessWidget {
   ImageBuilder({
-    Key key,
-    @required this.path,
-    this.path2,
+    Key? key,
+    required this.albumId,
+    required this.songId,
   }) : super(key: key);
 
-  final String path;
-  final Uint8List path2;
+  final int albumId;
+  final int songId;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultUtil.checkNotNull(path)
-        ? Image.file(
-            File(path),
-            fit: BoxFit.cover,
-          )
-        : DefaultUtil.checkListNotNull(path2) ? Image.memory(
-            path2, fit: 
-            BoxFit.cover,
-          ) : Image.asset(
-            DefaultUtil.defaultImage,
-            fit: BoxFit.cover,
-          );
+    return QueryArtworkWidget(
+      id: albumId,
+      type: ArtworkType.ALBUM,
+      artworkFit: BoxFit.cover,
+      artworkBorder: BorderRadius.zero,
+      artworkClipBehavior: Clip.hardEdge,
+      nullArtworkWidget: QueryArtworkWidget(
+        id: songId,
+        type: ArtworkType.AUDIO,
+        artworkFit: BoxFit.cover,
+        artworkBorder: BorderRadius.zero,
+        artworkClipBehavior: Clip.hardEdge,
+        nullArtworkWidget: Image.asset(
+          DefaultUtil.defaultImage,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 }

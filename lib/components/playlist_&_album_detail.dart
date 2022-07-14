@@ -13,11 +13,8 @@
 // imports
 
 // package imports
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // lib file imports
@@ -33,10 +30,11 @@ import '../provider/music_player.dart';
 
 import 'box_image.dart';
 import 'build_check_box.dart';
+import 'circular_image.dart';
 
 class PlaylistAndAlbumDetail extends StatelessWidget {
-  final PlayList playlist;
-  final Album album;
+  final PlayList? playlist;
+  final Album? album;
   PlaylistAndAlbumDetail({this.playlist, this.album});
   // either the album or playlist must be null
   @override
@@ -50,8 +48,8 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
     if (playlist == null) {
       final songProvider = Provider.of<SongProvider>(context);
       // it the album songs are null or 0 the empty widget is returned
-      return album.paths != null && album.paths.length != 0
-          ? _buildList(actualHeight, context, album.toString(), album.paths,
+      return album!.paths != null && album!.paths!.length != 0
+          ? _buildList(actualHeight, context, album.toString(), album!.paths!,
               songProvider, audioProvider, isLandScape, mediaQuery)
           : _noSongs(context);
     } else {
@@ -60,13 +58,13 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
         valueListenable: Hive.box<PlayList>("playLists")
             .listenable(keys: [playlist.toString()]),
         builder: (context, Box<PlayList> box, child) {
-          final currentPlayList = box.get(playlist.toString());
+          final currentPlayList = box.get(playlist.toString())!;
           final songs = songProvider
               .playListSongs(currentPlayList.paths ?? [])
               .reversed
               .toList();
           // if the playlist has 0 songs the empty widget is returned
-          return songs != null && songs.length != 0
+          return songs.length != 0
               ? _buildList(
                   actualHeight,
                   context,
@@ -117,15 +115,10 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: DefaultUtil.checkNotAsset(songs[0].artPath)
-                          ? FileImage(File(songs[0].artPath))
-                          : DefaultUtil.checkListNotNull(songs[0].artPath2) 
-                            ? MemoryImage(songs[0].artPath2)
-                            : AssetImage(DefaultUtil.defaultImage),
-                      fit: BoxFit.cover,
-                    ),
+                  child: AlbumArtBuilder(
+                    albumId: songs[0].albumId,
+                    songId: songs[0].songId,
+                    circular: false,
                   ),
                 ),
               ),
@@ -202,12 +195,12 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
 
 // builds list view to show songs in album or playlist.
 class BuildListView extends StatelessWidget {
-  const BuildListView({Key key, this.songs, this.songProvider, this.player})
+  const BuildListView({Key? key, this.songs, this.songProvider, this.player})
       : super(key: key);
 
-  final List<SongItem> songs;
-  final SongProvider songProvider;
-  final AudioPlayer player;
+  final List<SongItem>? songs;
+  final SongProvider? songProvider;
+  final AudioPlayer? player;
 
   @override
   Widget build(BuildContext context) {
@@ -215,44 +208,44 @@ class BuildListView extends StatelessWidget {
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        songProvider.changeBottomBar(false);
-        songProvider.setQueueToNull();
-        songProvider.setKeysToNull();
+        songProvider!.changeBottomBar(false);
+        songProvider!.setQueueToNull();
+        songProvider!.setKeysToNull();
       },
       child: ListView.separated(
-        separatorBuilder: (context, index) => index != songs.length - 1
+        separatorBuilder: (context, index) => index != songs!.length - 1
             ? Divider(
                 indent: mediaQuery.size.width * (1 / 4),
               )
-            : "",
-        itemCount: songs.length,
+            : "" as Widget,
+        itemCount: songs!.length,
         itemBuilder: (context, index) {
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
             child: InkWell(
               onTap: () {
-                player.setShuffle(false);
-                player.play(songs, index);
+                player!.setShuffle(false);
+                player!.play(songs!, index);
               },
-              onLongPress: () => songProvider.changeBottomBar(true),
+              onLongPress: () => songProvider!.changeBottomBar(true),
               child: Consumer<SongProvider>(
                 builder: (context, provider1, child) {
                   return GestureDetector(
-                    onTap: provider1.showBottonBar
+                    onTap: provider1.showBottomBar
                         ? () {
-                            songProvider.changeBottomBar(false);
-                            songProvider.setQueueToNull();
-                            songProvider.setKeysToNull();
+                            songProvider!.changeBottomBar(false);
+                            songProvider!.setQueueToNull();
+                            songProvider!.setKeysToNull();
                           }
                         : null,
                     child: ListTile(
                       leading: BoxImage(
-                        path: songs[index].artPath,
-                        path2: songs[index].artPath2,
+                        albumId: songs![index].albumId ?? -1,
+                        songId: songs![index].songId ?? -1,
                       ),
                       title: Text(
-                        DefaultUtil.checkNotNull(songs[index].title)
-                            ? songs[index].title
+                        DefaultUtil.checkNotNull(songs![index].title)
+                            ? songs![index].title!
                             : DefaultUtil.unknown,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -261,8 +254,8 @@ class BuildListView extends StatelessWidget {
                             : null,
                       ),
                       subtitle: Text(
-                        DefaultUtil.checkNotNull(songs[index].title)
-                            ? songs[index].artist
+                        DefaultUtil.checkNotNull(songs![index].title)
+                            ? songs![index].artist!
                             : DefaultUtil.unknown,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -270,9 +263,9 @@ class BuildListView extends StatelessWidget {
                             ? TextUtil.allSongsArtist
                             : null,
                       ),
-                      trailing: provider1.showBottonBar
+                      trailing: provider1.showBottomBar
                           ? BuildCheckBox(
-                              path: songs[index].path,
+                              path: songs![index].path,
                             )
                           : null,
                     ),

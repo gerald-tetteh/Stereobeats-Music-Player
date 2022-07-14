@@ -63,7 +63,7 @@ class AllSongsScreen extends StatelessWidget {
             ),
             duration: Duration(milliseconds: 300),
             curve: Curves.easeIn,
-            height: songProvider.showBottonBar ? 59 : 0,
+            height: songProvider.showBottomBar ? 59 : 0,
           );
         },
       ),
@@ -100,7 +100,7 @@ class AllSongsScreen extends StatelessWidget {
                           songProvider3.changeBottomBar(false);
                           songProvider3.setQueueToNull();
                           songProvider3.setKeysToNull();
-                          _scaffoldKey.currentState.openDrawer();
+                          _scaffoldKey.currentState!.openDrawer();
                         },
                       ),
                       Text(

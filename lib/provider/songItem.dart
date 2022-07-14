@@ -6,27 +6,21 @@
  * SongProvider & SongItem
 */
 
-/*
-  This file containes two class.
-  => SongItem : This class represents the structure
-                of a song that is retrieved from the 
-                device storage.
-  => SongProvider: The song provider is reponsible for retrieving
-                  and creating a SongItem to reflect each song in the device
-                  storage. It also stores the songs into albums, artists, favourites
-                  and playlists. It also retrieves album art.
-*/
+/// This file contains two class.
+/// SongItem : This class represents the structure of a
+/// song that is retrieved from the device storage.
+/// SongProvider: The song provider is responsible for retrieving
+/// and creating a SongItem to reflect each song in the device
+/// storage. It also stores the songs into albums, artists, favourites and playlists.
+/// It also retrieves album art.
 
 // imports
 
 // package imports
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 // lib file imports
@@ -36,19 +30,21 @@ import '../helpers/db_helper.dart';
 import '../utils/default_util.dart';
 
 class SongItem {
-  final String songId;
-  final String title;
-  final String artist;
-  final String album;
-  final String albumArtist;
-  final String albumId;
-  final String year;
-  final String dateAdded;
-  final String duration;
-  final String path;
-  String artPath; // artPath is not final because it is determined after
+  final int? songId;
+  final String? title;
+  final String? artist;
+  final String? album;
+  final String? albumArtist;
+  final int? albumId;
+  final String? year;
+  final int? dateAdded;
+  final int? duration;
+  final String? path;
+  String? artPath; // artPath is not final because it is determined after
   // the item is created.
-  Uint8List artPath2;
+  Uint8List? artPath2;
+  final int size;
+  final bool isMusic;
 
   SongItem({
     this.songId,
@@ -63,6 +59,8 @@ class SongItem {
     this.path,
     this.artPath,
     this.artPath2,
+    required this.size,
+    required this.isMusic,
   });
 }
 
@@ -70,28 +68,41 @@ class SongProvider with ChangeNotifier {
   List<SongItem> _songs = [];
   List<String> _favourites = [];
   List<String> _queue = [];
+  List<AlbumModel> _albums = [];
+  List<ArtistModel> _artists = [];
   List<String> _playlistKey = [];
-  SharedPreferences prefs;
-  bool showBottonBar = false;
+  SharedPreferences? prefs;
+  bool showBottomBar = false;
   final deviceInfo = DeviceInfoPlugin();
+  final _audioQuery = OnAudioQuery();
 
-  // returns a copy of all SongItems
+  /// returns a copy of all SongItems
   List<SongItem> get songs {
     return [..._songs];
   }
 
-  // returns a copy of all playlistKeys: Used to identify
-  // playlists in the db.
+  /// returns a copy of all albums
+  List<AlbumModel> get albums {
+    return [..._albums];
+  }
+
+  /// returns a copy of all artists
+  List<ArtistModel> get artists {
+    return [..._artists];
+  }
+
+  /// returns a copy of all playlistKeys: Used to identify
+  /// playlists in the db.
   List<String> get keys {
     return [..._playlistKey];
   }
 
-  // return all SongItems that are marked as favourite
+  /// return all SongItems that are marked as favourite
   List<SongItem> get favourites {
     return _songs.where((song) => isFavourite(song.path)).toList();
   }
 
-  // returns all selected SongItems.
+  /// returns all selected SongItems.
   List<SongItem> get queue {
     List<SongItem> selectedSongs = [];
     _queue.forEach((path) {
@@ -100,15 +111,13 @@ class SongProvider with ChangeNotifier {
     return selectedSongs;
   }
 
-  // returns the path of all selected SongItems
+  /// returns the path of all selected SongItems
   List<String> get queuePath {
     return [..._queue];
   }
 
-  /*
-    Returns a fraction or all SongItems depending on the the length 
-    of the _songs.
-  */
+  /// Returns a fraction or all SongItems depending on the the length
+  /// of the _songs.
   List<SongItem> get songsFraction {
     var fraction = [..._songs];
     if (songs.length < 20) {
@@ -119,135 +128,56 @@ class SongProvider with ChangeNotifier {
     return fraction.sublist(0, 20);
   }
 
-  // returns the SongItems whose path matches the string provided
-  SongItem getSongFromPath(String path) {
+  /// returns the SongItems whose path matches the string provided
+  SongItem getSongFromPath(String? path) {
     return _songs.firstWhere((song) => song.path == path);
   }
 
-  /*
-    Changes the visibilty of the bottom action bar(showButtonBar) 
-    based on the value provided.
-  */
+  /// Changes the visibility of the bottom action bar(showButtonBar)
+  /// based on the value provided.
   void changeBottomBar(bool value) {
-    showBottonBar = value;
+    showBottomBar = value;
     notifyListeners();
   }
 
-  /*
-    Retrievs all the album art related to each SongItem.
-    and sorts the songs in alphabetical order.
-    This completed using java code through the platform channel.
-  */
-  // Future<void> getAllAlbumArt() async {
-  //   const platform = MethodChannel("stereo.beats/metadata");
-  //   final path =
-  //       await platform.invokeMethod("getAllAlbumArt") as Map<dynamic, dynamic>;
-  //   _songs = _songs
-  //       .map(
-  //         (song) => SongItem(
-  //           songId: song.songId,
-  //           title: song.title,
-  //           album: song.album,
-  //           albumArtist: song.albumArtist,
-  //           albumId: song.albumId,
-  //           artist: song.artist,
-  //           dateAdded: song.duration,
-  //           duration: song.duration,
-  //           year: song.year,
-  //           path: song.path,
-  //           artPath: path[song.albumId],
-  //         ),
-  //       )
-  //       .toList();
-  //   _songs.sort(
-  //       (a, b) => a.title?.toUpperCase()?.compareTo(b.title?.toUpperCase()));
-  // }
-
-  /*
-    Retrieves all songs available on the device and all favourites from
-    the shared preference.
-    This completed using java code through the platform channel.
-  */
+  /// Retrieves all songs available on the device and all favourites from
+  /// the shared preference.
+  /// This completed using java code through the platform channel.
   Future<void> getSongs() async {
     prefs = await SharedPreferences.getInstance();
-    const platform = MethodChannel("stereo.beats/metadata");
-    final songList =
-        await platform.invokeMethod("getDeviceAudio") as List<dynamic>;
-    final audioQuery = FlutterAudioQuery();
-    // final songList = await audioQuery.getSongs();
+    var granted = await _audioQuery.permissionsStatus();
+    while (!granted) {
+      granted = await _audioQuery.permissionsRequest();
+    }
+    final songList = await _audioQuery.querySongs();
     _songs = songList
         .map(
           (song) => SongItem(
-            title: song["title"],
-            album: song["album"],
-            albumArtist: song["albumArtist"],
-            albumId: song["albumId"],
-            artist: song["artist"],
-            dateAdded: song["dateAdded"],
-            duration: song["duration"],
-            year: song["year"],
-            path: song["path"],
-            songId: song["songId"],
-            artPath2: song["artPath2"],
+            title: song.title,
+            album: song.album,
+            albumArtist: song.artist,
+            albumId: song.albumId,
+            artist: song.artist,
+            dateAdded: song.dateAdded,
+            duration: song.duration,
+            path: song.uri,
+            songId: song.id,
+            isMusic: song.isMusic!,
+            size: song.size,
           ),
         )
         .toList();
-    // final androidInfo = await deviceInfo.androidInfo;
-    // if (androidInfo.version.sdkInt >= 29) {
-    //   await Future.forEach(_songs, (SongItem song) async {
-    //     try {
-    //       if (song.artPath == null) {
-    //         song.artPath2 = await audioQuery.getArtwork(
-    //           type: ResourceType.SONG,
-    //           id: song.songId,
-    //         );
-    //       }
-    //     } catch (e) {}
-    //   });
-    // }
-    _favourites = prefs.getStringList("favourites") ?? [];
+    _favourites = prefs!.getStringList("favourites") ?? [];
   }
 
-  /*
-    Updates the id3 tags of a particular audio file
-    using UTF-8 encoding.
-    This completed using java code through the platform channel.
-    The local SongItem is also updated.
-  */
-  Future<int> updateSong(Map<String, String> songDetails) async {
-    const platform = MethodChannel("stereo.beats/metadata");
-    int result = await platform.invokeMethod("updateSong", {
-      "songDetails": {
-        "title": songDetails["title"],
-        "artist": songDetails["artist"],
-        "album": songDetails["album"],
-        "albumArtist": songDetails["albumArtist"],
-        "year": songDetails["year"],
-        "songId": songDetails["songId"],
-        "path": songDetails["path"],
-      }
-    });
-    if (result == 1) {
-      var oldSong =
-          _songs.firstWhere((song) => song.path == songDetails["path"]);
-      var index = _songs.indexWhere((song) => song.path == songDetails["path"]);
-      var newSong = SongItem(
-        album: songDetails["album"],
-        title: songDetails["title"],
-        artist: songDetails["artist"],
-        albumArtist: songDetails["albumArtist"],
-        artPath: oldSong.artPath,
-        albumId: oldSong.albumId,
-        dateAdded: oldSong.dateAdded,
-        duration: oldSong.duration,
-        path: oldSong.path,
-        songId: oldSong.songId,
-        year: songDetails["year"],
-      );
-      _songs.replaceRange(index, index + 1, [newSong]);
-      notifyListeners();
+  /// Retrieves all albums and artists
+  Future<void> getAlbumsAndArtists() async {
+    var granted = await _audioQuery.permissionsStatus();
+    while (!granted) {
+      granted = await _audioQuery.permissionsRequest();
     }
-    return result;
+    _albums = await _audioQuery.queryAlbums();
+    _artists = await _audioQuery.queryArtists();
   }
 
   // retrieves all albums from _songs.
@@ -256,7 +186,7 @@ class SongProvider with ChangeNotifier {
     _songs.map((song) {
       var albumName = song.album ?? "Unknown";
       if (albums.containsKey(albumName)) {
-        var songList = albums[albumName];
+        var songList = albums[albumName]!;
         songList.add(song);
         albums[albumName] = songList;
       } else {
@@ -266,11 +196,9 @@ class SongProvider with ChangeNotifier {
     return albums;
   }
 
-  /*
-    Converts Map<String,List<<SongItem>>(key,value) to List<Album>
-    with the name of each album being the key and the album
-    songs the value.
-  */
+  /// Converts Map<String,List<<SongItem>>(key,value) to List<Album>
+  /// with the name of each album being the key and the album
+  /// songs the value.
   List<Album> changeToAlbum(Map<String, List<SongItem>> albums) {
     return albums
         .map(
@@ -279,9 +207,14 @@ class SongProvider with ChangeNotifier {
               key,
               Album(
                 albumArtist: value
-                    .firstWhere((song) => song.albumArtist != null,
-                        orElse: () =>
-                            SongItem(albumArtist: DefaultUtil.unknown))
+                    .firstWhere(
+                      (song) => song.albumArtist != null,
+                      orElse: () => SongItem(
+                        albumArtist: DefaultUtil.unknown,
+                        isMusic: true,
+                        size: 0,
+                      ),
+                    )
                     .albumArtist,
                 name: key,
                 paths: value,
@@ -291,22 +224,22 @@ class SongProvider with ChangeNotifier {
         )
         .values
         .toList()
-      ..sort((a, b) => a.name?.toUpperCase()?.compareTo(b.name?.toUpperCase()));
+      ..sort((a, b) => a.name!.toUpperCase().compareTo(b.name!.toUpperCase()));
   }
 
-  // retrives all songs whose artist == input
+  /// retrieves all songs whose artist == input
   List<SongItem> getArtistSongs(String artist) {
     return _songs.where((song) => song.artist == artist).toList();
   }
 
-  // retrieves all albums whose albumArtist == input
+  /// retrieves all albums whose albumArtist == input
   List<Album> getArtistAlbums(String albumArtist) {
-    Map<String, Album> albums = Map();
+    Map<String?, Album> albums = Map();
     _songs.map((song) {
       if ((song.albumArtist ?? DefaultUtil.unknown) == albumArtist) {
-        if (song.album != null && song.album.length != 0) {
+        if (song.album != null && song.album!.length != 0) {
           if (albums.keys.contains(song.album)) {
-            albums[song.album].paths.add(song);
+            albums[song.album]!.paths!.add(song);
           } else {
             albums[song.album] = Album(
               albumArtist: song.albumArtist,
@@ -320,67 +253,64 @@ class SongProvider with ChangeNotifier {
     return albums.values.toList();
   }
 
-  // returns list of all artists
-  List<String> artists() {
-    return _songs
-        .map((song) => song.artist ?? DefaultUtil.unknown)
-        .toSet()
-        .toList()
-      ..sort((a, b) => a?.toUpperCase()?.compareTo(b?.toUpperCase()));
-  }
-
-  // returns the path to an image
-  // used on one of the songs made
-  // by the artist provided.
-  String artistCoverArt(String artist) {
+  /// returns the path to an image
+  /// used on one of the songs made
+  /// by the artist provided.
+  String? artistCoverArt(String? artist) {
     return _songs
         .firstWhere(
-            (song) =>
-                song.artist == artist &&
-                song.artPath != null &&
-                song.artPath.length != 0,
-            orElse: () => SongItem(artPath: DefaultUtil.defaultImage))
+          (song) =>
+              song.artist == artist &&
+              song.artPath != null &&
+              song.artPath!.length != 0,
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
+        )
         .artPath;
   }
 
-  // returns the path to an image
-  // used on one of the songs made
-  // by the artist provided.
-  Uint8List artistCoverArt2(String artist) {
+  /// returns the path to an image
+  /// used on one of the songs made
+  /// by the artist provided.
+  Uint8List? artistCoverArt2(String? artist) {
     return _songs
         .firstWhere(
-            (song) =>
-                song.artist == artist &&
-                song.artPath2 != null &&
-                song.artPath2.length != 0,
-            orElse: () => SongItem(artPath: DefaultUtil.defaultImage))
+          (song) =>
+              song.artist == artist &&
+              song.artPath2 != null &&
+              song.artPath2!.length != 0,
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
+        )
         .artPath2;
   }
 
-  /*
-    returns a list of SongItems whose
-    title contains or is eqaul to the
-    the text provided
-  */
+  /// returns a list of SongItems whose
+  /// title contains or is equal to the
+  /// the text provided
   List<SongItem> searchSongs(String text) {
     return _songs
         .where((song) =>
             song.title != null &&
-            song.title.toLowerCase().contains(text.toLowerCase()))
+            song.title!.toLowerCase().contains(text.toLowerCase()))
         .toList();
   }
 
-  /*
-    returns a list of all albums whose 
-    name containes or is == the text provided
-  */
+  /// returns a list of all albums whose
+  /// name contains or is == the text provided
   List<Album> searchAlbums(String text) {
-    Map<String, Album> albums = Map();
+    Map<String?, Album> albums = Map();
     _songs.map((song) {
       if ((song.album ?? DefaultUtil.unknown).contains(text)) {
-        if (song.album != null && song.album.length != 0) {
+        if (song.album != null && song.album!.length != 0) {
           if (albums.keys.contains(song.album)) {
-            albums[song.album].paths.add(song);
+            albums[song.album]!.paths!.add(song);
           } else {
             albums[song.album] = Album(
               albumArtist: song.albumArtist ?? DefaultUtil.unknown,
@@ -394,18 +324,16 @@ class SongProvider with ChangeNotifier {
     return albums.values.toList();
   }
 
-  /*
-    Provides a list of all artists
-    which contains or is == the text provided.
-  */
+  /// Provides a list of all artists
+  /// which contains or is == the text provided.
   List<String> searchArtist(String text) {
-    var artist = List<String>();
+    var artist = <String>[];
     _songs
         .map((song) {
           if (song.artist != null &&
-              song.artist.toLowerCase().contains(text.toLowerCase())) {
+              song.artist!.toLowerCase().contains(text.toLowerCase())) {
             if (!artist.contains(song.artist)) {
-              artist.add(song.artist);
+              artist.add(song.artist!);
             }
           }
         })
@@ -414,11 +342,9 @@ class SongProvider with ChangeNotifier {
     return artist;
   }
 
-  /*
-    This fuction searchs through the songs, artist and 
-    albums to find the items that match the input string.
-    It calls three other functions to complete the search
-  */
+  /// This fuction searchs through the songs, artist and
+  /// albums to find the items that match the input string.
+  /// It calls three other functions to complete the search
   Map<String, List<dynamic>> search(String text) {
     var results = Map<String, List<dynamic>>();
     results["songs"] = searchSongs(text);
@@ -427,55 +353,45 @@ class SongProvider with ChangeNotifier {
     return results;
   }
 
-  /*
-    The function adds or removes items from the favourite
-    list depending on its favourite status.
-  */
-  Future<void> toggleFavourite(String path) async {
+  /// The function adds or removes items from the favourite
+  /// list depending on its favourite status.
+  Future<void> toggleFavourite(String? path) async {
     if (!_favourites.contains(path)) {
-      _favourites.add(path);
+      _favourites.add(path!);
     } else {
       _favourites.remove(path);
     }
     notifyListeners();
-    await prefs.setStringList("favourites", _favourites);
+    await prefs!.setStringList("favourites", _favourites);
   }
 
-  /*
-    removes each item in _queue from the favourites list
-  */
+  /// removes each item in _queue from the favourites list
   void removeFromFavourites() async {
     _queue.forEach((path) {
       _favourites.remove(path);
     });
     notifyListeners();
-    prefs.setStringList("favourites", _favourites);
+    prefs!.setStringList("favourites", _favourites);
   }
 
-  /*
-    Adds each item in _queue to the favourites list
-  */
+  /// Adds each item in _queue to the favourites list
   void addToFavourites() {
     _favourites.addAll(_queue);
     notifyListeners();
-    prefs.setStringList("favourites", _favourites);
+    prefs!.setStringList("favourites", _favourites);
   }
 
-  /*
-    When a song is deleted this method removes it from the playlist
-    if it exits.
-  */
+  /// When a song is deleted this method removes it from the playlist
+  /// if it exits.
   void removeFromPlayList() {
     _queue.forEach((path) {
       DBHelper.randomDeleteItem("playLists", path);
     });
   }
 
-  /*
-    Deletes all songs in _queue permanently from the device
-    and clears all entries from the MediaStrore.
-    This completed using java code through the platform channel. 
-  */
+  /// Deletes all songs in _queue permanently from the device
+  /// and clears all entries from the MediaStore.
+  /// This completed using java code through the platform channel.
   Future<void> deleteSongs() async {
     const platform = MethodChannel("stereo.beats/metadata");
     _queue.forEach((path) async {
@@ -488,19 +404,17 @@ class SongProvider with ChangeNotifier {
     removeFromFavourites();
   }
 
-  /*
-    This function opens a share dialog 
-    which would enable the user to share a song item.
-    This completed using java code through the platform channel.
-  */
+  /// This function opens a share dialog
+  /// which would enable the user to share a song item.
+  /// This completed using java code through the platform channel.
   Future<void> shareFile() async {
     const platform = MethodChannel("stereo.beats/metadata");
     await platform.invokeMethod("shareFile", {"paths": _queue});
   }
 
-  // checks the favourite status of a song
-  // returns true if it is a favourite, false otherwise
-  bool isFavourite(String path) {
+  /// checks the favourite status of a song
+  /// returns true if it is a favourite, false otherwise
+  bool isFavourite(String? path) {
     if (_favourites.contains(path)) {
       return true;
     }
@@ -521,34 +435,24 @@ class SongProvider with ChangeNotifier {
   bool queueNotNull() => _queue.length > 0;
   bool keysNotNull() => _playlistKey.length > 0;
 
-  // removes a list of items from _queue
-  void removeListFromQueue(List<String> paths) {
-    List<String> toRemove = [];
+  /// removes a list of items from _queue
+  void removeListFromQueue(List<String?>? paths) {
+    List<String?> toRemove = [];
     _queue.forEach((item) {
-      if (paths.contains(item)) {
+      if (paths!.contains(item)) {
         toRemove.add(item);
       }
     });
     _queue.removeWhere((item) => toRemove.contains(item));
   }
 
-  // returns the artPath for a song with the path == input
-  String getArtPath(String path) =>
-      _songs.firstWhere((song) => song.path == path).artPath;
-
-  // returns the artPath for a song with the path == input
-  Uint8List getArtPath2(String path) =>
-      _songs.firstWhere((song) => song.path == path).artPath2;
-
-  /*
-    Returns a list of SongItems whose path is == to the 
-    list of paths provided from the db 
-  */
-  List<SongItem> playListSongs(List<String> paths) {
+  /// Returns a list of SongItems whose path is == to the
+  /// list of paths provided from the db
+  List<SongItem> playListSongs(List<String?> paths) {
     return _songs.where((song) => paths.contains(song.path)).toList();
   }
 
-  // adds items in _queue to the db
+  /// adds items in _queue to the db
   void addToPlayList(PlayList playList) =>
       DBHelper.addItem("playLists", playList, _queue);
 }

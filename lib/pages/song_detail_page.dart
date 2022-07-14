@@ -37,7 +37,7 @@ class SongDetailPage extends StatelessWidget {
     final songProvider = Provider.of<SongProvider>(context);
     final player = Provider.of<AudioPlayer>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
-    final songPath = ModalRoute.of(context).settings.arguments as String;
+    final songPath = ModalRoute.of(context)!.settings.arguments as String?;
     final song = songProvider.getSongFromPath(songPath);
     var appBar = AppBar(
       backgroundColor: ColorUtil.dark,
@@ -74,10 +74,11 @@ class SongDetailPage extends StatelessWidget {
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: DefaultUtil.checkNotNull(song.artPath)
-                    ? FileImage(File(song.artPath))
-                    : DefaultUtil.checkListNotNull(song.artPath2)
-                        ? MemoryImage(song.artPath2)
-                        : AssetImage(DefaultUtil.defaultImage),
+                    ? FileImage(File(song.artPath!))
+                    : (DefaultUtil.checkListNotNull(song.artPath2)
+                            ? MemoryImage(song.artPath2!)
+                            : AssetImage(DefaultUtil.defaultImage))
+                        as ImageProvider<Object>,
               ),
             ),
           ),
@@ -94,7 +95,7 @@ class SongDetailPage extends StatelessWidget {
                 _buildListItem("Year", song.year, themeProvider, mediaQuery),
                 _buildListItem(
                   "Length",
-                  player.calculateDuration(int.parse(song.duration)),
+                  player.calculateDuration(song.duration!),
                   themeProvider,
                   null,
                   false,
@@ -110,8 +111,8 @@ class SongDetailPage extends StatelessWidget {
   // this method returns a colum showing a part of the
   // songs metadata
   Column _buildListItem(
-      String leading, String songInfo, AppThemeMode themeProvider,
-      [MediaQueryData mediaQuery, bool showDivider = true]) {
+      String leading, String? songInfo, AppThemeMode themeProvider,
+      [MediaQueryData? mediaQuery, bool showDivider = true]) {
     return Column(
       children: [
         ListTile(
@@ -122,13 +123,15 @@ class SongDetailPage extends StatelessWidget {
             ),
           ),
           title: Text(
-            DefaultUtil.checkNotNull(songInfo) ? songInfo : DefaultUtil.unknown,
+            DefaultUtil.checkNotNull(songInfo)
+                ? songInfo!
+                : DefaultUtil.unknown,
             style: themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
           ),
         ),
         if (showDivider)
           Divider(
-            indent: mediaQuery.size.width * 0.2,
+            indent: mediaQuery!.size.width * 0.2,
           ),
       ],
     );

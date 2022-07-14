@@ -5,11 +5,9 @@
  * Email: addodevelop@gmail.com
 */
 
-/*
-  This is the main file which controlls the application.
-  It containes all the routes, primary and secondary themes
-  and where app wide providers are created.
-*/
+/// This is the main file which controls the application.
+/// It contains all the routes, primary and secondary themes
+/// and where app wide providers are created.
 
 // imports
 
@@ -59,9 +57,9 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // * initializing providers.
-    // the SongProvider controls all function relating to a song items,playlists and song infomation.
-    // the AudioPlayer handels playing audio, shuffle, loop and songs in queue.
+    // initializing providers.
+    // the SongProvider controls all function relating to a song items,playlists and song information.
+    // the AudioPlayer handles playing audio, shuffle, loop and songs in queue.
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

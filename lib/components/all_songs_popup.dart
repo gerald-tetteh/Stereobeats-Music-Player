@@ -34,10 +34,10 @@ import 'toast.dart';
 
 class AllSongsPopUp extends StatelessWidget {
   AllSongsPopUp({
-    @required this.index,
-    @required this.song,
-    @required this.songs,
-    @required this.scaffoldKey,
+    required this.index,
+    required this.song,
+    required this.songs,
+    required this.scaffoldKey,
   });
   final List<SongItem> songs;
   final int index;
@@ -78,17 +78,17 @@ class AllSongsPopUp extends StatelessWidget {
         if (value == _menuItems[0]) {
           player.play(songs, index);
         } else if (value == _menuItems[1]) {
-          songProvider.addToQueue(song.path);
-          var value = await showDialog<bool>(
+          songProvider.addToQueue(song.path!);
+          var value = await (showDialog<bool>(
             barrierDismissible: false,
-            context: scaffoldKey.currentContext,
+            context: scaffoldKey.currentContext!,
             builder: (context) {
               return ConfirmDeleteAlert(
                 deleteFunction: songProvider.deleteSongs,
                 songProvider: songProvider,
               );
             },
-          );
+          ) as Future<bool>);
           if (value) {
             fToast.showToast(
               child: ToastComponent(
@@ -104,11 +104,11 @@ class AllSongsPopUp extends StatelessWidget {
             songProvider.setQueueToNull();
           }
         } else if (value == _menuItems[2]) {
-          songProvider.addToQueue(song.path);
+          songProvider.addToQueue(song.path!);
           var result =
               await Navigator.of(context).pushNamed(AddToPage.routeName) ??
                   false;
-          if (result) {
+          if (result as bool) {
             fToast.showToast(
               child: ToastComponent(
                 color: Colors.green[100],
@@ -126,7 +126,7 @@ class AllSongsPopUp extends StatelessWidget {
           Navigator.of(context)
               .pushNamed(SongDetailPage.routeName, arguments: song.path);
         } else if (value == _menuItems[4]) {
-          songProvider.addToQueue(song.path);
+          songProvider.addToQueue(song.path!);
           songProvider.shareFile();
           songProvider.setQueueToNull();
         }

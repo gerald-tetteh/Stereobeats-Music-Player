@@ -25,9 +25,9 @@ import '../provider/music_player.dart';
 
 class QuickPlayOptions extends StatelessWidget {
   const QuickPlayOptions({
-    Key key,
-    @required this.provider,
-    @required this.songs,
+    Key? key,
+    required this.provider,
+    required this.songs,
   }) : super(key: key);
 
   final AudioPlayer provider; // audio player

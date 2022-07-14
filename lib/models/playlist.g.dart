@@ -17,8 +17,8 @@ class PlayListAdapter extends TypeAdapter<PlayList> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PlayList()
-      ..name = fields[0] as String
-      ..paths = (fields[1] as List)?.cast<String>();
+      ..name = fields[0] as String?
+      ..paths = (fields[1] as List?)?.cast<String>();
   }
 
   @override

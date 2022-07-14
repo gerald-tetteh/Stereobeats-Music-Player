@@ -18,7 +18,6 @@
 // imports
 
 // package imports
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -35,17 +34,17 @@ import '../components/page_view_card.dart';
 
 class AudioPlayer with ChangeNotifier {
   // initialized class variables (global)
-  SharedPreferences
+  SharedPreferences?
       prefs; // shared preferences; this is initialized in the loading page
   AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId("current_player");
   bool miniPlayerPresent = false;
   CarouselController pageController = CarouselController();
-  CarouselSlider slider;
-  List<SongItem> songsQueue;
+  late CarouselSlider slider;
+  late List<SongItem?> songsQueue;
 
   // returns the current Audio playing.
   Audio get playing {
-    return audioPlayer.current.value.audio.audio;
+    return audioPlayer.current.value!.audio.audio;
   }
 
   /*
@@ -58,7 +57,7 @@ class AudioPlayer with ChangeNotifier {
       carouselController: pageController,
       itemCount: songsQueue.length,
       itemBuilder: (context, index, id) {
-        return PageViewCard(songsQueue[index]);
+        return PageViewCard(songsQueue[index]!);
       },
       options: CarouselOptions(
         autoPlay: false,
@@ -66,7 +65,7 @@ class AudioPlayer with ChangeNotifier {
         viewportFraction: 1,
         enlargeCenterPage: true,
         initialPage:
-            findCurrentIndex(audioPlayer.current.value.audio.audio.path),
+            findCurrentIndex(audioPlayer.current.value!.audio.audio.path),
         onPageChanged: (index, reason) async {
           if (CarouselPageChangedReason.manual == reason) {
             await audioPlayer.playlistPlayAtIndex(index);
@@ -87,7 +86,7 @@ class AudioPlayer with ChangeNotifier {
   void animateCarousel() {
     try {
       pageController.jumpToPage(
-          findCurrentIndex(audioPlayer.current.value.audio.audio.path));
+          findCurrentIndex(audioPlayer.current.value!.audio.audio.path));
     } catch (e) {
       return;
     }
@@ -117,11 +116,11 @@ class AudioPlayer with ChangeNotifier {
   }
 
   // converts SongItems to Audio.
-  List<Audio> audioSongs(List<SongItem> songs) {
+  List<Audio> audioSongs(List<SongItem?> songs) {
     return songs
         .map(
           (song) => Audio.file(
-            song.path,
+            song!.path!,
             metas: Metas(
               album: DefaultUtil.checkNotNull(song.album)
                   ? song.album
@@ -132,10 +131,13 @@ class AudioPlayer with ChangeNotifier {
               title: DefaultUtil.checkNotNull(song.title)
                   ? song.title
                   : DefaultUtil.unknown,
-              image: DefaultUtil.checkNotNull(song.artPath) 
-                ? MetasImage.file(song.artPath) 
-                : MetasImage.asset(DefaultUtil.defaultImage) ,
-              extra: <String,Uint8List>{"path2":song.artPath2},
+              image: DefaultUtil.checkNotNull(song.artPath)
+                  ? MetasImage.file(song.artPath!)
+                  : MetasImage.asset(DefaultUtil.defaultImage),
+              extra: <String, int?>{
+                "albumId": song.albumId,
+                "songId": song.songId,
+              },
             ),
           ),
         )
@@ -155,9 +157,9 @@ class AudioPlayer with ChangeNotifier {
     A call back function is also created in case and audio file 
     is incompatible with the device.
   */
-  Future<void> play(List<SongItem> songs,
-      [int startIndex = 0, bool shuffle = false, Duration seekValue]) async {
-    audioPlayer.shuffle = shuffle ?? prefs.getBool("shuffle") ?? false;
+  Future<void> play(List<SongItem?> songs,
+      [int startIndex = 0, bool shuffle = false, Duration? seekValue]) async {
+    audioPlayer.shuffle = prefs?.getBool("shuffle") ?? shuffle;
     songsQueue = songs;
     Random rand = Random();
     int randomIndex = rand.nextInt(songs.length);
@@ -169,7 +171,7 @@ class AudioPlayer with ChangeNotifier {
         resumeAfterInterruption: true,
       ), // the song continues after the interuption.
       loopMode:
-          checkLoopMode(prefs.getString("loopMode") ?? "") ?? LoopMode.none,
+          checkLoopMode(prefs!.getString("loopMode") ?? "") ?? LoopMode.none,
       showNotification: true,
       headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
       playInBackground: PlayInBackground.enabled,
@@ -246,7 +248,7 @@ class AudioPlayer with ChangeNotifier {
 
   // returns the appropriate LoopMode based on the
   // string provided. Defaults to null.
-  LoopMode checkLoopMode(String mode) {
+  LoopMode? checkLoopMode(String mode) {
     if (mode == "single") {
       return LoopMode.single;
     } else if (mode == "all") {
@@ -259,7 +261,7 @@ class AudioPlayer with ChangeNotifier {
 
   // returns a string used to identify the LoopMode
   // when it is saved. Defaults to null
-  String saveLoopMode(LoopMode mode) {
+  String? saveLoopMode(LoopMode mode) {
     if (mode == LoopMode.none) {
       return "none";
     } else if (mode == LoopMode.playlist) {
@@ -273,25 +275,26 @@ class AudioPlayer with ChangeNotifier {
   // changes to LoopMode based on the current LoopMode.
   Future<void> toogleLoop() async {
     await audioPlayer.toggleLoop();
-    await prefs.setString("loopMode", saveLoopMode(audioPlayer.loopMode.value));
+    await prefs!
+        .setString("loopMode", saveLoopMode(audioPlayer.loopMode.value)!);
   }
 
   // returns the current index of the song whose path is provided.
   int findCurrentIndex(String path) {
-    return audioPlayer.playlist.audios.indexOf(
-        audioPlayer.playlist.audios.firstWhere((song) => song.path == path));
+    return audioPlayer.playlist!.audios.indexOf(
+        audioPlayer.playlist!.audios.firstWhere((song) => song.path == path));
   }
 
   // changes the suffle mode based on the current shuffle state.
   Future<void> changeShuffle() async {
     audioPlayer.toggleShuffle();
-    await prefs.setBool("shuffle", audioPlayer.shuffle);
+    await prefs!.setBool("shuffle", audioPlayer.shuffle);
   }
 
   // changes the shuffle state based on the value provided.
   Future<void> setShuffle(bool value) async {
     audioPlayer.shuffle = value;
-    await prefs.setBool("shuffle", audioPlayer.shuffle);
+    await prefs!.setBool("shuffle", audioPlayer.shuffle);
   }
 
   // changes the visiblility of the miniplayer
@@ -304,10 +307,11 @@ class AudioPlayer with ChangeNotifier {
   // adds the songs provided to the playing queue
   void addToQueue(List<SongItem> songs) async {
     songsQueue.addAll(songs);
-    var playlist = audioPlayer.playlist.audios;
+    var playlist = audioPlayer.playlist!.audios;
     playlist.addAll(audioSongs(songs));
     var currentIndex = findCurrentIndex(playing.path);
     var currentPosition = audioPlayer.currentPosition.value;
-    await play(songsQueue, currentIndex, null, currentPosition);
+    await play(songsQueue, currentIndex, prefs?.getBool("shuffle") ?? false,
+        currentPosition);
   }
 }

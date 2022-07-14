@@ -41,20 +41,28 @@ class ArtistViewScreen extends StatelessWidget {
     This method finds the find song in the album 
     with album art and returns the path to the image
   */
-  String getArtPath(Album album) {
-    return album.paths
+  String? getArtPath(Album album) {
+    return album.paths!
         .firstWhere(
-          (song) => song.artPath != null && song.artPath.length != 0,
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+          (song) => song.artPath != null && song.artPath!.length != 0,
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
         )
         .artPath;
   }
 
-  Uint8List getArtPath2(Album album) {
-    return album.paths
+  Uint8List? getArtPath2(Album album) {
+    return album.paths!
         .firstWhere(
-          (song) => song.artPath2 != null && song.artPath2.length != 0,
-          orElse: () => SongItem(artPath: DefaultUtil.defaultImage),
+          (song) => song.artPath2 != null && song.artPath2!.length != 0,
+          orElse: () => SongItem(
+            artPath: DefaultUtil.defaultImage,
+            isMusic: true,
+            size: 0,
+          ),
         )
         .artPath2;
   }
@@ -75,10 +83,10 @@ class ArtistViewScreen extends StatelessWidget {
       image associated with the artist
     */
     final parameters =
-        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final artist = parameters["artist"] as String;
-    final coverArt = parameters["art"] as String;
-    final coverArt2 = parameters["art2"] as Uint8List;
+    final coverArt = parameters["art"] as String?;
+    final coverArt2 = parameters["art2"] as Uint8List?;
     final songProvider = Provider.of<SongProvider>(context);
     final player = Provider.of<AudioPlayer>(context, listen: false);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
@@ -129,10 +137,11 @@ class ArtistViewScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: DefaultUtil.checkNotAsset(coverArt)
-                              ? FileImage(File(coverArt))
-                              : DefaultUtil.checkListNotNull(coverArt2)
-                                  ? MemoryImage(coverArt2)
-                                  : AssetImage(coverArt),
+                              ? FileImage(File(coverArt!))
+                              : (DefaultUtil.checkListNotNull(coverArt2)
+                                      ? MemoryImage(coverArt2!)
+                                      : AssetImage(coverArt!))
+                                  as ImageProvider<Object>,
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(25),
@@ -211,7 +220,7 @@ class ArtistViewScreen extends StatelessWidget {
       delegate: SliverChildBuilderDelegate(
         (BuildContext ctx, int index) {
           final artPath2 = getArtPath2(artistAlbums[index]);
-          String artPath;
+          String? artPath;
           if (artPath2 == null || artPath2.length < 1) {
             artPath = getArtPath(artistAlbums[index]);
           }
@@ -226,14 +235,14 @@ class ArtistViewScreen extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundColor: ColorUtil.dark,
                   backgroundImage: DefaultUtil.checkNotAsset(artPath)
-                      ? FileImage(File(artPath))
-                      : DefaultUtil.checkListNotNull(artPath2)
-                          ? MemoryImage(artPath2)
-                          : AssetImage(artPath),
+                      ? FileImage(File(artPath!))
+                      : (DefaultUtil.checkListNotNull(artPath2)
+                          ? MemoryImage(artPath2!)
+                          : AssetImage(artPath!)) as ImageProvider<Object>?,
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistAlbums[index].name)
-                      ? artistAlbums[index].name
+                      ? artistAlbums[index].name!
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -241,7 +250,7 @@ class ArtistViewScreen extends StatelessWidget {
                       themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
                 subtitle: Text(
-                  "Tracks: ${artistAlbums[index].paths != null ? artistAlbums[index].paths.length : 0}",
+                  "Tracks: ${artistAlbums[index].paths != null ? artistAlbums[index].paths!.length : 0}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
@@ -274,15 +283,16 @@ class ArtistViewScreen extends StatelessWidget {
                   backgroundColor: ColorUtil.dark,
                   backgroundImage:
                       DefaultUtil.checkNotNull(artistSongs[index].artPath)
-                          ? FileImage(File(artistSongs[index].artPath))
-                          : DefaultUtil.checkListNotNull(
-                                  artistSongs[index].artPath2)
-                              ? MemoryImage(artistSongs[index].artPath2)
-                              : AssetImage(DefaultUtil.defaultImage),
+                          ? FileImage(File(artistSongs[index].artPath!))
+                          : (DefaultUtil.checkListNotNull(
+                                      artistSongs[index].artPath2)
+                                  ? MemoryImage(artistSongs[index].artPath2!)
+                                  : AssetImage(DefaultUtil.defaultImage))
+                              as ImageProvider<Object>?,
                 ),
                 title: Text(
                   DefaultUtil.checkNotNull(artistSongs[index].title)
-                      ? artistSongs[index].title
+                      ? artistSongs[index].title!
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -291,7 +301,7 @@ class ArtistViewScreen extends StatelessWidget {
                 ),
                 subtitle: Text(
                   DefaultUtil.checkNotNull(artistSongs[index].album)
-                      ? artistSongs[index].album
+                      ? artistSongs[index].album!
                       : DefaultUtil.unknown,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

@@ -36,7 +36,7 @@ class DefaultUtil {
     not null or has a length greater that zero.
     Returns false otherwise.
   */
-  static bool checkNotNull(String value) {
+  static bool checkNotNull(String? value) {
     if (value != null && value.length != 0) {
       return true;
     }
@@ -48,7 +48,7 @@ class DefaultUtil {
     not null or has a length greater that zero.
     Returns false otherwise.
   */
-  static bool checkListNotNull(Uint8List value) {
+  static bool checkListNotNull(Uint8List? value) {
     if (value != null && value.length != 0) {
       return true;
     }
@@ -60,7 +60,7 @@ class DefaultUtil {
     "assets/images" indicating its is a local asset and false 
     otherwise.
   */
-  static bool checkNotAsset(String path) {
+  static bool checkNotAsset(String? path) {
     if (path == null || path.contains("assets/images")) {
       return false;
     }
@@ -96,7 +96,7 @@ class DefaultUtil {
     This is the widget that is retured if a widget is not provided with 
     the data it needs and can not be built without throwing a runtime error.
   */
-  static Widget empty(String text, [String subText]) {
+  static Widget empty(String text, [String? subText]) {
     return EmptyWidget(
       image: DefaultUtil.emptyImage,
       title: text,
@@ -111,7 +111,7 @@ class DefaultUtil {
     the data it needs and can not be built without throwing a runtime error.
     (DarkMode)
   */
-  static Widget emptyDarkMode(String text, [String subText]) {
+  static Widget emptyDarkMode(String text, [String? subText]) {
     return CircleAvatar(
       backgroundColor: ColorUtil.dark2,
       maxRadius: 160,

@@ -50,15 +50,15 @@ class AlbumListScreen extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
       key: _scaffoldKey,
-      bottomNavigationBar: AnimatedContainer(
-        child: BottomActionsBar(
-          scaffoldKey: _scaffoldKey,
-          deleteFunction: songProvider.deleteSongs,
-        ),
-        duration: Duration(milliseconds: 400),
-        curve: Curves.easeIn,
-        height: songProvider.showBottonBar ? 59 : 0,
-      ),
+      // bottomNavigationBar: AnimatedContainer(
+      //   child: BottomActionsBar(
+      //     scaffoldKey: _scaffoldKey,
+      //     deleteFunction: songProvider.deleteSongs,
+      //   ),
+      //   duration: Duration(milliseconds: 400),
+      //   curve: Curves.easeIn,
+      //   height: songProvider.showBottomBar ? 59 : 0,
+      // ),
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       appBar: AppBar(
@@ -69,7 +69,7 @@ class AlbumListScreen extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
+            _scaffoldKey.currentState!.openDrawer();
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
             songProvider.setKeysToNull();
@@ -95,14 +95,16 @@ class AlbumListScreen extends StatelessWidget {
             title: "Albums",
             subTitle: "for you",
             purpose: Purpose.AlbumView,
-            albums: songProvider.getAlbumsFromSongs(),
+            albums: songProvider.albums,
           ),
           Positioned(
             bottom: 10,
             left: 3,
             right: 3,
-            // shows miniplayer if present
-            child: MiniPlayer(mediaQuery: mediaQuery),
+            // shows mini player if present
+            child: MiniPlayer(
+              mediaQuery: mediaQuery,
+            ),
           ),
         ],
       ),

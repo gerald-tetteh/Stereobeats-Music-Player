@@ -28,42 +28,42 @@ class BuildCheckBox extends StatefulWidget {
     PlayListName can be non-null at all times.
   */
   const BuildCheckBox({
-    Key key,
+    Key? key,
     this.path,
     this.paths,
     this.playListName,
   }) : super(key: key);
 
-  final String path;
-  final List<String> paths;
-  final String playListName;
+  final String? path;
+  final List<String>? paths;
+  final String? playListName;
   @override
   _BuildCheckBoxState createState() => _BuildCheckBoxState();
 }
 
 class _BuildCheckBoxState extends State<BuildCheckBox> {
-  bool _boxValue = false;
+  bool? _boxValue = false;
   @override
   Widget build(BuildContext context) {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     return Checkbox(
       value: _boxValue,
       onChanged: (value) {
-        if (value) {
+        if (value!) {
           if (widget.playListName != null) {
-            songProvider.addToKeys(widget.playListName);
+            songProvider.addToKeys(widget.playListName!);
           }
           if (widget.path != null) {
-            songProvider.addToQueue(widget.path);
+            songProvider.addToQueue(widget.path!);
           } else {
-            songProvider.addListToQueue(widget.paths);
+            songProvider.addListToQueue(widget.paths!);
           }
         } else {
           if (widget.playListName != null) {
-            songProvider.removeFromKeys(widget.playListName);
+            songProvider.removeFromKeys(widget.playListName!);
           }
           if (widget.path != null) {
-            songProvider.removeFromQueue(widget.path);
+            songProvider.removeFromQueue(widget.path!);
           } else {
             songProvider.removeListFromQueue(widget.paths);
           }

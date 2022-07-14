@@ -6,20 +6,15 @@
  * Mini Player (component)
 */
 
-/*
-  This widget returns a rectangle with rounded edges which shows
-  the current song that is playing. It also has controls to pause or play the
-  song and also sekip to the next track or return to the previous song.
+/// This widget returns a rectangle with rounded edges which shows
+/// the current song that is playing. It also has controls to pause or play the
+/// song and also skip to the next track or return to the previous song.
 
-  Cliking on the miniplayer opens the play page.
-*/
+/// Clicking on the mini player opens the play page.
 
 // imports
 
 // package imports
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,10 +28,12 @@ import '../pages/play_page.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
 
+import './circular_image.dart';
+
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({
-    Key key,
-    @required this.mediaQuery,
+    Key? key,
+    required this.mediaQuery,
   }) : super(key: key);
 
   final MediaQueryData mediaQuery;
@@ -47,7 +44,8 @@ class MiniPlayer extends StatelessWidget {
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     if (audioProvider.audioPlayer.playerState.value != PlayerState.stop) {
       Audio song = audioProvider.playing;
-      final artPath2 = song.metas.extra["path2"] as Uint8List;
+      final albumId = song.metas.extra!["albumId"] as int?;
+      final songId = song.metas.extra!["songId"] as int?;
       return GestureDetector(
         onTap: () => Navigator.of(context).pushNamed(PlayMusicScreen.routeName),
         child: Container(
@@ -69,15 +67,9 @@ class MiniPlayer extends StatelessWidget {
                       children: [
                         Hero(
                           tag: song.path,
-                          child: CircleAvatar(
-                            backgroundImage:
-                                DefaultUtil.checkNotAsset(song.metas.image.path)
-                                    ? FileImage(File(song.metas.image.path))
-                                    : DefaultUtil.checkListNotNull(artPath2)
-                                        ? MemoryImage(artPath2)
-                                        : AssetImage(
-                                            "assets/images/default-image.png"),
-                            backgroundColor: Color(0xff212121),
+                          child: CircularImage(
+                            albumId: albumId,
+                            songId: songId,
                           ),
                         ),
                         Expanded(
@@ -90,7 +82,7 @@ class MiniPlayer extends StatelessWidget {
                               children: [
                                 // shows song title and artist
                                 Text(
-                                  song.metas.title,
+                                  song.metas.title!,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: themeProvider.isDarkMode
@@ -98,7 +90,7 @@ class MiniPlayer extends StatelessWidget {
                                       : null,
                                 ),
                                 Text(
-                                  song.metas.artist,
+                                  song.metas.artist!,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextUtil.mutedText,
@@ -114,25 +106,27 @@ class MiniPlayer extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                          icon: FaIcon(FontAwesomeIcons.stepBackward),
-                          onPressed: () async =>
-                              await audioProvider.previousTrack()),
+                        icon: FaIcon(FontAwesomeIcons.backwardStep),
+                        onPressed: () async =>
+                            await audioProvider.previousTrack(),
+                      ),
                       // depending on the playing state
                       // either the play or pause button is shown
                       PlayerBuilder.playerState(
                         player: audioProvider.audioPlayer,
                         builder: (context, playerState) => IconButton(
-                            icon: (playerState == PlayerState.pause ||
-                                    playerState == PlayerState.stop)
-                                ? FaIcon(FontAwesomeIcons.play)
-                                : FaIcon(FontAwesomeIcons.pause),
-                            onPressed: () async =>
-                                await audioProvider.playOrPause()),
+                          icon: (playerState == PlayerState.pause ||
+                                  playerState == PlayerState.stop)
+                              ? FaIcon(FontAwesomeIcons.play)
+                              : FaIcon(FontAwesomeIcons.pause),
+                          onPressed: () async =>
+                              await audioProvider.playOrPause(),
+                        ),
                       ),
                       IconButton(
-                          icon: FaIcon(FontAwesomeIcons.stepForward),
-                          onPressed: () async =>
-                              await audioProvider.nextTrack()),
+                        icon: FaIcon(FontAwesomeIcons.forwardStep),
+                        onPressed: () async => await audioProvider.nextTrack(),
+                      ),
                     ],
                   ),
                 ],

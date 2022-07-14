@@ -61,7 +61,7 @@ class PlayListScreen extends StatelessWidget {
             ),
             duration: Duration(milliseconds: 400),
             curve: Curves.easeIn,
-            height: songProvider.showBottonBar ? 59 : 0,
+            height: songProvider.showBottomBar ? 59 : 0,
           );
         },
       ),
@@ -75,7 +75,7 @@ class PlayListScreen extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
+            _scaffoldKey.currentState!.openDrawer();
             songProvider.changeBottomBar(false);
             songProvider.setQueueToNull();
             songProvider.setKeysToNull();
@@ -95,7 +95,7 @@ class PlayListScreen extends StatelessWidget {
               Provider.of<SongProvider>(context, listen: false)
                   .setQueueToNull();
               showModalBottomSheet(
-                context: _scaffoldKey.currentState.context,
+                context: _scaffoldKey.currentState!.context,
                 builder: (ctx) {
                   return ModalSheet(_formKey);
                 },

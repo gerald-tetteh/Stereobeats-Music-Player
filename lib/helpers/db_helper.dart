@@ -22,20 +22,20 @@ import '../models/playlist.dart';
 
 class DBHelper {
   // this method adds items to an entry in the database
-  static void addItem(String boxName, PlayList playList, List<String> paths) {
+  static void addItem(String boxName, PlayList playList, List<String?> paths) {
     var box = Hive.box<PlayList>(boxName);
-    var savedPlayList = box.get(playList.toString());
+    var savedPlayList = box.get(playList.toString())!;
     if (savedPlayList.paths == null) {
       savedPlayList.paths = paths;
     } else {
-      savedPlayList.paths.addAll(paths);
+      savedPlayList.paths!.addAll(paths);
     }
     box.put(playList.toString(), savedPlayList);
   }
 
   // this method creats new entries in the database
   static void createItem(String boxName, String playListName,
-      [List<String> paths]) {
+      [List<String?>? paths]) {
     var box = Hive.box<PlayList>(boxName);
     var playList = PlayList()
       ..name = playListName
@@ -47,19 +47,19 @@ class DBHelper {
   static void deleteItem(
       String boxName, String playlistName, List<String> paths) {
     var box = Hive.box<PlayList>(boxName);
-    var playList = box.get(playlistName);
-    playList.paths.removeWhere((path) => paths.contains(path));
+    var playList = box.get(playlistName)!;
+    playList.paths!.removeWhere((path) => paths.contains(path));
     box.put(playlistName, playList);
   }
 
   // this method deletes items from the data base when the items have
   // been deleted from the device
-  static void randomDeleteItem(String boxName, String path) {
+  static void randomDeleteItem(String boxName, String? path) {
     var box = Hive.box<PlayList>(boxName);
     List<PlayList> playLists =
-        box.values.where((playlist) => playlist.paths.contains(path)).toList();
+        box.values.where((playlist) => playlist.paths!.contains(path)).toList();
     playLists.forEach((list) {
-      list.paths.remove(path);
+      list.paths!.remove(path);
       box.put(list.toString(), list);
     });
   }
@@ -80,7 +80,7 @@ class DBHelper {
   static void changeItemName(
       String boxName, String playlistName, String newName) {
     var box = Hive.box<PlayList>(boxName);
-    var oldPlaylist = box.get(playlistName);
+    var oldPlaylist = box.get(playlistName)!;
     box.delete(oldPlaylist.toString());
     oldPlaylist.name = newName;
     box.put(oldPlaylist.name, oldPlaylist);

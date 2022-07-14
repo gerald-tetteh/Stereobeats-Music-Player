@@ -31,10 +31,10 @@ import 'all_songs_popup.dart';
 
 class SeparatedPositionedList extends StatelessWidget {
   const SeparatedPositionedList({
-    Key key,
-    @required this.itemScrollController,
-    @required this.mediaQuery,
-    @required this.scaffoldKey,
+    Key? key,
+    required this.itemScrollController,
+    required this.mediaQuery,
+    required this.scaffoldKey,
   }) : super(key: key);
 
   final ItemScrollController itemScrollController;
@@ -73,7 +73,7 @@ class SeparatedPositionedList extends StatelessWidget {
             ? Divider(
                 indent: mediaQuery.size.width * (1 / 4),
               )
-            : "",
+            : "" as Widget,
         itemBuilder: (context, index) {
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
@@ -88,7 +88,7 @@ class SeparatedPositionedList extends StatelessWidget {
                 actions bar is shown to remove its functionality. 
               */
               child: GestureDetector(
-                onTap: songProvider.showBottonBar
+                onTap: songProvider.showBottomBar
                     ? () {
                         songProvider.changeBottomBar(false);
                         songProvider.setQueueToNull();
@@ -96,12 +96,12 @@ class SeparatedPositionedList extends StatelessWidget {
                     : null,
                 child: ListTile(
                   leading: BoxImage(
-                    path: songs[index].artPath,
-                    path2: songs[index].artPath2,
+                    albumId: songs[index].albumId ?? -1,
+                    songId: songs[index].songId ?? -1,
                   ),
                   title: Text(
                     DefaultUtil.checkNotNull(songs[index].title)
-                        ? songs[index].title
+                        ? songs[index].title!
                         : DefaultUtil.unknown,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -111,7 +111,7 @@ class SeparatedPositionedList extends StatelessWidget {
                   ),
                   subtitle: Text(
                     DefaultUtil.checkNotNull(songs[index].artist)
-                        ? songs[index].artist
+                        ? songs[index].artist!
                         : DefaultUtil.unknown,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -119,7 +119,7 @@ class SeparatedPositionedList extends StatelessWidget {
                         ? TextUtil.allSongsArtist
                         : null,
                   ),
-                  trailing: songProvider.showBottonBar
+                  trailing: songProvider.showBottomBar
                       ? BuildCheckBox(path: songs[index].path)
                       : AllSongsPopUp(
                           index: index,

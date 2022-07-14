@@ -51,7 +51,7 @@ class ReviewHelper {
       nextDate = nextReviewDefault.toIso8601String();
       await box.put("nextReview", nextDate);
     }
-    var reviewCount = box.get("reviewCount", defaultValue: "0");
+    var reviewCount = box.get("reviewCount", defaultValue: "0")!;
     if (askCount(int.parse(reviewCount))) {
       if (isAfter(DateTime.parse(nextDate))) {
         if (await inAppReview.isAvailable()) {
