@@ -180,27 +180,12 @@ class SongProvider with ChangeNotifier {
     _artists = await _audioQuery.queryArtists();
   }
 
-  // retrieves all albums from _songs.
-  Map<String, List<SongItem>> getAlbumsFromSongs() {
-    Map<String, List<SongItem>> albums = Map();
-    _songs.map((song) {
-      var albumName = song.album ?? "Unknown";
-      if (albums.containsKey(albumName)) {
-        var songList = albums[albumName]!;
-        songList.add(song);
-        albums[albumName] = songList;
-      } else {
-        albums[albumName] = [song];
-      }
-    }).toList();
-    return albums;
-  }
-
   /// returns album songs
   List<SongItem> getAlbumSongs(String albumName, String albumArtist) {
     return _songs
-        .where((song) =>
-            song.album == albumName || song.albumArtist == albumArtist)
+        .where(
+          (song) => song.album == albumName,
+        )
         .toList();
   }
 
@@ -214,96 +199,40 @@ class SongProvider with ChangeNotifier {
     return _albums.where((album) => album.artist == albumArtist).toList();
   }
 
-  /// returns the path to an image
-  /// used on one of the songs made
-  /// by the artist provided.
-  String? artistCoverArt(String? artist) {
-    return _songs
-        .firstWhere(
-          (song) =>
-              song.artist == artist &&
-              song.artPath != null &&
-              song.artPath!.length != 0,
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath;
-  }
-
-  /// returns the path to an image
-  /// used on one of the songs made
-  /// by the artist provided.
-  Uint8List? artistCoverArt2(String? artist) {
-    return _songs
-        .firstWhere(
-          (song) =>
-              song.artist == artist &&
-              song.artPath2 != null &&
-              song.artPath2!.length != 0,
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath2;
-  }
-
   /// returns a list of SongItems whose
   /// title contains or is equal to the
   /// the text provided
   List<SongItem> searchSongs(String text) {
     return _songs
-        .where((song) =>
-            song.title != null &&
-            song.title!.toLowerCase().contains(text.toLowerCase()))
+        .where(
+          (song) =>
+              song.title != null &&
+              song.title!.toLowerCase().contains(text.toLowerCase()),
+        )
         .toList();
   }
 
   /// returns a list of all albums whose
   /// name contains or is == the text provided
-  List<Album> searchAlbums(String text) {
-    Map<String?, Album> albums = Map();
-    _songs.map((song) {
-      if ((song.album ?? DefaultUtil.unknown).contains(text)) {
-        if (song.album != null && song.album!.length != 0) {
-          if (albums.keys.contains(song.album)) {
-            albums[song.album]!.paths!.add(song);
-          } else {
-            albums[song.album] = Album(
-              albumArtist: song.albumArtist ?? DefaultUtil.unknown,
-              name: song.album,
-              paths: [song],
-            );
-          }
-        }
-      }
-    }).toList();
-    return albums.values.toList();
+  List<AlbumModel> searchAlbums(String text) {
+    return _albums
+        .where(
+          (album) => album.album.toLowerCase().contains(text.toLowerCase()),
+        )
+        .toList();
   }
 
   /// Provides a list of all artists
   /// which contains or is == the text provided.
-  List<String> searchArtist(String text) {
-    var artist = <String>[];
-    _songs
-        .map((song) {
-          if (song.artist != null &&
-              song.artist!.toLowerCase().contains(text.toLowerCase())) {
-            if (!artist.contains(song.artist)) {
-              artist.add(song.artist!);
-            }
-          }
-        })
-        .toSet()
+  List<ArtistModel> searchArtist(String text) {
+    return _artists
+        .where(
+          (artist) => artist.artist.toLowerCase().contains(text.toLowerCase()),
+        )
         .toList();
-    return artist;
   }
 
-  /// This fuction searchs through the songs, artist and
+  /// This function searches through the songs, artist and
   /// albums to find the items that match the input string.
   /// It calls three other functions to complete the search
   Map<String, List<dynamic>> search(String text) {

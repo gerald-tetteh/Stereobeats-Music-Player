@@ -6,19 +6,15 @@
  * Search View
 */
 
-/*
-  The search view serches for song, albums and artists that 
-  match the input string. The reults are renderend in a single
-  child scroll view.
-*/
+/// The search view searches for song, albums and artists that
+/// match the input string. The results are rendered in a single
+/// child scroll view.
 
 //imports
 
 // package imports
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 // lib file imports
@@ -27,29 +23,28 @@ import '../provider/music_player.dart';
 import '../provider/theme_mode.dart';
 import '../utils/color_util.dart';
 import '../utils/text_util.dart';
-import '../utils/default_util.dart';
 import '../components/build_check_box.dart';
-import '../models/album.dart';
+import '../components/circular_image.dart';
 
 import 'artist_view_page.dart';
 import 'album_detail_screen.dart';
 import 'search_view_more.dart';
 
-// eneum to determine type of data
+// enum to determine type of data
 enum ListType { Songs, Albums, Artists }
 
 class SearchView extends StatefulWidget {
   // name of route
   static const routeName = "/search-view";
   @override
-  _SearchViewState createState() => _SearchViewState();
+  _SearchView createState() => _SearchView();
 }
 
-class _SearchViewState extends State<SearchView> {
+class _SearchView extends State<SearchView> {
   TextEditingController? _controller;
-  List<dynamic>? _songs;
-  List<dynamic>? _albums;
-  List<dynamic>? _artists;
+  List<SongItem>? _songs;
+  List<AlbumModel>? _albums;
+  List<ArtistModel>? _artists;
   late SongProvider songProvider;
   late AppThemeMode themeProvider;
   late AudioPlayer player;
@@ -77,10 +72,10 @@ class _SearchViewState extends State<SearchView> {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
     var viewHeight = mediaQuery.size.height;
-    var extrapadding = mediaQuery.padding.top;
+    var extraPadding = mediaQuery.padding.top;
     /*
       The appBar contains a TextField that is used
-      to recieve user input.
+      to receive user input.
     */
     var appBar = AppBar(
       backgroundColor:
@@ -106,7 +101,7 @@ class _SearchViewState extends State<SearchView> {
       ],
     );
     var appBarHeight = appBar.preferredSize.height;
-    var actualHeight = viewHeight - (extrapadding + appBarHeight);
+    var actualHeight = viewHeight - (extraPadding + appBarHeight);
     return Scaffold(
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark : ColorUtil.white,
@@ -114,7 +109,7 @@ class _SearchViewState extends State<SearchView> {
       /*
         The single child scroll view consists of  
         three other lists that are used to show the results
-        of the search => songs, albums, artsis in that order.
+        of the search => songs, albums, artists in that order.
       */
       body: SingleChildScrollView(
         child: Container(
@@ -147,49 +142,26 @@ class _SearchViewState extends State<SearchView> {
   }
 
   /*
-    This method is called everytime the user types in the
+    This method is called every time the user types in the
     search box.
-    Its serches through the list of SongItems to find the ones 
+    Its searches through the list of SongItems to find the ones 
     that match the users input.
   */
   void _submit(SongProvider provider, String text) {
     var results = provider.search(text.trim());
-    _songs = results["songs"];
-    _artists = results["artists"];
-    _albums = results["albums"];
+    _songs = results["songs"] as List<SongItem>;
+    _artists = results["artists"] as List<ArtistModel>;
+    _albums = results["albums"] as List<AlbumModel>;
     setState(() {});
-  }
-
-  /*
-    This methods finds the album art that would be used 
-    to identify an album
-  */
-  String? getArtPath(Album album) {
-    return album.paths!
-        .firstWhere(
-          (song) => song.artPath != null && song.artPath!.length != 0,
-          orElse: () => SongItem(
-            artPath: DefaultUtil.defaultImage,
-            isMusic: true,
-            size: 0,
-          ),
-        )
-        .artPath;
-  }
-
-  Uint8List? getArtPath2(Album album) {
-    return album.paths!
-        .firstWhere(
-          (song) => song.artPath2 != null && song.artPath2!.length != 0,
-          orElse: () => SongItem(
-              artPath: DefaultUtil.defaultImage, isMusic: true, size: 0),
-        )
-        .artPath2;
   }
 
   // builds results list
   Widget _buildSearchResults(
-      String title, List<dynamic> items, ListType type, BuildContext context) {
+    String title,
+    List<dynamic> items,
+    ListType type,
+    BuildContext context,
+  ) {
     if (items.length == 0) {
       return Container();
     }
@@ -223,20 +195,11 @@ class _SearchViewState extends State<SearchView> {
               _listType(type, context),
               if (items.length > 10)
                 TextButton(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: themeProvider.isDarkMode
-                          ? ColorUtil.purple
-                          : Colors.blue,
-                    ),
-                    child: Text(
-                      "View More +${items.length - 10}",
-                      style: themeProvider.isDarkMode
-                          ? TextUtil.allSongsTitle
-                          : null,
-                    ),
+                  child: Text(
+                    "View More +${items.length - 10}",
+                    style: themeProvider.isDarkMode
+                        ? TextUtil.allSongsTitle
+                        : null,
                   ),
                   onPressed: () async {
                     await Navigator.of(context).pushNamed(
@@ -266,30 +229,30 @@ class _SearchViewState extends State<SearchView> {
     switch (type) {
       case ListType.Songs:
         return _buildSongList(context, all, selectable);
-        break;
       case ListType.Albums:
         return _buildAlbumList(context, all);
-        break;
       case ListType.Artists:
         return _buildArtistList(context, all);
-        break;
       default:
         return Container();
-        break;
     }
   }
 
   // builds a list of all songs that match the users search
-  Widget _buildSongList(BuildContext context, bool all, bool selectable) {
-    List<dynamic>? songs;
+  Widget _buildSongList(
+    BuildContext context,
+    bool all,
+    bool selectable,
+  ) {
+    late List<SongItem> songs;
     /*
       Depending on th current context the full list of results
       or a portion of it is shown.
     */
     if (_songs!.length > 10 && !all) {
-      songs = _songs!.sublist(0, 5);
+      songs = (_songs as List<SongItem>).sublist(0, 5);
     } else {
-      songs = _songs;
+      songs = _songs as List<SongItem>;
     }
     return Consumer<SongProvider>(
       builder: (context, provider, child) {
@@ -303,14 +266,14 @@ class _SearchViewState extends State<SearchView> {
                 : null,
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: songs!.length,
+              itemCount: songs.length,
               itemBuilder: (context, index) {
                 return Material(
                   color: themeProvider.isDarkMode
                       ? ColorUtil.dark2
                       : ColorUtil.white,
                   child: InkWell(
-                    onTap: () => player.play(songs as List<SongItem?>, index),
+                    onTap: () => player.play(songs, index),
                     onLongPress: selectable
                         ? () => provider.changeBottomBar(true)
                         : null,
@@ -322,21 +285,12 @@ class _SearchViewState extends State<SearchView> {
                             }
                           : null,
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: ColorUtil.dark,
-                          backgroundImage: DefaultUtil.checkNotNull(
-                                  songs![index].artPath)
-                              ? FileImage(File(songs[index].artPath))
-                              : (DefaultUtil.checkListNotNull(
-                                          songs[index].artPath2)
-                                      ? MemoryImage(songs[index].artPath2)
-                                      : AssetImage(DefaultUtil.defaultImage))
-                                  as ImageProvider<Object>?,
+                        leading: CircularImage(
+                          albumId: -1,
+                          songId: songs[index].songId,
                         ),
                         title: Text(
-                          songs[index] != null
-                              ? songs[index].title
-                              : DefaultUtil.unknown,
+                          songs[index].title!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: themeProvider.isDarkMode
@@ -344,9 +298,7 @@ class _SearchViewState extends State<SearchView> {
                               : null,
                         ),
                         subtitle: Text(
-                          DefaultUtil.checkNotNull(songs[index]?.artist)
-                              ? songs[index].artist
-                              : DefaultUtil.unknown,
+                          songs[index].artist!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: themeProvider.isDarkMode
@@ -372,42 +324,32 @@ class _SearchViewState extends State<SearchView> {
 
   // build a list of all artists that match the users input
   Widget _buildArtistList(BuildContext context, bool all) {
-    List<dynamic>? artists;
+    late List<ArtistModel> artists;
     if (_artists!.length > 10 && !all) {
       artists = _artists!.sublist(0, 10);
     } else {
-      artists = _artists;
+      artists = _artists!;
     }
     return Expanded(
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: artists!.length,
+        itemCount: artists.length,
         itemBuilder: (context, index) {
-          String? cover;
-          final coverArt2 = songProvider.artistCoverArt2(artists![index]);
-          if (coverArt2 == null || coverArt2.length < 1) {
-            cover = songProvider.artistCoverArt(artists[index]);
-          }
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
             child: InkWell(
               onTap: () => Navigator.of(context)
                   .pushNamed(ArtistViewScreen.routeName, arguments: {
-                "artist": artists![index] as String?,
-                "art": cover,
-                "art2": coverArt2,
+                "artist": artists[index],
               }),
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: ColorUtil.dark,
-                  backgroundImage: DefaultUtil.checkNotAsset(cover)
-                      ? FileImage(File(cover!))
-                      : (DefaultUtil.checkListNotNull(coverArt2)
-                          ? MemoryImage(coverArt2!)
-                          : AssetImage(cover!)) as ImageProvider<Object>?,
+                leading: CircularImage(
+                  albumId: -1,
+                  songId: -1,
+                  artistId: artists[index].id,
                 ),
                 title: Text(
-                  artists[index] != null ? artists[index] : DefaultUtil.unknown,
+                  artists[index].artist,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
@@ -423,51 +365,39 @@ class _SearchViewState extends State<SearchView> {
 
   // builds a list of albums that match the users input
   Widget _buildAlbumList(BuildContext context, bool all) {
-    List<dynamic>? albums;
+    late List<AlbumModel> albums;
     if (_albums!.length > 10 && !all) {
       albums = _albums!.sublist(0, 10);
     } else {
-      albums = _albums;
+      albums = _albums!;
     }
     return Expanded(
       child: ListView.builder(
         shrinkWrap: true,
-        itemCount: albums!.length,
+        itemCount: albums.length,
         itemBuilder: (context, index) {
-          String? cover;
-          final cover2 = getArtPath2(albums![index]);
-          if (cover2 == null || cover2.length < 1) {
-            cover = getArtPath(albums[index]);
-          }
           return Material(
             color: themeProvider.isDarkMode ? ColorUtil.dark2 : ColorUtil.white,
             child: InkWell(
               onTap: () => Navigator.of(context).pushNamed(
                 AlbumDetailScreen.routeName,
-                arguments: albums![index],
+                arguments: albums[index],
               ),
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: ColorUtil.dark,
-                  backgroundImage: DefaultUtil.checkNotAsset(cover)
-                      ? FileImage(File(cover!))
-                      : (DefaultUtil.checkListNotNull(cover2)
-                          ? MemoryImage(cover2!)
-                          : AssetImage(cover!)) as ImageProvider<Object>?,
+                leading: CircularImage(
+                  albumId: albums[index].id,
+                  songId: -1,
+                  artistId: -1,
                 ),
                 title: Text(
-                  albums[index] != null
-                      ? albums[index].toString()
-                      : DefaultUtil.unknown,
+                  albums[index].album,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
                       themeProvider.isDarkMode ? TextUtil.allSongsTitle : null,
                 ),
                 subtitle: Text(
-                  albums[index] != null
-                      ? albums[index].albumArtist
-                      : DefaultUtil.unknown,
+                  albums[index].artist!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
