@@ -122,6 +122,7 @@ class HomeScreen extends StatelessWidget {
                   ImageBuilder(
                     albumId: songs[0].albumId ?? -1,
                     songId: songs[0].songId ?? -1,
+                    highQuality: true,
                   ),
                   Positioned(
                     right: 10,

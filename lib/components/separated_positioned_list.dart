@@ -47,7 +47,7 @@ class SeparatedPositionedList extends StatelessWidget {
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     final songs = songProvider.songs;
     // returns empty widget if no songs are available
-    return songs != null && songs.length != 0
+    return songs.length != 0
         ? _buildSongList(songProvider, songs, audioProvider, themeProvider)
         : themeProvider.isDarkMode
             ? DefaultUtil.emptyDarkMode("No songs found...")

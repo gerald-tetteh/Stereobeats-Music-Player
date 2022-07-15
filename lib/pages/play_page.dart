@@ -40,6 +40,7 @@ import '../components/slider_and_duration.dart';
 import '../components/play_page_controls.dart';
 import '../components/play_page_pop_up.dart';
 import '../components/toast.dart';
+import '../components/circular_image.dart';
 import '../helpers/api_keys.dart';
 
 import 'song_detail_page.dart';
@@ -156,27 +157,20 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
       ),
       builder: (context, provider, child) {
         final song = provider.playing;
-        final path = song.metas.image!.path;
-        final path2 = song.metas.extra!["path2"] as Uint8List?;
         return Stack(
           fit: StackFit.expand,
           children: [
-            FadeInImage(
-              placeholder: AssetImage(DefaultUtil.defaultImage),
-              image: DefaultUtil.checkNotAsset(path)
-                  ? FileImage(File(path))
-                  : (DefaultUtil.checkListNotNull(path2)
-                          ? MemoryImage(path2!)
-                          : AssetImage(DefaultUtil.defaultImage))
-                      as ImageProvider<Object>,
-              fit: BoxFit.cover,
-              fadeOutDuration: Duration(milliseconds: 700),
+            AlbumArtBuilder(
+              albumId: song.metas.extra!["albumId"] ?? -1,
+              songId: song.metas.extra!["songId"] ?? -1,
+              artistId: -1,
+              circular: false,
             ),
             Container(
               width: double.infinity,
               height: double.infinity,
               child: ClipRRect(
-                // creats a backgroud blur effect
+                // creates a background blur effect
                 // the songs album art is used as the background
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),

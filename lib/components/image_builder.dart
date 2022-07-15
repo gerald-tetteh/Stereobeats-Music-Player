@@ -23,10 +23,12 @@ class ImageBuilder extends StatelessWidget {
     Key? key,
     required this.albumId,
     required this.songId,
+    this.highQuality = false,
   }) : super(key: key);
 
   final int albumId;
   final int songId;
+  final bool highQuality;
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +38,20 @@ class ImageBuilder extends StatelessWidget {
       artworkFit: BoxFit.cover,
       artworkBorder: BorderRadius.zero,
       artworkClipBehavior: Clip.hardEdge,
+      keepOldArtwork: true,
+      format: highQuality ? ArtworkFormat.PNG : null,
+      size: highQuality ? 300 : 200,
+      artworkQuality: highQuality ? FilterQuality.high : FilterQuality.low,
       nullArtworkWidget: QueryArtworkWidget(
         id: songId,
         type: ArtworkType.AUDIO,
         artworkFit: BoxFit.cover,
         artworkBorder: BorderRadius.zero,
         artworkClipBehavior: Clip.hardEdge,
+        keepOldArtwork: true,
+        size: highQuality ? 300 : 200,
+        format: highQuality ? ArtworkFormat.PNG : null,
+        artworkQuality: highQuality ? FilterQuality.high : FilterQuality.low,
         nullArtworkWidget: Image.asset(
           DefaultUtil.defaultImage,
           fit: BoxFit.cover,

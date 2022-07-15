@@ -102,8 +102,11 @@ class PlayListAndAlbum extends StatelessWidget {
   }
 
   /// returns the album list
-  Widget _buildAlbumList(MediaQueryData mediaQuery, SongProvider songProvider,
-      AppThemeMode themeProvider) {
+  Widget _buildAlbumList(
+    MediaQueryData mediaQuery,
+    SongProvider songProvider,
+    AppThemeMode themeProvider,
+  ) {
     if (albums!.length == 0) {
       return themeProvider.isDarkMode
           ? DefaultUtil.emptyDarkMode("No Albums yet..")
@@ -119,8 +122,11 @@ class PlayListAndAlbum extends StatelessWidget {
   }
 
   /// returns the playlist view
-  Widget _buildPlayList(MediaQueryData mediaQuery, SongProvider songProvider,
-      AppThemeMode themeProvider) {
+  Widget _buildPlayList(
+    MediaQueryData mediaQuery,
+    SongProvider songProvider,
+    AppThemeMode themeProvider,
+  ) {
     return ValueListenableBuilder(
       valueListenable: Hive.box<PlayList>("playLists").listenable(),
       builder: (context, Box<PlayList> box, child) {
@@ -241,7 +247,9 @@ class PlayListAndAlbum extends StatelessWidget {
                               : null, // ensures null is not returned
                         ),
                         trailing: Hero(
-                          tag: items[index].toString(),
+                          tag: isPlaylist
+                              ? items[index].toString()
+                              : items[index].album,
                           child: CircularImage(
                             songId: listSong?.songId ?? -1,
                             albumId: listSong?.albumId ?? -1,

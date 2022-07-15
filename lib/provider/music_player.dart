@@ -82,7 +82,7 @@ class AudioPlayer with ChangeNotifier {
     notifyListeners();
   }
 
-  // change the current index of the carousel when it is mouted
+  // change the current index of the carousel when it is mounted
   void animateCarousel() {
     try {
       pageController.jumpToPage(

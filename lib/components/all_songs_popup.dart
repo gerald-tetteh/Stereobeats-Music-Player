@@ -66,6 +66,7 @@ class AllSongsPopUp extends StatelessWidget {
             ))
         .toList();
     final fToast = FToast();
+    fToast.init(context);
     return PopupMenuButton<String>(
       icon: Icon(
         Icons.more_vert,
@@ -79,7 +80,7 @@ class AllSongsPopUp extends StatelessWidget {
           player.play(songs, index);
         } else if (value == _menuItems[1]) {
           songProvider.addToQueue(song.path!);
-          var value = await (showDialog<bool>(
+          var value = await showDialog<bool>(
             barrierDismissible: false,
             context: scaffoldKey.currentContext!,
             builder: (context) {
@@ -88,8 +89,8 @@ class AllSongsPopUp extends StatelessWidget {
                 songProvider: songProvider,
               );
             },
-          ) as Future<bool>);
-          if (value) {
+          );
+          if (value!) {
             fToast.showToast(
               child: ToastComponent(
                 color: Colors.green[100],

@@ -161,8 +161,8 @@ class AllSongsScreen extends StatelessWidget {
                             scaffoldKey: _scaffoldKey,
                           ),
                         ),
-                        // creats a space beneath the list so that
-                        // it is not obstacted by the miniplayer
+                        // creates a space beneath the list so that
+                        // it is not obstructed by the mini player
                         SizedBox(
                           height: 73,
                         ),
@@ -177,7 +177,7 @@ class AllSongsScreen extends StatelessWidget {
             bottom: 10,
             left: 3,
             right: 3,
-            // shows miniplayer if available
+            // shows mini player if available
             child: MiniPlayer(mediaQuery: mediaQuery),
           ),
         ],

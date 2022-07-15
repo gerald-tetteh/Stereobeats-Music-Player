@@ -17,6 +17,8 @@
 // imports
 
 // package imports
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -25,7 +27,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 // lib file imports
 import '../models/playlist.dart';
-import '../models/album.dart';
 import '../helpers/db_helper.dart';
 import '../utils/default_util.dart';
 
@@ -283,12 +284,13 @@ class SongProvider with ChangeNotifier {
   /// and clears all entries from the MediaStore.
   /// This completed using java code through the platform channel.
   Future<void> deleteSongs() async {
-    const platform = MethodChannel("stereo.beats/metadata");
     _queue.forEach((path) async {
-      _songs.removeWhere((song) => song.path == path);
-      await platform.invokeMethod("deleteFile", {
-        "path": path,
-      });
+      // print(await file.exists());
+      // print(file);
+      // print(file.path);
+      // if (await file.exists()) {
+      //   await file.delete();
+      // }
     });
     removeFromPlayList();
     removeFromFavourites();

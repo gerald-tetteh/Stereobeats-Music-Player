@@ -66,7 +66,7 @@ class ConfirmDeleteAlert extends StatelessWidget {
             "Yes",
             style: themeProvider.isDarkMode ? TextUtil.addPlaylistForm : null,
           ),
-          onPressed: () {
+          onPressed: () async {
             if (deleteFunction != null) {
               deleteFunction!();
             } else if (playListDeleteSingle != null) {

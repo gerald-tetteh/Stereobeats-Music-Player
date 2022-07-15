@@ -41,6 +41,7 @@ class PageViewCard extends StatelessWidget {
             child: ImageBuilder(
               albumId: song.albumId ?? -1,
               songId: song.songId ?? -1,
+              highQuality: true,
             ),
           ),
         ),
