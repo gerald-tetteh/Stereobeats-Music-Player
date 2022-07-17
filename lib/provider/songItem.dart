@@ -77,6 +77,17 @@ class SongProvider with ChangeNotifier {
   final _platform = MethodChannel("stereo.beats/methods");
   final _eventChannel = EventChannel("stereo.beats/media-change");
 
+  /// Constructor initializes media store change
+  /// listener
+  SongProvider() {
+    _eventChannel
+        .receiveBroadcastStream()
+        .map<bool>((event) => event)
+        .listen((event) async {
+      initSongProvider();
+    });
+  }
+
   /// returns a copy of all SongItems
   List<SongItem> get songs {
     return [..._songs];
@@ -188,12 +199,6 @@ class SongProvider with ChangeNotifier {
   Future<void> initSongProvider() async {
     await getSongs();
     await getAlbumsAndArtists();
-    _eventChannel
-        .receiveBroadcastStream()
-        .map<bool>((event) => event)
-        .listen((event) {
-      print(event);
-    });
   }
 
   /// returns album songs
@@ -299,11 +304,11 @@ class SongProvider with ChangeNotifier {
   /// and clears all entries from the MediaStore.
   /// This completed using java code through the platform channel.
   Future<void> deleteSongs() async {
+    deletedSongs = _queue;
     for (var path in _queue) {
       final result =
           await _platform.invokeMethod<bool>("delete", {"path": path});
     }
-    deletedSongs = _queue;
     removeFromPlayList();
     removeFromFavourites();
   }
@@ -312,8 +317,7 @@ class SongProvider with ChangeNotifier {
   /// which would enable the user to share a song item.
   /// This completed using java code through the platform channel.
   Future<void> shareFile() async {
-    const platform = MethodChannel("stereo.beats/metadata");
-    await platform.invokeMethod("shareFile", {"paths": _queue});
+    _platform.invokeMethod<void>("share", {"paths": _queue});
   }
 
   /// checks the favourite status of a song

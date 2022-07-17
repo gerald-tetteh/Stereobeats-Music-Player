@@ -154,13 +154,16 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
             _isLandScape ? Row(children: contents) : Column(children: contents),
       ),
       builder: (context, provider, child) {
-        final song = provider.playing!;
+        final song = provider.playing;
+        if (song == null) {
+          Navigator.of(context).pop();
+        }
         return Stack(
           fit: StackFit.expand,
           children: [
             AlbumArtBuilder(
-              albumId: song.metas.extra!["albumId"] ?? -1,
-              songId: song.metas.extra!["songId"] ?? -1,
+              albumId: song?.metas.extra!["albumId"] ?? -1,
+              songId: song?.metas.extra!["songId"] ?? -1,
               artistId: -1,
               circular: false,
             ),

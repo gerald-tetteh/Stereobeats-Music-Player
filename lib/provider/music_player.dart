@@ -35,31 +35,36 @@ class AudioPlayer with ChangeNotifier {
   // initialized class variables (global)
   SharedPreferences?
       prefs; // shared preferences; this is initialized in the loading page
-  AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId("current_player");
+  AssetsAudioPlayer audioPlayer;
   bool miniPlayerPresent;
   CarouselController pageController = CarouselController();
   CarouselSlider? slider;
   List<SongItem> songsQueue;
   List<String> deletedSongs;
+  Audio? lastPlayed;
 
   AudioPlayer({
     this.prefs,
     this.miniPlayerPresent = false,
     this.slider,
+    this.lastPlayed,
+    required this.audioPlayer,
     required this.deletedSongs,
     required this.songsQueue,
   }) {
     if (deletedSongs.contains(playing?.path ?? "")) {
-      audioPlayer.next();
+      audioPlayer.next(stopIfLast: true);
+      audioPlayer.playlist?.audios
+          .removeWhere((audio) => deletedSongs.contains(audio.path));
     }
   }
 
   // returns the current Audio playing.
   Audio? get playing {
     if (audioPlayer.current.hasValue) {
-      return audioPlayer.current.value!.audio.audio;
+      return audioPlayer.current.value?.audio.audio;
     }
-    return null;
+    return lastPlayed;
   }
 
   /*
@@ -207,16 +212,18 @@ class AudioPlayer with ChangeNotifier {
     miniPlayerPresent = true;
     notifyListeners();
     audioPlayer.onReadyToPlay.listen((event) async {
-      changePageController();
-      notifyListeners();
-      animateCarousel();
+      if (event?.audio != null) {
+        changePageController();
+        notifyListeners();
+        animateCarousel();
+        lastPlayed = event!.audio;
+      }
     });
-    // audioPlayer.playlistFinished.listen((event) async {
-    //   if (event && audioPlayer.loopMode.value == LoopMode.none) {
-    //     await audioPlayer.playlistPlayAtIndex(startIndex);
-    //     await audioPlayer.pause();
-    //   }
-    // });
+    audioPlayer.playlistFinished.listen((event) async {
+      if (event && audioPlayer.loopMode.value == LoopMode.none) {
+        miniPlayerPresent = false;
+      }
+    });
     audioPlayer.onErrorDo = (handler) async {
       // shows a toast if song can not be played and
       // moves to the next song.

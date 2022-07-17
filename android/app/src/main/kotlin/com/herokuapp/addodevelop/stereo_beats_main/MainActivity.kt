@@ -6,6 +6,8 @@ import android.content.Intent
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -30,20 +32,27 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, METHOD_CHANNEL).setMethodCallHandler {
             call, result ->
-            if (call.method == "delete") {
-                call.argument<String>("path")?.let {
-                    methodResult = result
-                    deleteSong(it)
+            when (call.method) {
+                "delete" -> {
+                    call.argument<String>("path")?.let {
+                        methodResult = result
+                        deleteSong(it)
+                    }
                 }
-            } else {
-                result.notImplemented()
+                "share" -> {
+                    call.argument<List<String>>("paths")?.let {
+                        methodResult = result
+                        share(it)
+                    }
+                }
+                else -> result.notImplemented()
             }
         }
         EventChannel(flutterEngine.dartExecutor.binaryMessenger, MEDIA_CHANGE_CHANNEL)
                 .setStreamHandler(MediaStoreListener(::initContentObserver, ::cancelContentObserver))
     }
 
-    private fun deleteSong(path: String): Unit {
+    private fun deleteSong(path: String) {
         val uri = Uri.parse(path)
         try {
             contentResolver.delete(uri,null,null)
@@ -62,10 +71,28 @@ class MainActivity : FlutterActivity() {
             startIntentSenderForResult(intentSender,0,null,0,0,0,null)
         }
     }
+    private fun share(paths: List<String>) {
+        val uris = ArrayList<Uri>()
+        for (path in paths) {
+            uris.add(Uri.parse(path))
+        }
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND_MULTIPLE
+            type = "audio/*"
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM,uris)
+        }
+        startActivity(Intent.createChooser(shareIntent,"Share Songs"))
+        methodResult.success(true)
+    }
+
+
     private fun initContentObserver(events: EventChannel.EventSink): ContentObserver {
         val contentObserver = object: ContentObserver(null) {
             override fun onChange(selfChange: Boolean) {
-                events.success(true)
+                val uiThreadHandler = Handler(Looper.getMainLooper())
+                uiThreadHandler.post {
+                        events.success(true)
+                }
             }
         }
         contentResolver.registerContentObserver(
