@@ -43,7 +43,7 @@ class MiniPlayer extends StatelessWidget {
     final audioProvider = Provider.of<AudioPlayer>(context);
     final themeProvider = Provider.of<AppThemeMode>(context, listen: false);
     if (audioProvider.audioPlayer.playerState.value != PlayerState.stop) {
-      Audio song = audioProvider.playing;
+      Audio song = audioProvider.playing!;
       final albumId = song.metas.extra!["albumId"] as int?;
       final songId = song.metas.extra!["songId"] as int?;
       return GestureDetector(

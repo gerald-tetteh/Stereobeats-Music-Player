@@ -65,8 +65,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SongProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => AudioPlayer(),
+        ChangeNotifierProxyProvider<SongProvider, AudioPlayer>(
+          create: (context) => AudioPlayer(
+            songsQueue: [],
+            deletedSongs: [],
+          ),
+          update: (ctx, songProvider, audioProvider) => AudioPlayer(
+            deletedSongs: songProvider.deletedSongs,
+            prefs: songProvider.prefs,
+            songsQueue: audioProvider != null ? audioProvider.songsQueue : [],
+            miniPlayerPresent:
+                audioProvider != null ? audioProvider.miniPlayerPresent : false,
+            slider: audioProvider != null ? audioProvider.slider : null,
+          ),
         ),
         ChangeNotifierProvider(
           create: (_) => AppThemeMode(),

@@ -99,7 +99,7 @@ class PlayPagePopUp extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
       ),
       onSelected: (value) async {
-        var path = audioProvider.playing.path;
+        var path = audioProvider.playing!.path;
         if (value == _menuItemsText[0]) {
           print("show equalizer");
         } else if (value == _menuItemsText[1]) {

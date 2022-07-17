@@ -19,7 +19,6 @@
 
 // package imports
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
@@ -37,19 +36,35 @@ class AudioPlayer with ChangeNotifier {
   SharedPreferences?
       prefs; // shared preferences; this is initialized in the loading page
   AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId("current_player");
-  bool miniPlayerPresent = false;
+  bool miniPlayerPresent;
   CarouselController pageController = CarouselController();
-  late CarouselSlider slider;
-  late List<SongItem?> songsQueue;
+  CarouselSlider? slider;
+  List<SongItem> songsQueue;
+  List<String> deletedSongs;
+
+  AudioPlayer({
+    this.prefs,
+    this.miniPlayerPresent = false,
+    this.slider,
+    required this.deletedSongs,
+    required this.songsQueue,
+  }) {
+    if (deletedSongs.contains(playing?.path ?? "")) {
+      audioPlayer.next();
+    }
+  }
 
   // returns the current Audio playing.
-  Audio get playing {
-    return audioPlayer.current.value!.audio.audio;
+  Audio? get playing {
+    if (audioPlayer.current.hasValue) {
+      return audioPlayer.current.value!.audio.audio;
+    }
+    return null;
   }
 
   /*
     This function changes the page controller when
-    the song playing is chagened to keep the carousel
+    the song playing is changed to keep the carousel
     up to date.
   */
   void changePageController() {
@@ -57,7 +72,7 @@ class AudioPlayer with ChangeNotifier {
       carouselController: pageController,
       itemCount: songsQueue.length,
       itemBuilder: (context, index, id) {
-        return PageViewCard(songsQueue[index]!);
+        return PageViewCard(songsQueue[index]);
       },
       options: CarouselOptions(
         autoPlay: false,
@@ -157,7 +172,7 @@ class AudioPlayer with ChangeNotifier {
     A call back function is also created in case and audio file 
     is incompatible with the device.
   */
-  Future<void> play(List<SongItem?> songs,
+  Future<void> play(List<SongItem> songs,
       [int startIndex = 0, bool shuffle = false, Duration? seekValue]) async {
     audioPlayer.shuffle = prefs?.getBool("shuffle") ?? shuffle;
     songsQueue = songs;
@@ -165,8 +180,9 @@ class AudioPlayer with ChangeNotifier {
     int randomIndex = rand.nextInt(songs.length);
     await audioPlayer.open(
       Playlist(
-          audios: audioSongs(songs),
-          startIndex: shuffle ? randomIndex : startIndex),
+        audios: audioSongs(songs),
+        startIndex: shuffle ? randomIndex : startIndex,
+      ),
       audioFocusStrategy: AudioFocusStrategy.request(
         resumeAfterInterruption: true,
       ), // the song continues after the interuption.
@@ -297,7 +313,7 @@ class AudioPlayer with ChangeNotifier {
     await prefs!.setBool("shuffle", audioPlayer.shuffle);
   }
 
-  // changes the visiblility of the miniplayer
+  // changes the visibility of the mini player
   // based on the value provided.
   void setMiniPlayer(bool value) {
     miniPlayerPresent = value;
@@ -309,9 +325,13 @@ class AudioPlayer with ChangeNotifier {
     songsQueue.addAll(songs);
     var playlist = audioPlayer.playlist!.audios;
     playlist.addAll(audioSongs(songs));
-    var currentIndex = findCurrentIndex(playing.path);
+    var currentIndex = findCurrentIndex(playing?.path ?? "");
     var currentPosition = audioPlayer.currentPosition.value;
-    await play(songsQueue, currentIndex, prefs?.getBool("shuffle") ?? false,
-        currentPosition);
+    await play(
+      songsQueue,
+      currentIndex,
+      prefs?.getBool("shuffle") ?? false,
+      currentPosition,
+    );
   }
 }

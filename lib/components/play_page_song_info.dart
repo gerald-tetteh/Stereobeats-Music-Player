@@ -34,8 +34,8 @@ class PlayPageSongInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     // the consumer rebuilds the widget when the song changes
     return Consumer<AudioPlayer>(builder: (context, provider, child) {
-      final song =
-          provider.songsQueue[provider.findCurrentIndex(provider.playing.path)]!;
+      final song = provider
+          .songsQueue[provider.findCurrentIndex(provider.playing!.path)];
       final mediaQuery = MediaQuery.of(context);
       return Container(
         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),

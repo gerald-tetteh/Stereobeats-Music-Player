@@ -17,8 +17,6 @@
 // imports
 
 // package imports
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -130,7 +128,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
     );
     List<Widget> contents = [
       Expanded(
-        child: slider,
+        child: slider!,
       ),
       _smallSize && !_isLandScape
           ? FittedBox(
@@ -156,7 +154,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
             _isLandScape ? Row(children: contents) : Column(children: contents),
       ),
       builder: (context, provider, child) {
-        final song = provider.playing;
+        final song = provider.playing!;
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -217,9 +215,9 @@ class YoutubeView extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () async {
-            var artist = value.playing.metas.artist!.toLowerCase();
+            var artist = value.playing!.metas.artist!.toLowerCase();
             var finalArtistName = artist.contains("unknown") ? "" : artist;
-            var title = value.playing.metas.title;
+            var title = value.playing!.metas.title;
             if (title != null) {
               _showSnackBar(context);
               try {

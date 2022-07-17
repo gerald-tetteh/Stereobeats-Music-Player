@@ -34,7 +34,7 @@ class SliderAndDuration extends StatelessWidget {
     return Consumer<AudioPlayer>(
       builder: (context, provider, child) {
         final songDuration = provider
-            .songsQueue[provider.findCurrentIndex(provider.playing.path)]!
+            .songsQueue[provider.findCurrentIndex(provider.playing!.path)]
             .duration;
         // the PlayBuilder updates every second in sync with the current song.
         return PlayerBuilder.currentPosition(

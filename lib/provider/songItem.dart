@@ -17,8 +17,6 @@
 // imports
 
 // package imports
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -28,7 +26,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 // lib file imports
 import '../models/playlist.dart';
 import '../helpers/db_helper.dart';
-import '../utils/default_util.dart';
 
 class SongItem {
   final int? songId;
@@ -67,6 +64,7 @@ class SongItem {
 
 class SongProvider with ChangeNotifier {
   List<SongItem> _songs = [];
+  List<String> deletedSongs = [];
   List<String> _favourites = [];
   List<String> _queue = [];
   List<AlbumModel> _albums = [];
@@ -76,6 +74,8 @@ class SongProvider with ChangeNotifier {
   bool showBottomBar = false;
   final deviceInfo = DeviceInfoPlugin();
   final _audioQuery = OnAudioQuery();
+  final _platform = MethodChannel("stereo.beats/methods");
+  final _eventChannel = EventChannel("stereo.beats/media-change");
 
   /// returns a copy of all SongItems
   List<SongItem> get songs {
@@ -179,6 +179,21 @@ class SongProvider with ChangeNotifier {
     }
     _albums = await _audioQuery.queryAlbums();
     _artists = await _audioQuery.queryArtists();
+    notifyListeners();
+  }
+
+  /// Queries songs, artists and albumArt
+  /// This function also initializes the event listener for
+  /// changes in the media store (android)
+  Future<void> initSongProvider() async {
+    await getSongs();
+    await getAlbumsAndArtists();
+    _eventChannel
+        .receiveBroadcastStream()
+        .map<bool>((event) => event)
+        .listen((event) {
+      print(event);
+    });
   }
 
   /// returns album songs
@@ -284,14 +299,11 @@ class SongProvider with ChangeNotifier {
   /// and clears all entries from the MediaStore.
   /// This completed using java code through the platform channel.
   Future<void> deleteSongs() async {
-    _queue.forEach((path) async {
-      // print(await file.exists());
-      // print(file);
-      // print(file.path);
-      // if (await file.exists()) {
-      //   await file.delete();
-      // }
-    });
+    for (var path in _queue) {
+      final result =
+          await _platform.invokeMethod<bool>("delete", {"path": path});
+    }
+    deletedSongs = _queue;
     removeFromPlayList();
     removeFromFavourites();
   }

@@ -33,12 +33,7 @@ class LoadingScreen extends StatelessWidget {
     // var box = Hive.box<String>("settings");
     // var updateCode = box.get("updateCode");
     var songProvider = Provider.of<SongProvider>(context, listen: false);
-    songProvider
-        .getSongs()
-        .then((_) => songProvider.getAlbumsAndArtists())
-        .then((_) {
-      Provider.of<AudioPlayer>(context, listen: false).prefs =
-          songProvider.prefs;
+    songProvider.initSongProvider().then((_) {
       // Include for feature updates
       // if (updateCode == DefaultUtil.versionCode) {
       //   Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
