@@ -31,7 +31,7 @@ import 'search_view.dart';
 class HomeScreen extends StatelessWidget {
   // name of route
   static const routeName = "/home-page";
-  final _scaffoldkey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     AssetsAudioPlayer.addNotificationOpenAction((notification) {
@@ -51,15 +51,26 @@ class HomeScreen extends StatelessWidget {
     var actualHeight = viewHeight - extraPadding;
     var _isLandScape = mediaQuery.orientation == Orientation.landscape;
     return Scaffold(
-      key: _scaffoldkey,
+      key: _scaffoldKey,
       drawer: CustomDrawer(),
       backgroundColor:
           themeProvider.isDarkMode ? ColorUtil.dark2 : Color(0xffeeeeee),
       // returns empty widget if there are songs on the device
       body: songs.length != 0
-          ? _buildSongList(_isLandScape, actualHeight, songs, _scaffoldkey,
-              mediaQuery, songProvider, themeProvider, context)
-          : _noSongs(context, themeProvider),
+          ? _buildSongList(
+              _isLandScape,
+              actualHeight,
+              songs,
+              _scaffoldKey,
+              mediaQuery,
+              songProvider,
+              themeProvider,
+              context,
+            )
+          : _noSongs(
+              context,
+              themeProvider,
+            ),
     );
   }
 
@@ -79,7 +90,7 @@ class HomeScreen extends StatelessWidget {
               Icons.menu,
               size: TextUtil.medium,
             ),
-            onPressed: () => _scaffoldkey.currentState!.openDrawer(),
+            onPressed: () => _scaffoldKey.currentState!.openDrawer(),
           ),
         ),
         Center(
@@ -104,7 +115,7 @@ class HomeScreen extends StatelessWidget {
       bool _isLandScape,
       double actualHeight,
       List<SongItem> songs,
-      GlobalKey<ScaffoldState> _scaffoldkey,
+      GlobalKey<ScaffoldState> _scaffoldKey,
       MediaQueryData mediaQuery,
       SongProvider songProvider,
       AppThemeMode themeProvider,
@@ -126,30 +137,32 @@ class HomeScreen extends StatelessWidget {
                   ),
                   Positioned(
                     right: 10,
-                    top: 15,
+                    top: 0,
                     left: 10,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            size: TextUtil.large,
+                    child: SafeArea(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.menu,
+                              size: TextUtil.large,
+                            ),
+                            onPressed: () {
+                              _scaffoldKey.currentState!.openDrawer();
+                            },
                           ),
-                          onPressed: () {
-                            _scaffoldkey.currentState!.openDrawer();
-                          },
-                        ),
-                        DefaultUtil.appName,
-                        IconButton(
-                          icon: Icon(
-                            Icons.search,
-                            size: TextUtil.large,
+                          DefaultUtil.appName,
+                          IconButton(
+                            icon: Icon(
+                              Icons.search,
+                              size: TextUtil.large,
+                            ),
+                            onPressed: () => Navigator.of(context)
+                                .pushNamed(SearchView.routeName),
                           ),
-                          onPressed: () => Navigator.of(context)
-                              .pushNamed(SearchView.routeName),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   Positioned(

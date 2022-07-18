@@ -27,6 +27,7 @@ class MainActivity : FlutterActivity() {
     private val METHOD_CHANNEL = "stereo.beats/methods"
     private val MEDIA_CHANGE_CHANNEL = "stereo.beats/media-change"
     private var methodResult: MethodChannel.Result? = null
+    private var deletedSong: String? = null;
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -70,6 +71,7 @@ class MainActivity : FlutterActivity() {
             }
             startIntentSenderForResult(intentSender,0,null,0,0,0,null)
         }
+        deletedSong = path;
     }
     private fun share(paths: List<String>) {
         val uris = ArrayList<Uri>()
@@ -109,6 +111,9 @@ class MainActivity : FlutterActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            if(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                deletedSong?.let { deleteSong(it) }
+            }
             methodResult?.success(true)
         } else {
             methodResult?.success(false)

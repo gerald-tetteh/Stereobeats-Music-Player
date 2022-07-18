@@ -151,9 +151,7 @@ class AudioPlayer with ChangeNotifier {
               title: DefaultUtil.checkNotNull(song.title)
                   ? song.title
                   : DefaultUtil.unknown,
-              image: DefaultUtil.checkNotNull(song.artPath)
-                  ? MetasImage.file(song.artPath!)
-                  : MetasImage.asset(DefaultUtil.defaultImage),
+              image: MetasImage.asset("assets/images/app_icon.png"),
               extra: <String, int?>{
                 "albumId": song.albumId,
                 "songId": song.songId,
