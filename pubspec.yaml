@@ -46,6 +46,7 @@ dependencies:
   device_info_plus: ^4.0.0
   collection: ^1.15.0-nullsafety.4
   on_audio_query: ^2.6.1
+  audiotagger: ^2.2.1
 
 dev_dependencies:
   flutter_test:

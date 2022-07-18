@@ -26,7 +26,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private val METHOD_CHANNEL = "stereo.beats/methods"
     private val MEDIA_CHANGE_CHANNEL = "stereo.beats/media-change"
-    private lateinit var methodResult: MethodChannel.Result
+    private var methodResult: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -56,7 +56,7 @@ class MainActivity : FlutterActivity() {
         val uri = Uri.parse(path)
         try {
             contentResolver.delete(uri,null,null)
-            methodResult.success(true)
+            methodResult?.success(true)
         } catch (e: SecurityException) {
             val intentSender = when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
@@ -82,7 +82,7 @@ class MainActivity : FlutterActivity() {
             putParcelableArrayListExtra(Intent.EXTRA_STREAM,uris)
         }
         startActivity(Intent.createChooser(shareIntent,"Share Songs"))
-        methodResult.success(true)
+        methodResult?.success(true)
     }
 
 
@@ -109,9 +109,9 @@ class MainActivity : FlutterActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
-            methodResult.success(true)
+            methodResult?.success(true)
         } else {
-            methodResult.success(false)
+            methodResult?.success(false)
         }
     }
 }

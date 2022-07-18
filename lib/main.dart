@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => SongProvider(),
+          create: (_) => SongProvider(sdkVersion),
         ),
         ChangeNotifierProxyProvider<SongProvider, AudioPlayer>(
           create: (context) => AudioPlayer(

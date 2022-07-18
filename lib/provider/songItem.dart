@@ -17,11 +17,12 @@
 // imports
 
 // package imports
+import 'package:audiotagger/audiotagger.dart';
+import 'package:audiotagger/models/tag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 
 // lib file imports
 import '../models/playlist.dart';
@@ -72,19 +73,21 @@ class SongProvider with ChangeNotifier {
   List<String> _playlistKey = [];
   SharedPreferences? prefs;
   bool showBottomBar = false;
-  final deviceInfo = DeviceInfoPlugin();
+  final int sdkVersion;
   final _audioQuery = OnAudioQuery();
+  final _audioEdit = Audiotagger();
   final _platform = MethodChannel("stereo.beats/methods");
   final _eventChannel = EventChannel("stereo.beats/media-change");
 
   /// Constructor initializes media store change
   /// listener
-  SongProvider() {
+  SongProvider(this.sdkVersion) {
     _eventChannel
         .receiveBroadcastStream()
         .map<bool>((event) => event)
         .listen((event) async {
       initSongProvider();
+      print("Change");
     });
   }
 
@@ -298,6 +301,33 @@ class SongProvider with ChangeNotifier {
     _queue.forEach((path) {
       DBHelper.randomDeleteItem("playLists", path);
     });
+  }
+
+  /// Edit song
+  /// Todo: Function not complete
+  Future<bool> editSong(Map<String, String> songDetails) async {
+    final tags = {
+      "title": songDetails["title"],
+      "artist": songDetails["artist"],
+      "album": songDetails["album"],
+      "albumArtist": songDetails["albumArtist"],
+      "year": songDetails["year"],
+    };
+    // if (sdkVersion >= 30) {
+    //   var hasPermission = await _audioEdit.complexPermissionStatus();
+    //   if (!hasPermission) {
+    //     await _audioEdit.requestComplexPermission();
+    //   }
+    //   hasPermission = await _audioEdit.complexPermissionStatus();
+    //   if (!hasPermission) {
+    //     return false;
+    //   }
+    // }
+    final result = await _audioEdit.writeTagsFromMap(
+      path: songDetails["path"]!,
+      tags: tags,
+    );
+    return result ?? false;
   }
 
   /// Deletes all songs in _queue permanently from the device

@@ -26,6 +26,7 @@ import '../provider/theme_mode.dart';
 import '../utils/text_util.dart';
 import '../utils/default_util.dart';
 import '../utils/color_util.dart';
+import '../components/image_builder.dart';
 
 import 'edit_song_page.dart';
 
@@ -44,19 +45,20 @@ class SongDetailPage extends StatelessWidget {
       elevation: 0,
       iconTheme: Theme.of(context).iconTheme,
       title: Text("Song Details"),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.edit_outlined,
-            size: TextUtil.medium,
-          ),
-          onPressed: () => Navigator.of(context)
-              .pushNamed(EditSongPage.routeName, arguments: {
-            "song": song,
-            "songProvider": songProvider,
-          }),
-        ),
-      ],
+      // TODO: edit song
+      // actions: [
+      //   IconButton(
+      //     icon: Icon(
+      //       Icons.edit_outlined,
+      //       size: TextUtil.medium,
+      //     ),
+      //     onPressed: () => Navigator.of(context)
+      //         .pushNamed(EditSongPage.routeName, arguments: {
+      //       "song": song,
+      //       "songProvider": songProvider,
+      //     }),
+      //   ),
+      // ],
     );
     var mediaQuery = MediaQuery.of(context);
     var appBarHeight = appBar.preferredSize.height;
@@ -70,16 +72,11 @@ class SongDetailPage extends StatelessWidget {
         children: [
           Container(
             height: actualHeight * 0.4,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: DefaultUtil.checkNotNull(song.artPath)
-                    ? FileImage(File(song.artPath!))
-                    : (DefaultUtil.checkListNotNull(song.artPath2)
-                            ? MemoryImage(song.artPath2!)
-                            : AssetImage(DefaultUtil.defaultImage))
-                        as ImageProvider<Object>,
-              ),
+            width: double.infinity,
+            child: ImageBuilder(
+              albumId: song.albumId!,
+              songId: song.songId!,
+              highQuality: true,
             ),
           ),
           Container(

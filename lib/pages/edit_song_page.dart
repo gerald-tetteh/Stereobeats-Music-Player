@@ -19,13 +19,21 @@ import '../utils/text_util.dart';
 import '../utils/color_util.dart';
 import '../utils/default_util.dart';
 import '../provider/songItem.dart';
+import '../components/image_builder.dart';
 import '../provider/theme_mode.dart';
 
-class EditSongPage extends StatelessWidget {
+class EditSongPage extends StatefulWidget {
   // name of route
   static const routeName = "/edit-song-page";
+
+  @override
+  State<EditSongPage> createState() => _EditSongPageState();
+}
+
+class _EditSongPageState extends State<EditSongPage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _loading = false;
 
   /*
     This method is called when the user wishes to save changes.
@@ -36,25 +44,28 @@ class EditSongPage extends StatelessWidget {
     No errors => A snackbar is shown to let the user know that changes
     are being made. 
   */
-  Future<void> _submit(SongProvider? provider, Map<String, Object?> songDetails,
-      BuildContext context) async {
-    // if (!_formKey.currentState!.validate()) {
-    //   return;
-    // }
-    // _formKey.currentState!.save();
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //   content: Row(
-    //     children: [CircularProgressIndicator(), Text("Saving Changes...")],
-    //   ),
-    //   duration: Duration(minutes: 2),
-    // ));
-    // var result = await provider!.updateSong(songDetails);
-    // ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    // if (result == 1) {
-    //   Navigator.of(context).pop();
-    // } else {
-    //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    // }
+  Future<void> _submit(
+    SongProvider? provider,
+    Map<String, String> songDetails,
+    BuildContext context,
+  ) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: [CircularProgressIndicator(), Text("Saving Changes...")],
+      ),
+      duration: Duration(minutes: 2),
+    ));
+    var result = await provider!.editSong(songDetails);
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    if (result) {
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    }
   }
 
   /*
@@ -69,24 +80,24 @@ class EditSongPage extends StatelessWidget {
     final song = parameters["song"] as SongItem;
     final songProvider = parameters["songProvider"] as SongProvider?;
     // songDetails is updated when the user saves data
-    // it is used to prepopulate the text fields
-    var songdDetails = {
+    // it is used to pre populate the text fields
+    var songDetails = {
       "title": DefaultUtil.checkNotNull(song.title)
-          ? song.title
+          ? song.title!
           : DefaultUtil.unknown,
       "artist": DefaultUtil.checkNotNull(song.artist)
-          ? song.artist
+          ? song.artist!
           : DefaultUtil.unknown,
       "album": DefaultUtil.checkNotNull(song.album)
-          ? song.album
+          ? song.album!
           : DefaultUtil.unknown,
       "albumArtist": DefaultUtil.checkNotNull(song.albumArtist)
-          ? song.albumArtist
+          ? song.albumArtist!
           : DefaultUtil.unknown,
-      "year":
-          DefaultUtil.checkNotNull(song.year) ? song.year : DefaultUtil.unknown,
-      "songId": song.songId,
-      "path": song.path,
+      "year": DefaultUtil.checkNotNull(song.year)
+          ? song.year!
+          : DefaultUtil.unknown,
+      "path": song.path!,
     };
     var appBar = AppBar(
       backgroundColor: ColorUtil.dark,
@@ -104,7 +115,7 @@ class EditSongPage extends StatelessWidget {
             size: TextUtil.medium,
           ),
           onPressed: () async =>
-              await _submit(songProvider, songdDetails, context),
+              await _submit(songProvider, songDetails, context),
         ),
       ],
     );
@@ -122,16 +133,11 @@ class EditSongPage extends StatelessWidget {
           children: [
             Container(
               height: actualHeight * 0.4,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: DefaultUtil.checkNotNull(song.artPath)
-                      ? FileImage(File(song.artPath!))
-                      : (DefaultUtil.checkListNotNull(song.artPath2)
-                              ? MemoryImage(song.artPath2!)
-                              : AssetImage(DefaultUtil.defaultImage))
-                          as ImageProvider<Object>,
-                ),
+              width: double.infinity,
+              child: ImageBuilder(
+                albumId: song.albumId ?? -1,
+                songId: song.songId ?? -1,
+                highQuality: true,
               ),
             ),
             Padding(
@@ -172,9 +178,10 @@ class EditSongPage extends StatelessWidget {
                             if (!(value is String)) {
                               return "Text not supported";
                             }
+                            return null;
                           },
                           onSaved: (value) {
-                            songdDetails["title"] =
+                            songDetails["title"] =
                                 DefaultUtil.checkNotNull(value!.trim())
                                     ? value.trim()
                                     : DefaultUtil.unknown;
@@ -209,7 +216,7 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["artist"] =
+                            songDetails["artist"] =
                                 DefaultUtil.checkNotNull(value!.trim())
                                     ? value.trim()
                                     : DefaultUtil.unknown;
@@ -244,7 +251,7 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["album"] =
+                            songDetails["album"] =
                                 DefaultUtil.checkNotNull(value!.trim())
                                     ? value.trim()
                                     : DefaultUtil.unknown;
@@ -279,7 +286,7 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["albumArtist"] =
+                            songDetails["albumArtist"] =
                                 DefaultUtil.checkNotNull(value!.trim())
                                     ? value.trim()
                                     : DefaultUtil.unknown;
@@ -314,35 +321,43 @@ class EditSongPage extends StatelessWidget {
                             }
                           },
                           onSaved: (value) {
-                            songdDetails["year"] =
+                            songDetails["year"] =
                                 DefaultUtil.checkNotNull(value!.trim())
                                     ? value.trim()
                                     : DefaultUtil.unknown;
                           },
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            backgroundColor: themeProvider.isDarkMode
-                                ? ColorUtil.purple
-                                : Colors.blue,
-                          ),
-                          onPressed: () async => await _submit(
-                              songProvider, songdDetails, context),
-                          child: Text(
-                            "Submit",
-                            style: TextUtil.submitForm.copyWith(
-                              color: themeProvider.isDarkMode
-                                  ? ColorUtil.white
-                                  : null,
-                            ),
-                          ),
-                        ),
+                        _loading
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(),
+                              )
+                            : ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 30,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  backgroundColor: themeProvider.isDarkMode
+                                      ? ColorUtil.purple
+                                      : Colors.blue,
+                                ),
+                                onPressed: () async => await _submit(
+                                  songProvider,
+                                  songDetails,
+                                  context,
+                                ),
+                                child: Text(
+                                  "Submit",
+                                  style: TextUtil.submitForm.copyWith(
+                                    color: themeProvider.isDarkMode
+                                        ? ColorUtil.white
+                                        : null,
+                                  ),
+                                ),
+                              ),
                       ],
                     ),
                   ),
