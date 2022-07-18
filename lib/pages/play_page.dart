@@ -177,7 +177,7 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
                     alignment: Alignment.center,
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withOpacity(0.4),
                     child: child,
                   ),
                 ),

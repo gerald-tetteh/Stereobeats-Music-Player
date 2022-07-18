@@ -16,8 +16,6 @@
 // imports
 
 // package imports
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 
 // lib file imports

@@ -101,7 +101,14 @@ class PlayPagePopUp extends StatelessWidget {
       onSelected: (value) async {
         var path = audioProvider.playing!.path;
         if (value == _menuItemsText[0]) {
-          print("show equalizer");
+          final result = await audioProvider.openEqualizer();
+          if (!result) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Equalizer not available"),
+              ),
+            );
+          }
         } else if (value == _menuItemsText[1]) {
           Navigator.of(context)
               .pushNamed(SongDetailPage.routeName, arguments: path);

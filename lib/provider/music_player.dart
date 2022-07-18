@@ -23,6 +23,7 @@ import 'dart:math';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -42,6 +43,7 @@ class AudioPlayer with ChangeNotifier {
   List<SongItem> songsQueue;
   List<String> deletedSongs;
   Audio? lastPlayed;
+  final _platform = MethodChannel("stereo.beats/methods");
 
   AudioPlayer({
     this.prefs,
@@ -234,7 +236,21 @@ class AudioPlayer with ChangeNotifier {
       );
       await nextTrack();
     };
-    // setup eqaulizer
+  }
+
+  /// opens device equalizer or show a
+  /// returns true is successful, false otherwise
+  Future<bool> openEqualizer() async {
+    if (audioPlayer.audioSessionId.hasValue) {
+      final result = await _platform.invokeMethod<bool>(
+        "equalizer",
+        {
+          "sessionId": audioPlayer.audioSessionId.value,
+        },
+      );
+      return result ?? false;
+    }
+    return false;
   }
 
   // plays or pauses a song based on the current state

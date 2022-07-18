@@ -2,8 +2,10 @@ package com.herokuapp.addodevelop.stereo_beats_main
 
 import android.app.Activity
 import android.app.RecoverableSecurityException
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.database.ContentObserver
+import android.media.audiofx.AudioEffect
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -27,7 +29,7 @@ class MainActivity : FlutterActivity() {
     private val METHOD_CHANNEL = "stereo.beats/methods"
     private val MEDIA_CHANGE_CHANNEL = "stereo.beats/media-change"
     private var methodResult: MethodChannel.Result? = null
-    private var deletedSong: String? = null;
+    private var deletedSong: String? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -44,6 +46,12 @@ class MainActivity : FlutterActivity() {
                     call.argument<List<String>>("paths")?.let {
                         methodResult = result
                         share(it)
+                    }
+                }
+                "equalizer" -> {
+                    call.argument<Int>("sessionId")?.let {
+                        methodResult = result
+                        openEqualiser(it)
                     }
                 }
                 else -> result.notImplemented()
@@ -71,7 +79,7 @@ class MainActivity : FlutterActivity() {
             }
             startIntentSenderForResult(intentSender,0,null,0,0,0,null)
         }
-        deletedSong = path;
+        deletedSong = path
     }
     private fun share(paths: List<String>) {
         val uris = ArrayList<Uri>()
@@ -85,6 +93,19 @@ class MainActivity : FlutterActivity() {
         }
         startActivity(Intent.createChooser(shareIntent,"Share Songs"))
         methodResult?.success(true)
+    }
+    private fun openEqualiser(sessionId: Int) {
+        val equaliserIntent = Intent().apply {
+            action = AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME,context.packageName)
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId)
+            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+        }
+        try {
+            startActivityForResult(equaliserIntent,1)
+        } catch (e: ActivityNotFoundException) {
+            methodResult?.success(false)
+        }
     }
 
 
@@ -110,13 +131,17 @@ class MainActivity : FlutterActivity() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode == 0 && resultCode == Activity.RESULT_OK) {
-            if(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                deletedSong?.let { deleteSong(it) }
+        when {
+            requestCode == 0 && resultCode == Activity.RESULT_OK -> {
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                    deletedSong?.let { deleteSong(it) }
+                }
+                methodResult?.success(true)
             }
-            methodResult?.success(true)
-        } else {
-            methodResult?.success(false)
+            requestCode == 1 && resultCode == Activity.RESULT_OK -> {
+                methodResult?.success(true)
+            }
+            else -> methodResult?.success(false)
         }
     }
 }

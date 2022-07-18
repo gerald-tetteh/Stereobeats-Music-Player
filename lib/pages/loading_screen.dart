@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // lib file imports
-import '../provider/music_player.dart';
 import '../provider/songItem.dart';
 import 'home.dart';
 // import 'new_feature_page.dart';
