@@ -26,7 +26,6 @@ import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
-import 'package:youtube_api/youtube_api.dart';
 
 // lib file imports
 import '../provider/music_player.dart';
@@ -60,11 +59,11 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
     final songProvider = Provider.of<SongProvider>(context, listen: false);
     final slider = value.slider;
     final mediaQuery = MediaQuery.of(context);
-    var viewlHeight = mediaQuery.size.height;
+    var viewHeight = mediaQuery.size.height;
     var viewWidth = mediaQuery.size.width;
     // the boolean variables ae used to ensure different
     // layouts on different screen sizes
-    final _smallSize = viewlHeight < 600;
+    final _smallSize = viewHeight < 600;
     final _smallWidth = viewWidth < 600;
     var appBar = AppBar(
       iconTheme: Theme.of(context).iconTheme,
@@ -96,9 +95,8 @@ class _PlayMusicScreenState extends State<PlayMusicScreen> {
     ); // carousel slider
     var appBarHeight = appBar.preferredSize.height;
     var extraPadding = mediaQuery.padding.top;
-    var actualHeight = viewlHeight - (extraPadding + appBarHeight);
+    var actualHeight = viewHeight - (extraPadding + appBarHeight);
     final _isLandScape = mediaQuery.orientation == Orientation.landscape;
-
     var songDataAndDuration = Container(
       constraints: _smallSize && !_isLandScape
           ? BoxConstraints(
@@ -208,7 +206,7 @@ class YoutubeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fToast = FToast();
+    final fToast = FToast()..init(context);
     return PlayerBuilder.current(
       player: value.audioPlayer,
       builder: (context, current) {

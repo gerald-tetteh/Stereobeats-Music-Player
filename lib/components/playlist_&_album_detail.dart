@@ -30,7 +30,7 @@ import '../provider/music_player.dart';
 
 import 'box_image.dart';
 import 'build_check_box.dart';
-import 'circular_image.dart';
+import 'image_builder.dart';
 
 class PlaylistAndAlbumDetail extends StatelessWidget {
   final PlayList? playlist;
@@ -125,10 +125,10 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  child: AlbumArtBuilder(
-                    albumId: songs[0].albumId,
-                    songId: songs[0].songId,
-                    circular: false,
+                  child: ImageBuilder(
+                    albumId: songs[0].albumId ?? -1,
+                    songId: songs[0].songId ?? -1,
+                    highQuality: true,
                   ),
                 ),
               ),
@@ -194,7 +194,7 @@ class PlaylistAndAlbumDetail extends StatelessWidget {
             player: player,
           ),
         ),
-        // adds extra space when the miniplayer is present
+        // adds extra space when the mini player is present
         SizedBox(
           height: 73,
         ),
