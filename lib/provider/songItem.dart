@@ -180,6 +180,7 @@ class SongProvider with ChangeNotifier {
             size: song.size,
           ),
         )
+        .where((song) => song.isMusic)
         .toList();
     _favourites = prefs!.getStringList("favourites") ?? [];
   }
